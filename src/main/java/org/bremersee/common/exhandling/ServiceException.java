@@ -100,4 +100,40 @@ public class ServiceException extends RuntimeException {
     return httpStatus != null ? httpStatus.value() : null;
   }
 
+
+  public static ServiceException internalServerError(final String reason) {
+    return internalServerError(reason, (String) null);
+  }
+
+  public static ServiceException internalServerError(final String reason, final Throwable cause) {
+    return internalServerError(reason, null, cause);
+  }
+
+  public static ServiceException internalServerError(final String reason, final String errorCode) {
+    return new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR.value(), reason, errorCode);
+  }
+
+  public static ServiceException internalServerError(final String reason, final String errorCode,
+      final Throwable cause) {
+    return new ServiceException(HttpStatus.INTERNAL_SERVER_ERROR.value(), reason, errorCode, cause);
+  }
+
+
+  public static ServiceException badRequest(final String reason) {
+    return badRequest(reason, (String) null);
+  }
+
+  public static ServiceException badRequest(final String reason, final Throwable cause) {
+    return badRequest(reason, null, cause);
+  }
+
+  public static ServiceException badRequest(final String reason, final String errorCode) {
+    return new ServiceException(HttpStatus.BAD_REQUEST.value(), reason, errorCode);
+  }
+
+  public static ServiceException badRequest(final String reason, final String errorCode,
+      final Throwable cause) {
+    return new ServiceException(HttpStatus.BAD_REQUEST.value(), reason, errorCode, cause);
+  }
+
 }

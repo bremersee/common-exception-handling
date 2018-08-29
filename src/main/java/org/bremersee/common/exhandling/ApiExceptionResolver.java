@@ -85,6 +85,8 @@ public class ApiExceptionResolver extends AbstractExceptionHandler implements
       final Object handler,
       final Exception ex) {
 
+    log.info("######## API EXCEPTION RESOLVER ########");
+
     if (!isRestController(handler)) {
       return null;
     }
@@ -102,6 +104,7 @@ public class ApiExceptionResolver extends AbstractExceptionHandler implements
         mjv.setContentType(chooser.getContentType());
         mjv.setPrettyPrint(true);
         mjv.setModelKey(MODEL_KEY);
+        mjv.setExtractValueFromSingleKeyModel(true); // removes the MODEL_KEY from the output
         modelAndView = new ModelAndView(mjv, MODEL_KEY, payload);
         break;
 

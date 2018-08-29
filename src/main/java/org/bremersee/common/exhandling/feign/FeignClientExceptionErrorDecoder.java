@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.bremersee.common.exhandling.model.RestApiException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -42,6 +43,7 @@ import org.springframework.util.StringUtils;
 /**
  * @author Christian Bremer
  */
+@Slf4j
 public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
 
   private final DateFormat rfc822Format = new SimpleDateFormat(
@@ -77,11 +79,19 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
   @Override
   public Exception decode(final String methodKey, final Response response) {
 
+    if (log.isDebugEnabled()) {
+      log.debug("msg=[Decoding error at {}]", methodKey);
+    }
     final String body = readBody(response);
     final String message = format("status %s reading %s", response.status(), methodKey);
     final String contentType = firstOrDefault(response.headers(), HttpHeaders.CONTENT_TYPE,
         MediaType.TEXT_PLAIN_VALUE);
     final RestApiException restApiException = parseRestApiException(body, contentType);
+    if (log.isDebugEnabled() && body != null) {
+      log.debug("msg=[Is error formatted as rest api exception? {}]",
+          restApiException != null && !body.equals(restApiException.getMessage()));
+      // too much: log.debug("restApiException=[{}]", restApiException);
+    }
     final FeignClientException feignClientException = new FeignClientException(
         response.request(),
         response.headers(),

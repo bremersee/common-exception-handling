@@ -16,6 +16,7 @@
 
 package org.bremersee.common.exhandling.feign;
 
+import feign.FeignException;
 import feign.Request;
 import java.util.Collection;
 import java.util.Map;
@@ -26,10 +27,7 @@ import org.springframework.http.HttpStatus;
 /**
  * @author Christian Bremer
  */
-public class FeignClientException extends RuntimeException {
-
-  @Getter
-  private final Integer httpStatusCode;
+public class FeignClientException extends FeignException {
 
   @Getter
   private final Request request;
@@ -38,17 +36,16 @@ public class FeignClientException extends RuntimeException {
   private final Map<String, Collection<String>> headers;
 
   @Getter
-  private final RestApiException restApiException;
+  private final RestApiException restApiException; // Do not rename! It's used with reflection!
 
   public FeignClientException(
       final Request request,
       final Map<String, Collection<String>> headers,
-      final int httpStatusCode,
+      final int status,
       final String message,
       final RestApiException restApiException) {
 
-    super(message);
-    this.httpStatusCode = resolveHttpStatusCode(httpStatusCode);
+    super(resolveHttpStatusCode(status), message);
     this.request = request;
     this.headers = headers;
     this.restApiException = restApiException;
@@ -58,9 +55,9 @@ public class FeignClientException extends RuntimeException {
     return restApiException != null ? restApiException.getErrorCode() : null;
   }
 
-  private static Integer resolveHttpStatusCode(final int httpStatusCode) {
+  private static int resolveHttpStatusCode(final int httpStatusCode) {
     final HttpStatus httpStatus = HttpStatus.resolve(httpStatusCode);
-    return httpStatus != null ? httpStatus.value() : null;
+    return httpStatus != null ? httpStatus.value() : HttpStatus.INTERNAL_SERVER_ERROR.value();
   }
 
 }

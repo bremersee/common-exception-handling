@@ -25,12 +25,10 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.bremersee.common.exhandling.feign.FeignClientException; // TODO without feign on classpath
 import org.bremersee.common.exhandling.model.RestApiException;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -41,6 +39,8 @@ import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 import org.springframework.web.servlet.view.xml.MappingJackson2XmlView;
 import org.springframework.web.util.WebUtils;
+
+//import org.bremersee.common.exhandling.feign.FeignClientException;
 
 /**
  * @author Christian Bremer
@@ -58,10 +58,6 @@ public class ApiExceptionResolver extends AbstractExceptionHandler implements
 
   @SuppressWarnings("WeakerAccess")
   public static final String CLASS_HEADER_NAME = "X-ERROR-CLASS-NAME";
-
-  private static final String FEIGN_EXCEPTION_CLASS_NAME = "feign.FeignException";
-
-  private static final String FEIGN_EXCEPTION_STATUS_METHOD_NAME = "status";
 
   private static final String MODEL_KEY = "error";
 
@@ -148,21 +144,8 @@ public class ApiExceptionResolver extends AbstractExceptionHandler implements
       return ((ServiceException) ex).getHttpStatusCode();
     }
 
-    if (ex instanceof FeignClientException
-        && ((FeignClientException) ex).getHttpStatusCode() != null) {
-      return ((FeignClientException) ex).getHttpStatusCode();
-    }
-
-    if (isInstanceOf(ex.getClass(), FEIGN_EXCEPTION_CLASS_NAME)) {
-      try {
-        final Method method = ReflectionUtils.findMethod(
-            Class.forName(FEIGN_EXCEPTION_CLASS_NAME), FEIGN_EXCEPTION_STATUS_METHOD_NAME);
-        if (method != null) {
-          return (int) ReflectionUtils.invokeMethod(method, ex);
-        }
-      } catch (Exception ignored) {
-        // ignored
-      }
+    if (FeignReflectionUtils.isFeignException(ex)) {
+      return FeignReflectionUtils.getStatus(ex);
     }
 
     ResponseStatus responseStatus = AnnotationUtils
@@ -178,16 +161,6 @@ public class ApiExceptionResolver extends AbstractExceptionHandler implements
     }
 
     return getProperties().findExceptionMapping(ex).getStatus();
-  }
-
-  private boolean isInstanceOf(Class<?> cls, String clsName) {
-    if (cls == null || clsName == null) {
-      return false;
-    }
-    if (cls.getName().equals(clsName)) {
-      return true;
-    }
-    return isInstanceOf(cls.getSuperclass(), clsName);
   }
 
   @SuppressWarnings("WeakerAccess")

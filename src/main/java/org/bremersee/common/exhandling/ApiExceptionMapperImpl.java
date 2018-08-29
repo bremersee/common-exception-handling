@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.bremersee.common.exhandling.ApiExceptionResolverProperties.ExceptionMappingConfig;
 import org.bremersee.common.exhandling.annotation.ErrorCode;
-import org.bremersee.common.exhandling.feign.FeignClientException; // TODO without feign on classpath
 import org.bremersee.common.exhandling.model.RestApiException;
 import org.bremersee.common.exhandling.model.StackTraceItem;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -39,6 +39,7 @@ import org.springframework.web.method.HandlerMethod;
  * @author Christian Bremer
  */
 @Validated
+@Slf4j
 public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements ApiExceptionMapper {
 
   private final String applicationName;
@@ -90,8 +91,8 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
     }
 
     if (config.isIncludeCause()) {
-      if (ex instanceof FeignClientException) {
-        restApiException.setCause(((FeignClientException) ex).getRestApiException());
+      if (FeignReflectionUtils.isFeignClientException(ex)) {
+        restApiException.setCause(FeignReflectionUtils.getRestApiException(ex));
       } else {
         restApiException.setCause(buildRestApiExceptionCause(ex.getCause(), config));
       }
@@ -189,22 +190,22 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
     if (cause == null) {
       return null;
     }
-    if (cause instanceof FeignClientException) {
-      return ((FeignClientException) cause).getRestApiException();
+    if (FeignReflectionUtils.isFeignClientException(cause)) {
+      return FeignReflectionUtils.getRestApiException(cause);
     }
-    final RestApiException payload = new RestApiException();
-    payload.setMessage(detectMessage(cause, null, config));
+    final RestApiException restApiException = new RestApiException();
+    restApiException.setMessage(detectMessage(cause, null, config));
     if (config.isIncludeCode()) {
-      payload.setErrorCode(detectErrorCode(cause, null, config));
+      restApiException.setErrorCode(detectErrorCode(cause, null, config));
     }
     if (config.isIncludeExceptionClass()) {
-      payload.setExceptionClassName(cause.getClass().getName());
+      restApiException.setExceptionClassName(cause.getClass().getName());
     }
     if (config.isIncludeStackTrace()) {
-      addStackTraceItems(payload, cause.getStackTrace());
+      addStackTraceItems(restApiException, cause.getStackTrace());
     }
-    payload.setCause(buildRestApiExceptionCause(cause.getCause(), config));
-    return payload;
+    restApiException.setCause(buildRestApiExceptionCause(cause.getCause(), config));
+    return restApiException;
   }
 
 }

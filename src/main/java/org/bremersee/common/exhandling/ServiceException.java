@@ -143,48 +143,48 @@ public class ServiceException extends RuntimeException {
     return new ServiceException(HttpStatus.NOT_FOUND);
   }
 
-  public static ServiceException notFound(String entityName) {
+  public static ServiceException notFound(Object entityName) {
     return notFound("Entity", entityName);
   }
 
-  public static ServiceException notFound(String entityType, String entityName) {
+  public static ServiceException notFound(String entityType, Object entityName) {
     return notFoundWithErrorCode(entityType, entityName, null);
   }
 
   public static ServiceException notFoundWithErrorCode(
-      String entityName,
+      Object entityName,
       String errorCode) {
     return notFoundWithErrorCode("Entity", entityName, errorCode);
   }
 
   public static ServiceException notFoundWithErrorCode(
       String entityType,
-      String entityName,
+      Object entityName,
       String errorCode) {
     return new ServiceException(HttpStatus.NOT_FOUND.value(),
         entityType + " with identifier [" + entityName + "] was not found.", errorCode);
   }
 
   public static ServiceException alreadyExists(
-      String entityName) {
+      Object entityName) {
     return alreadyExistsWithErrorCode("Entity", entityName, null);
   }
 
   public static ServiceException alreadyExists(
       String entityType,
-      String entityName) {
+      Object entityName) {
     return alreadyExistsWithErrorCode(entityType, entityName, null);
   }
 
   public static ServiceException alreadyExistsWithErrorCode(
-      String entityName,
+      Object entityName,
       String errorCode) {
     return alreadyExistsWithErrorCode("Entity", entityName, errorCode);
   }
 
   public static ServiceException alreadyExistsWithErrorCode(
       String entityType,
-      String entityName,
+      Object entityName,
       String errorCode) {
     return new ServiceException(HttpStatus.CONFLICT.value(),
         entityType + " with identifier [" + entityName + "] already exists.",
@@ -196,13 +196,13 @@ public class ServiceException extends RuntimeException {
   }
 
   public static ServiceException forbidden(
-      String entityName) {
+      Object entityName) {
     return forbiddenWithErrorCode(entityName, null);
   }
 
   public static ServiceException forbidden(
       String entityType,
-      String entityName) {
+      Object entityName) {
     return forbiddenWithErrorCode(entityType, entityName, null);
   }
 
@@ -211,7 +211,7 @@ public class ServiceException extends RuntimeException {
   }
 
   public static ServiceException forbiddenWithErrorCode(
-      String entityName,
+      Object entityName,
       String errorCode) {
     return new ServiceException(HttpStatus.FORBIDDEN.value(),
         "Access to entity with identifier [" + entityName + "] is forbidden.",
@@ -220,7 +220,7 @@ public class ServiceException extends RuntimeException {
 
   public static ServiceException forbiddenWithErrorCode(
       String entityType,
-      String entityName,
+      Object entityName,
       String errorCode) {
     return new ServiceException(HttpStatus.FORBIDDEN.value(),
         "Access to [" + entityType + "] with identifier [" + entityName + "] is forbidden.",

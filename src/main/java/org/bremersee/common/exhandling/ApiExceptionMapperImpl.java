@@ -59,14 +59,14 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
 
     final RestApiException restApiException = new RestApiException();
 
-    restApiException.setMessage(detectMessage(ex, handler));
+    restApiException.setMessage(detectMessage(ex, handler, config));
 
     if (config.isIncludeApplication()) {
       restApiException.setApplication(applicationName);
     }
 
     if (config.isIncludeCode()) {
-      restApiException.setErrorCode(detectErrorCode(ex, handler));
+      restApiException.setErrorCode(detectErrorCode(ex, handler, config));
     }
 
     if (config.isIncludeExceptionClass()) {
@@ -100,9 +100,12 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
     return restApiException;
   }
 
-  private String detectMessage(Throwable throwable, Object handler) {
+  private String detectMessage(
+      final Throwable throwable,
+      final Object handler,
+      final ExceptionMappingConfig config) {
 
-    if (StringUtils.hasText(throwable.getMessage())) {
+    if (StringUtils.hasText(throwable.getMessage()) && !config.isEvaluateAnnotationFirst()) {
       return throwable.getMessage();
     }
     ResponseStatus responseStatus = AnnotationUtils
@@ -119,10 +122,14 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
     return getProperties().findExceptionMapping(throwable).getMessage();
   }
 
-  private String detectErrorCode(Throwable throwable, Object handler) {
+  private String detectErrorCode(
+      final Throwable throwable,
+      final Object handler,
+      final ExceptionMappingConfig config) {
 
     if (throwable instanceof ServiceException
-        && StringUtils.hasText(((ServiceException) throwable).getErrorCode())) {
+        && StringUtils.hasText(((ServiceException) throwable).getErrorCode())
+        && !config.isEvaluateAnnotationFirst()) {
       return ((ServiceException) throwable).getErrorCode();
     }
     ErrorCode errorCode = AnnotationUtils.findAnnotation(throwable.getClass(), ErrorCode.class);
@@ -178,9 +185,9 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
       return ((FeignClientException) cause).getRestApiException();
     }
     final RestApiException payload = new RestApiException();
-    payload.setMessage(detectMessage(cause, null));
+    payload.setMessage(detectMessage(cause, null, config));
     if (config.isIncludeCode()) {
-      payload.setErrorCode(detectErrorCode(cause, null));
+      payload.setErrorCode(detectErrorCode(cause, null, config));
     }
     if (config.isIncludeExceptionClass()) {
       payload.setExceptionClassName(cause.getClass().getName());

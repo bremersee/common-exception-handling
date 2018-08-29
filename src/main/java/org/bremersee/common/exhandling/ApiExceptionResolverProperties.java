@@ -193,6 +193,10 @@ public class ApiExceptionResolverProperties {
     @Setter
     private boolean includeCause = true;
 
+    @Getter
+    @Setter
+    private boolean evaluateAnnotationFirst = false;
+
     public boolean isIncludeHandlerMethodParameterTypes() {
       return includeHandlerMethodParameterTypes && includeHandlerMethod;
     }

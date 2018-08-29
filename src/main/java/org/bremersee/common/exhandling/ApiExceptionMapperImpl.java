@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import org.bremersee.common.exhandling.ApiExceptionResolverProperties.ExceptionMappingConfig;
 import org.bremersee.common.exhandling.annotation.ErrorCode;
-import org.bremersee.common.exhandling.feign.FeignClientException;
+import org.bremersee.common.exhandling.feign.FeignClientException; // TODO without feign on classpath
 import org.bremersee.common.exhandling.model.RestApiException;
 import org.bremersee.common.exhandling.model.StackTraceItem;
 import org.springframework.core.annotation.AnnotationUtils;

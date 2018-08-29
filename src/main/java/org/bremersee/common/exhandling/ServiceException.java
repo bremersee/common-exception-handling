@@ -18,11 +18,14 @@ package org.bremersee.common.exhandling;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Christian Bremer
  */
 public class ServiceException extends RuntimeException {
+
+  public static final String ERROR_CODE_ALREADY_EXISTS = "COMMON:ALREADY_EXISTS";
 
   @Getter
   private final Integer httpStatusCode;
@@ -134,6 +137,94 @@ public class ServiceException extends RuntimeException {
   public static ServiceException badRequest(final String reason, final String errorCode,
       final Throwable cause) {
     return new ServiceException(HttpStatus.BAD_REQUEST.value(), reason, errorCode, cause);
+  }
+
+  public static ServiceException notFound() {
+    return new ServiceException(HttpStatus.NOT_FOUND);
+  }
+
+  public static ServiceException notFound(String entityName) {
+    return notFound("Entity", entityName);
+  }
+
+  public static ServiceException notFound(String entityType, String entityName) {
+    return notFoundWithErrorCode(entityType, entityName, null);
+  }
+
+  public static ServiceException notFoundWithErrorCode(
+      String entityName,
+      String errorCode) {
+    return notFoundWithErrorCode("Entity", entityName, errorCode);
+  }
+
+  public static ServiceException notFoundWithErrorCode(
+      String entityType,
+      String entityName,
+      String errorCode) {
+    return new ServiceException(HttpStatus.NOT_FOUND.value(),
+        entityType + " with identifier [" + entityName + "] was not found.", errorCode);
+  }
+
+  public static ServiceException alreadyExists(
+      String entityName) {
+    return alreadyExistsWithErrorCode("Entity", entityName, null);
+  }
+
+  public static ServiceException alreadyExists(
+      String entityType,
+      String entityName) {
+    return alreadyExistsWithErrorCode(entityType, entityName, null);
+  }
+
+  public static ServiceException alreadyExistsWithErrorCode(
+      String entityName,
+      String errorCode) {
+    return alreadyExistsWithErrorCode("Entity", entityName, errorCode);
+  }
+
+  public static ServiceException alreadyExistsWithErrorCode(
+      String entityType,
+      String entityName,
+      String errorCode) {
+    return new ServiceException(HttpStatus.CONFLICT.value(),
+        entityType + " with identifier [" + entityName + "] already exists.",
+        StringUtils.hasText(errorCode) ? errorCode : ERROR_CODE_ALREADY_EXISTS);
+  }
+
+  public static ServiceException forbidden() {
+    return new ServiceException(HttpStatus.FORBIDDEN);
+  }
+
+  public static ServiceException forbidden(
+      String entityName) {
+    return forbiddenWithErrorCode(entityName, null);
+  }
+
+  public static ServiceException forbidden(
+      String entityType,
+      String entityName) {
+    return forbiddenWithErrorCode(entityType, entityName, null);
+  }
+
+  public static ServiceException forbiddenWithErrorCode(String errorCode) {
+    return new ServiceException(HttpStatus.FORBIDDEN, errorCode);
+  }
+
+  public static ServiceException forbiddenWithErrorCode(
+      String entityName,
+      String errorCode) {
+    return new ServiceException(HttpStatus.FORBIDDEN.value(),
+        "Access to entity with identifier [" + entityName + "] is forbidden.",
+        errorCode);
+  }
+
+  public static ServiceException forbiddenWithErrorCode(
+      String entityType,
+      String entityName,
+      String errorCode) {
+    return new ServiceException(HttpStatus.FORBIDDEN.value(),
+        "Access to [" + entityType + "] with identifier [" + entityName + "] is forbidden.",
+        errorCode);
   }
 
 }

@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.bremersee.common.exhandling.feign.FeignClientException;
+import org.bremersee.common.exhandling.feign.FeignClientException; // TODO without feign on classpath
 import org.bremersee.common.exhandling.model.RestApiException;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.MediaType;

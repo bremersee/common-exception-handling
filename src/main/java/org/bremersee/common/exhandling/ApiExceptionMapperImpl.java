@@ -105,9 +105,11 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
       final Object handler,
       final ExceptionMappingConfig config) {
 
-    if (StringUtils.hasText(throwable.getMessage()) && !config.isEvaluateAnnotationFirst()) {
-      return throwable.getMessage();
+    String message = throwable.getMessage();
+    if (StringUtils.hasText(message) && !config.isEvaluateAnnotationFirst()) {
+      return message;
     }
+
     ResponseStatus responseStatus = AnnotationUtils
         .findAnnotation(throwable.getClass(), ResponseStatus.class);
     if (responseStatus == null) {
@@ -117,9 +119,11 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
       }
     }
     if (responseStatus != null && StringUtils.hasText(responseStatus.reason())) {
-      return responseStatus.reason();
+      message = responseStatus.reason();
     }
-    return getProperties().findExceptionMapping(throwable).getMessage();
+    return StringUtils.hasText(message)
+        ? message
+        : getProperties().findExceptionMapping(throwable).getMessage();
   }
 
   private String detectErrorCode(
@@ -127,11 +131,13 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
       final Object handler,
       final ExceptionMappingConfig config) {
 
-    if (throwable instanceof ServiceException
-        && StringUtils.hasText(((ServiceException) throwable).getErrorCode())
-        && !config.isEvaluateAnnotationFirst()) {
-      return ((ServiceException) throwable).getErrorCode();
+    String code = (throwable instanceof ServiceException)
+        ? ((ServiceException) throwable).getErrorCode()
+        : null;
+    if (StringUtils.hasText(code) && !config.isEvaluateAnnotationFirst()) {
+      return code;
     }
+
     ErrorCode errorCode = AnnotationUtils.findAnnotation(throwable.getClass(), ErrorCode.class);
     if (errorCode == null) {
       Optional<Method> method = getHandlerMethod(handler);
@@ -140,9 +146,11 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
       }
     }
     if (errorCode != null && StringUtils.hasText(errorCode.value())) {
-      return errorCode.value();
+      code = errorCode.value();
     }
-    return getProperties().findExceptionMapping(throwable).getCode();
+    return StringUtils.hasText(code)
+        ? code
+        : getProperties().findExceptionMapping(throwable).getCode();
   }
 
   private String detectHandlerMethodName(final Object handler) {

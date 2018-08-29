@@ -35,11 +35,11 @@ import org.springframework.http.HttpStatus;
 @Data
 public class ApiExceptionResolverProperties {
 
-  private ExceptionMapping defaultExceptionMapping = new ExceptionMapping();
+  private ExceptionMapping defaultExceptionMapping;
 
   private List<ExceptionMapping> exceptionMappings = new ArrayList<>();
 
-  private ExceptionMappingConfig defaultExceptionMappingConfig = new ExceptionMappingConfig();
+  private ExceptionMappingConfig defaultExceptionMappingConfig;
 
   private List<ExceptionMappingConfig> exceptionMappingConfigs = new ArrayList<>();
 
@@ -50,6 +50,8 @@ public class ApiExceptionResolverProperties {
     defaultExceptionMapping.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
     defaultExceptionMapping.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
     defaultExceptionMapping.setExceptionClassName("*");
+
+    defaultExceptionMappingConfig = new ExceptionMappingConfig();
 
     exceptionMappings.add(new ExceptionMapping(
         IllegalArgumentException.class.getName(),

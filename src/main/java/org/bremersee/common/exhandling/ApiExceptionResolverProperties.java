@@ -97,8 +97,8 @@ public class ApiExceptionResolverProperties {
       return true;
     }
     if (exceptionClassName.endsWith(".*")) {
-      final String packageName = exceptionClassName.substring(0, exceptionClassName.length() - 1);
-      if (throwable.getClass().getName().startsWith(packageName)) {
+      final String packagePrefix = exceptionClassName.substring(0, exceptionClassName.length() - 1);
+      if (throwable.getClass().getName().startsWith(packagePrefix)) {
         return true;
       }
     }
@@ -116,8 +116,8 @@ public class ApiExceptionResolverProperties {
       return true;
     }
     if (exceptionClassName.endsWith(".*")) {
-      final String packageName = exceptionClassName.substring(0, exceptionClassName.length() - 1);
-      if (exceptionClass.getName().startsWith(packageName)) {
+      final String packagePrefix = exceptionClassName.substring(0, exceptionClassName.length() - 1);
+      if (exceptionClass.getName().startsWith(packagePrefix)) {
         return true;
       }
     }

@@ -112,7 +112,6 @@ public class ApiExceptionResolverProperties {
     return matches(exceptionClass.getSuperclass(), exceptionClassName);
   }
 
-
   @ToString
   @EqualsAndHashCode
   @NoArgsConstructor

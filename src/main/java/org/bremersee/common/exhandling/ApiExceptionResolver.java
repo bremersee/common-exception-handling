@@ -144,6 +144,10 @@ public class ApiExceptionResolver extends AbstractExceptionHandler implements
       return ((ServiceException) ex).getHttpStatusCode();
     }
 
+    if (ex instanceof HttpStatusAware) {
+      return ((HttpStatusAware)ex).status();
+    }
+
     if (FeignReflectionUtils.isFeignException(ex)) {
       return FeignReflectionUtils.getStatus(ex);
     }

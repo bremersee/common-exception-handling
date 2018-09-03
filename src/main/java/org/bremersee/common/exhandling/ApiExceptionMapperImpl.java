@@ -91,11 +91,18 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
     }
 
     if (config.isIncludeCause()) {
+      if (ex instanceof RestApiExceptionAware) {
+        restApiException.setCause(((RestApiExceptionAware)ex).getRestApiException());
+      } else {
+        restApiException.setCause(buildRestApiExceptionCause(ex.getCause(), config));
+      }
+      /*
       if (FeignReflectionUtils.isFeignClientException(ex)) {
         restApiException.setCause(FeignReflectionUtils.getRestApiException(ex));
       } else {
         restApiException.setCause(buildRestApiExceptionCause(ex.getCause(), config));
       }
+      */
     }
 
     return restApiException;
@@ -190,9 +197,14 @@ public class ApiExceptionMapperImpl extends AbstractExceptionHandler implements 
     if (cause == null) {
       return null;
     }
+    if (cause instanceof RestApiExceptionAware) {
+      return ((RestApiExceptionAware)cause).getRestApiException();
+    }
+    /*
     if (FeignReflectionUtils.isFeignClientException(cause)) {
       return FeignReflectionUtils.getRestApiException(cause);
     }
+    */
     final RestApiException restApiException = new RestApiException();
     restApiException.setMessage(detectMessage(cause, null, config));
     if (config.isIncludeCode()) {

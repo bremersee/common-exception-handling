@@ -18,7 +18,6 @@ package org.bremersee.common.exhandling;
 
 import java.lang.reflect.Method;
 import lombok.extern.slf4j.Slf4j;
-import org.bremersee.common.exhandling.model.RestApiException;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -37,6 +36,7 @@ abstract class FeignReflectionUtils {
     return isInstanceOf(throwable.getClass(), "feign.FeignException");
   }
 
+  /*
   static boolean isFeignClientException(final Throwable throwable) {
     if (throwable == null) {
       return false;
@@ -44,18 +44,23 @@ abstract class FeignReflectionUtils {
     return isInstanceOf(throwable.getClass(),
         "org.bremersee.common.exhandling.feign.FeignClientException");
   }
+  */
 
   static int getStatus(final Throwable throwable) {
     final Object result = get(throwable, "status");
     if (result instanceof Integer) {
       return (int) result;
     }
+    log.warn("msg=[Getting http status failed. Returning 500.] exception=[{}] status=[{}]",
+        throwable.getClass().getName(), result);
     return 500;
   }
 
+  /*
   static RestApiException getRestApiException(final Throwable throwable) {
     return get(throwable, "getRestApiException");
   }
+  */
 
   private static boolean isInstanceOf(final Class<?> cls, final String clsName) {
     if (cls == null || clsName == null) {
@@ -67,6 +72,7 @@ abstract class FeignReflectionUtils {
     return isInstanceOf(cls.getSuperclass(), clsName);
   }
 
+  @SuppressWarnings("SameParameterValue")
   private static <T> T get(final Throwable throwable, final String methodName) {
     try {
       final Method method = ReflectionUtils.findMethod(

@@ -21,13 +21,17 @@ import feign.Request;
 import java.util.Collection;
 import java.util.Map;
 import lombok.Getter;
+import org.bremersee.common.exhandling.HttpStatusAware;
+import org.bremersee.common.exhandling.HttpResponseHeadersAware;
+import org.bremersee.common.exhandling.RestApiExceptionAware;
 import org.bremersee.common.exhandling.model.RestApiException;
 import org.springframework.http.HttpStatus;
 
 /**
  * @author Christian Bremer
  */
-public class FeignClientException extends FeignException {
+public class FeignClientException extends FeignException implements HttpStatusAware,
+    HttpResponseHeadersAware, RestApiExceptionAware {
 
   @Getter
   private final Request request;

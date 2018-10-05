@@ -145,7 +145,7 @@ public class ApiExceptionResolver extends AbstractExceptionHandler implements
     }
 
     if (ex instanceof HttpStatusAware) {
-      return ((HttpStatusAware)ex).status();
+      return ((HttpStatusAware) ex).status();
     }
 
     if (FeignReflectionUtils.isFeignException(ex)) {
@@ -197,11 +197,11 @@ public class ApiExceptionResolver extends AbstractExceptionHandler implements
     ResponseFormatAndContentType(final @NotNull HttpServletRequest request) {
       String acceptHeader = request
           .getHeader("Accept") == null ? "" : request.getHeader("Accept").toLowerCase();
-      if ("".equals(acceptHeader) || acceptHeader.contains("*/*") || acceptHeader
-          .contains("/json")) {
+      if ("".equals(acceptHeader) || acceptHeader.contains("*/*")
+          || ContentTypeHelper.isJson(acceptHeader)) {
         responseFormat = ResponseFormat.JSON;
         contentType = MediaType.APPLICATION_JSON_UTF8_VALUE;
-      } else if (acceptHeader.contains("/xml")) {
+      } else if (ContentTypeHelper.isXml(acceptHeader)) {
         responseFormat = ResponseFormat.XML;
         contentType = MediaType.APPLICATION_XML_VALUE;
       } else if (acceptHeader.contains("text/plain")) {

@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.bremersee.common.exhandling.ContentTypeHelper;
 import org.bremersee.common.exhandling.model.RestApiException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -108,11 +109,10 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
   }
 
   private RestApiException parseRestApiException(String body, String contentType) {
-    final String lowerCaseContentType = contentType.toLowerCase();
     RestApiException restApiException = null;
-    if (lowerCaseContentType.contains("/json")) {
+    if (ContentTypeHelper.isJson(contentType)) {
       restApiException = parseJson(body);
-    } else if (lowerCaseContentType.contains("/xml")) {
+    } else if (ContentTypeHelper.isXml(contentType)) {
       restApiException = parseXml(body);
     }
     if (restApiException == null && StringUtils.hasText(body)) {

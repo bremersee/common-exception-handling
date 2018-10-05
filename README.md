@@ -156,11 +156,11 @@ This will extract the following files into the directory target/swagger-refs:
       |
       +- META-INF
          |
-        +- swagger
-           |
-           +- common-exception-handling.yml
-           |
-           +- common-exception-handling-mappings.json
+         +- swagger
+            |
+            +- common-exception-handling.yml
+            |
+            +- common-exception-handling-mappings.json
 ```
 
 In your swagger definition you can refer to the exception model like this:

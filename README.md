@@ -164,7 +164,6 @@ This will extract the following files into the directory target/swagger-refs:
 ```
 
 In your swagger definition you can refer to the exception model like this:
-
 ```yml
 /api/pets:
   get:
@@ -185,6 +184,65 @@ In your swagger definition you can refer to the exception model like this:
         description: "Fatal server error."
         schema:
           $ref: '../../../target/swagger-refs/META-INF/swagger/common-exception-handling.yml#/definitions/RestApiException'
+```
+
+Create a config file with the following content for the code generator:
+```json
+{
+  "importMappings": {
+    "StackTraceItem": "org.bremersee.common.exhandling.model.StackTraceItem",
+    "RestApiException": "org.bremersee.common.exhandling.model.RestApiException"
+  }
+}
+```
+
+And specify it in the swagger-codegen-maven-plugin:
+```xml
+<plugin>
+  <groupId>io.swagger</groupId>
+  <artifactId>swagger-codegen-maven-plugin</artifactId>
+  <executions>
+    <execution>
+      <id>api</id>
+      <goals>
+        <goal>generate</goal>
+      </goals>
+      <configuration>
+        <configurationFile>
+          ${project.basedir}/src/main/swagger/pet-api-config.json
+        </configurationFile>
+        <inputSpec>
+          ${project.basedir}/src/main/swagger/pet-api.yml
+        </inputSpec>
+        <language>spring</language>
+        <output>${project.build.directory}/generated-sources</output>
+        <templateDirectory>
+          ${project.basedir}/src/main/swagger/templates
+        </templateDirectory>
+        <modelPackage>${swagger-base-package}.model</modelPackage>
+        <apiPackage>${swagger-base-package}.api</apiPackage>
+        <invokerPackage>${swagger-base-package}.invoker</invokerPackage>
+        <withXml>true</withXml>
+        <generateApis>true</generateApis>
+        <generateApiTests>false</generateApiTests>
+        <generateApiDocumentation>false</generateApiDocumentation>
+        <generateModels>true</generateModels>
+        <generateModelTests>false</generateModelTests>
+        <generateModelDocumentation>true</generateModelDocumentation>
+        <generateSupportingFiles>false</generateSupportingFiles>
+        <configOptions>
+          <serializableModel>true</serializableModel>
+          <hideGenerationTimestamp>true</hideGenerationTimestamp>
+          <withXml>true</withXml>
+          <dateLibrary>java8</dateLibrary>
+          <java8>true</java8>
+          <useTags>true</useTags>
+          <interfaceOnly>true</interfaceOnly>
+        </configOptions>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
 ```
 
 ## Configuration

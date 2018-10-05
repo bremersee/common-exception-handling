@@ -17,16 +17,30 @@
 package org.bremersee.common.exhandling;
 
 /**
+ * The content type helper.
+ *
  * @author Christian Bremer
  */
 public abstract class ContentTypeHelper {
 
+  /**
+   * Determine whether the given content type is json.
+   *
+   * @param contentType the content type
+   * @return the boolean
+   */
   public static boolean isJson(String contentType) {
     return contentType != null
         && (contentType.toLowerCase().contains("/json")
         || contentType.toLowerCase().contains("+json"));
   }
 
+  /**
+   * Determine whether the given content type is xml.
+   *
+   * @param contentType the content type
+   * @return the boolean
+   */
   public static boolean isXml(String contentType) {
     return contentType != null
         && (contentType.toLowerCase().contains("/xml")

@@ -121,11 +121,160 @@ TODO (not yet implemented)
 
 ### Refer to the exception payload type in your swagger definitions
 
+If you want to refer to the exception payload model in your swagger definition, you'll have to
+extract the swagger definition of this project via Maven's dependency plugin:
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-dependency-plugin</artifactId>
+  <executions>
+    <execution>
+      <id>swagger-codegen-dependencies</id>
+      <phase>initialize</phase>
+      <goals>
+        <goal>unpack</goal>
+      </goals>
+      <configuration>
+        <artifactItems>
+          <artifactItem>
+            <groupId>org.bremersee</groupId>
+            <artifactId>common-exception-handling</artifactId>
+            <outputDirectory>${basedir}/target/swagger-refs</outputDirectory>
+            <includes>**/*.json,**/*.yml</includes>
+          </artifactItem>
+        </artifactItems>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+```
+This will extract the following files into the directory target/swagger-refs:
+```
++- target
+   |
+   +- swagger-refs
+      |
+      +- META-INF
+         |
+        +- swagger
+           |
+           +- common-exception-handling.yml
+           |
+           +- common-exception-handling-mappings.json
+```
+
+In your swagger definition you can refer to the exception model like this:
+
+```yml
+/api/pets:
+  get:
+    tags:
+      - "pet-controller"
+    description: "Get all pets."
+    operationId: "getPets"
+    produces:
+      - "application/json"
+    responses:
+      200:
+        description: "A list with pets."
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/PetList"
+      500:
+        description: "Fatal server error."
+        schema:
+          $ref: '../../../target/swagger-refs/META-INF/swagger/common-exception-handling.yml#/definitions/RestApiException'
+```
+
 ## Configuration
 
 ### ApiExceptionResolver
 
+```java
+import java.util.List;
+import org.bremersee.common.exhandling.ApiExceptionMapper;
+import org.bremersee.common.exhandling.ApiExceptionMapperImpl;
+import org.bremersee.common.exhandling.ApiExceptionResolver;
+import org.bremersee.common.exhandling.ApiExceptionResolverProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+@EnableConfigurationProperties({ApiExceptionResolverProperties.class})
+public class WebMvcConfiguration implements WebMvcConfigurer {
+
+  private final ApiExceptionResolver apiExceptionResolver;
+
+  /**
+   * Instantiates a new web mvc configuration.
+   *
+   * @param env                            the env
+   * @param apiExceptionResolverProperties the api exception resolver properties
+   * @param objectMapperBuilder            the object mapper builder
+   */
+  @Autowired
+  public WebMvcConfiguration(
+      final Environment env,
+      final ApiExceptionResolverProperties apiExceptionResolverProperties,
+      final Jackson2ObjectMapperBuilder objectMapperBuilder) {
+
+    final ApiExceptionMapper apiExceptionMapper = new ApiExceptionMapperImpl(
+        apiExceptionResolverProperties,
+        env.getProperty("spring.application.name"));
+
+    this.apiExceptionResolver = new ApiExceptionResolver(
+        apiExceptionResolverProperties,
+        apiExceptionMapper);
+    this.apiExceptionResolver.setObjectMapperBuilder(objectMapperBuilder);
+  }
+
+  @Override
+  public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> exceptionResolvers) {
+    exceptionResolvers.add(0, apiExceptionResolver);
+  }
+
+}
+```
+
 ### Feign ErrorDecoder
+
+Create a feign client configuration like this:
+
+```java
+import feign.codec.ErrorDecoder;
+import org.bremersee.common.exhandling.feign.FeignClientExceptionErrorDecoder;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+
+@Configuration
+public class MyFeignClientConfiguration {
+
+  @Bean
+  public ErrorDecoder errorDecoder(Jackson2ObjectMapperBuilder objectMapperBuilder) {
+    return new FeignClientExceptionErrorDecoder(objectMapperBuilder);
+  }
+
+}
+```
+
+Extend the generated swagger api and annotate it with @FeignClient like this:
+ 
+```java
+@FeignClient(name = "my-feign-client",
+    url = "http://example.org",
+    configuration = {MyFeignClientConfiguration.class})
+public interface MyFeignClient extends MyControllerApi {
+
+}
+```
 
 ### RestTemplate
 

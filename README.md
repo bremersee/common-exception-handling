@@ -25,7 +25,7 @@ A JSON output may look like this (it's configurable: you can also add causes and
 ```
 
 The message is the message from the exception or the reason that can be specified with Spring's
-annotation @ResponseStatus. You can configure which message should be preferred. We default is to 
+annotation @ResponseStatus. You can configure which message should be preferred. The default is to 
 use the message of the exception unless it is not null or empty.
 
 The error code can be set on the provided ServiceException of this project or on every exception
@@ -86,9 +86,9 @@ a message like 'status 500 reading PetRestController#getPets()'. The body of the
 may contain some important information for the client, gets lost as well as the response headers.
 
 The error decoder for feign clients in this project reads the http body of the response and adds
-it the FeignClientException of this project. Since it is assumed that the error description is in 
+it to the FeignClientException of this project. Since it is assumed that the error description is in 
 the specified format, it is attempted to parse the same. If this fails, the body content will be 
-treated as the exception message. Is this FeignClientException is rendered again by the 
+treated as the exception message. If this FeignClientException is rendered again by the 
 ApiExceptionResolver the result will be a chain of two exceptions. The first is the 
 FeignClientException produced by the client, the second is the exception of the remote server:
 

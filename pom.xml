@@ -21,6 +21,7 @@
   <url>https://github.com/bremersee/common-exception-handling</url>
 
   <modules>
+    <module>common-exception-model</module>
   </modules>
 
   <properties>
@@ -29,6 +30,7 @@
     <gh-pages-staging-dir>${maven.multiModuleProjectDirectory}/target/staging</gh-pages-staging-dir>
 
     <common-autoconfigure.version>0.0.1-SNAPSHOT</common-autoconfigure.version>
+    <common-xml.version>2.5.0-SNAPSHOT</common-xml.version>
   </properties>
 
   <developers>
@@ -87,6 +89,11 @@
         <groupId>org.bremersee</groupId>
         <artifactId>common-spring-boot-autoconfigure</artifactId>
         <version>${common-autoconfigure.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bremersee</groupId>
+        <artifactId>common-xml</artifactId>
+        <version>${common-xml.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

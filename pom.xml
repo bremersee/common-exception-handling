@@ -21,8 +21,8 @@
   <url>https://github.com/bremersee/common-exception-handling</url>
 
   <modules>
-    <module>common-exception-model</module>
     <module>common-exception</module>
+    <module>common-exception-model</module>
   </modules>
 
   <properties>

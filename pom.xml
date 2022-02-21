@@ -23,6 +23,7 @@
   <modules>
     <module>common-exception</module>
     <module>common-exception-model</module>
+    <module>common-exception-spring-web</module>
   </modules>
 
   <properties>
@@ -63,7 +64,8 @@
   <scm>
     <url>https://github.com/bremersee/common-exception-handling</url>
     <connection>scm:git:git://github.com/bremersee/common-exception-handling.git</connection>
-    <developerConnection>scm:git:git@github.com:bremersee/common-exception-handling.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:bremersee/common-exception-handling.git
+    </developerConnection>
   </scm>
 
   <issueManagement>
@@ -90,6 +92,11 @@
         <groupId>org.bremersee</groupId>
         <artifactId>common-spring-boot-autoconfigure</artifactId>
         <version>${common-autoconfigure.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bremersee</groupId>
+        <artifactId>common-xml-adapter</artifactId>
+        <version>${common-xml.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bremersee</groupId>

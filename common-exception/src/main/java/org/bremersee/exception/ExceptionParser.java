@@ -25,7 +25,7 @@ import java.util.Map;
  * @param <T> the parsed exception type
  * @author Christian Bremer
  */
-public interface ExceptionParser<T> {
+public interface ExceptionParser<T> { // better?: HttpClientExceptionParser
 
   /**
    * Parse exception.

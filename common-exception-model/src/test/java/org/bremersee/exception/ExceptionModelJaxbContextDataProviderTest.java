@@ -16,23 +16,26 @@
 
 package org.bremersee.exception;
 
-import java.util.Collection;
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.bremersee.exception.model.RestApiException;
-import org.bremersee.xml.JaxbContextDataProvider;
 import org.bremersee.xml.JaxbContextMember;
+import org.junit.jupiter.api.Test;
 
 /**
- * The exception model jaxb context data provider.
+ * The exception model jaxb context data provider test.
  *
  * @author Christian Bremer
  */
-public class ExceptionModelJaxbContextDataProvider implements JaxbContextDataProvider {
+class ExceptionModelJaxbContextDataProviderTest {
 
-  @Override
-  public Collection<JaxbContextMember> getJaxbContextData() {
-    return List.of(
-        JaxbContextMember.byClass(RestApiException.class).build()
-    );
+  /**
+   * Gets jaxb context data.
+   */
+  @Test
+  void getJaxbContextData() {
+    ExceptionModelJaxbContextDataProvider provider = new ExceptionModelJaxbContextDataProvider();
+    assertThat(provider.getJaxbContextData())
+        .contains(JaxbContextMember.byClass(RestApiException.class).build());
   }
 }

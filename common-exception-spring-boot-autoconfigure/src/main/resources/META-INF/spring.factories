@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+\
+org.bremersee.exception.boot.RestApiExceptionMapperAutoConfiguration,\
+org.bremersee.exception.boot.RestApiExceptionParserAutoConfiguration,\
+org.bremersee.exception.boot.servlet.ApiExceptionResolverAutoConfiguration

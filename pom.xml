@@ -24,8 +24,10 @@
     <module>common-exception</module>
     <module>common-exception-model</module>
     <module>common-exception-spring-web</module>
+    <module>common-exception-spring-webmvc</module>
     <module>common-exception-spring-webflux</module>
     <module>common-exception-feign</module>
+    <module>common-exception-spring-boot-autoconfigure</module>
   </modules>
 
   <properties>

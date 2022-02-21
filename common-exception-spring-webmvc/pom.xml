@@ -3,18 +3,17 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <artifactId>common-exception-parent</artifactId>
     <groupId>org.bremersee</groupId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>common-exception-feign</artifactId>
+  <artifactId>common-exception-spring-webmvc</artifactId>
 
-  <name>Common Exception Feign</name>
+  <name>Common Exception Spring WebMvc</name>
   <description>
-    This project contains common exceptions for Feign.
+    This project contains common exceptions for Spring WebMvc.
   </description>
 
   <developers>
@@ -50,8 +49,12 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.github.openfeign</groupId>
-      <artifactId>feign-core</artifactId>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
 
     <dependency>
@@ -65,17 +68,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jdk8</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
@@ -83,11 +75,6 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

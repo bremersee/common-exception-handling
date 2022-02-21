@@ -19,13 +19,15 @@ package org.bremersee.exception;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Some utilities.
  *
  * @author Christian Bremer
  */
-public abstract class RestApiExceptionUtils { // TODO rename
+@Slf4j
+public abstract class RestApiExceptionUtils {
 
   /**
    * The header name for the 'id' attribute.
@@ -86,18 +88,15 @@ public abstract class RestApiExceptionUtils { // TODO rename
    * @param value the 'timestamp' header value
    * @return the timestamp
    */
-  public static OffsetDateTime parseHeaderValue(String value) {
+  public static OffsetDateTime parseHeaderValue(String value) { // TODO rename
     OffsetDateTime time = null;
     if (Objects.nonNull(value)) {
       try {
         time = OffsetDateTime.parse(value, TIMESTAMP_FORMATTER);
       } catch (final Exception e) {
-        // TODO
-        /*
         if (log.isDebugEnabled()) {
           log.debug("msg=[Parsing timestamp failed.] timestamp=[{}]", value);
         }
-        */
       }
     }
     return time;

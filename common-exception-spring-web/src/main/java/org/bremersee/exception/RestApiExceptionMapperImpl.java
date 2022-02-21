@@ -40,6 +40,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -69,6 +70,8 @@ public class RestApiExceptionMapperImpl implements RestApiExceptionMapper {
       String applicationName) {
     this.properties = properties;
     this.applicationName = applicationName;
+
+    RestTemplate r;
   }
 
   @Override

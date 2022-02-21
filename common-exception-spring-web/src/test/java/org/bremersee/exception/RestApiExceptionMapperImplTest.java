@@ -24,8 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMapping;
 import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMappingConfig;
 import org.bremersee.exception.model.RestApiException;
@@ -34,10 +36,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.server.ResponseStatusException;
 
-//import org.bremersee.web.reactive.function.client.WebClientException;
 /**
  * The rest api exception mapper impl test.
  *
@@ -169,7 +172,7 @@ class RestApiExceptionMapperImplTest {
 
   /**
    * Test build with cause.
-   *
+   */
   @Test
   void testBuildWithCause() {
     final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
@@ -185,7 +188,7 @@ class RestApiExceptionMapperImplTest {
     cause.setPath("/api/cause");
     cause.setTimestamp(OffsetDateTime.now(ZoneId.of("UTC")));
 
-    final WebClientException exception = new WebClientException(
+    final ExampleException exception = new ExampleException(
         HttpStatus.INTERNAL_SERVER_ERROR,
         Collections.unmodifiableMap(headers),
         cause);
@@ -199,6 +202,48 @@ class RestApiExceptionMapperImplTest {
     assertNotNull(model.getId());
     assertEquals(cause, model.getCause());
   }
-  */
 
+  private static class ExampleException extends ResponseStatusException
+      implements RestApiExceptionAware, ErrorCodeAware, HttpResponseHeadersAware {
+
+    private final Map<String, ? extends Collection<String>> headers;
+
+    private final RestApiException restApiException;
+
+    private ExampleException(
+        final HttpStatus status,
+        final Map<String, ? extends Collection<String>> headers,
+        final RestApiException restApiException) {
+
+      super(status);
+      this.headers = headers != null ? headers : Collections.emptyMap();
+      this.restApiException = restApiException;
+    }
+
+    @Override
+    public RestApiException getRestApiException() {
+      return restApiException;
+    }
+
+    @NonNull
+    @Override
+    public HttpHeaders getResponseHeaders() {
+      HttpHeaders httpHeaders = new HttpHeaders();
+      for (Map.Entry<String, ? extends Collection<String>> entry : headers.entrySet()) {
+        httpHeaders.put(entry.getKey(), List.copyOf(entry.getValue()));
+      }
+      return httpHeaders;
+    }
+
+    @Override
+    public Map<String, ? extends Collection<String>> getMultiValueHeaders() {
+      return headers;
+    }
+
+    @Override
+    public String getErrorCode() {
+      return getRestApiException() != null ? getRestApiException().getErrorCode() : null;
+    }
+
+  }
 }

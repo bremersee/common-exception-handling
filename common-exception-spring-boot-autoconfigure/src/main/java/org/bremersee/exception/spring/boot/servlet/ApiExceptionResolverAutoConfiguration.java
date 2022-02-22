@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.bremersee.exception.boot.servlet;
+package org.bremersee.exception.spring.boot.servlet;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
-import org.bremersee.exception.boot.RestApiExceptionMapperAutoConfiguration;
+import org.bremersee.exception.spring.boot.RestApiExceptionMapperAutoConfiguration;
 import org.bremersee.exception.servlet.ApiExceptionResolver;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;

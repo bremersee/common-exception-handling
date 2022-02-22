@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bremersee.exception.boot.reactive;
+package org.bremersee.exception.spring.boot.reactive;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

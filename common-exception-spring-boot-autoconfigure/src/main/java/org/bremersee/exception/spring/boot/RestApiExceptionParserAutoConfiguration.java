@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bremersee.exception.boot;
+package org.bremersee.exception.spring.boot;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;

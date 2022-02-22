@@ -28,6 +28,8 @@
     <module>common-exception-spring-webflux</module>
     <module>common-exception-feign</module>
     <module>common-exception-spring-boot-autoconfigure</module>
+    <module>common-exception-spring-boot-web-starter</module>
+    <module>common-exception-spring-boot-webflux-starter</module>
   </modules>
 
   <properties>

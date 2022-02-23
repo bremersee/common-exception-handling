@@ -1,1 +1,1 @@
-# Common Exception Spring Boot Autoconfigure
+# Common Exception Spring Boot Autoconfiguration

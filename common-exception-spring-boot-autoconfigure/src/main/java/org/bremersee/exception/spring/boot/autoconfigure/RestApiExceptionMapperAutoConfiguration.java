@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bremersee.exception.spring.boot;
+package org.bremersee.exception.spring.boot.autoconfigure;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;

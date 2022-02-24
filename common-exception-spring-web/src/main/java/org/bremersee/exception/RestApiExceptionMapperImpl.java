@@ -18,7 +18,7 @@ package org.bremersee.exception;
 
 import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -40,7 +40,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -70,8 +69,6 @@ public class RestApiExceptionMapperImpl implements RestApiExceptionMapper {
       String applicationName) {
     this.properties = properties;
     this.applicationName = applicationName;
-
-    RestTemplate r;
   }
 
   @Override
@@ -164,7 +161,7 @@ public class RestApiExceptionMapperImpl implements RestApiExceptionMapper {
     if (httpStatus.series() == HttpStatus.Series.SERVER_ERROR) {
       restApiException.setId(UUID.randomUUID().toString());
     }
-    restApiException.setTimestamp(OffsetDateTime.now(ZoneId.of("UTC")));
+    restApiException.setTimestamp(OffsetDateTime.now(ZoneOffset.UTC));
     restApiException.setMessage(detectMessage(exception, handler, config));
     if (config.isIncludeExceptionClassName()) {
       restApiException.setClassName(exception.getClass().getName());
@@ -191,7 +188,7 @@ public class RestApiExceptionMapperImpl implements RestApiExceptionMapper {
       cause = buildRestApiExceptionCause(exception.getCause(), config);
     }
     if (cause != null && StringUtils.hasText(cause.getErrorCode())
-        && !RestApiExceptionUtils.NO_ERROR_CODE_VALUE.equals(cause.getErrorCode())) {
+        && !RestApiExceptionConstants.NO_ERROR_CODE_VALUE.equals(cause.getErrorCode())) {
       restApiException.setErrorCode(cause.getErrorCode());
       restApiException.setErrorCodeInherited(true);
     } else {

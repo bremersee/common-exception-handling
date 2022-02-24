@@ -59,10 +59,6 @@ class FeignClientExceptionTest {
         new RequestTemplate());
     FeignClientException actual = new FeignClientException(404, "Fatal", request, headers,
         new byte[0], restApiException);
-    softly.assertThat(actual.getErrorCode())
-        .isEqualTo("TEST:0001");
-    softly.assertThat(actual.getMultiValueHeaders())
-        .containsKey(HttpHeaders.CONTENT_TYPE);
     softly.assertThat(actual.status())
         .isEqualTo(HttpStatus.NOT_FOUND.value());
     softly.assertThat(actual.getMessage())

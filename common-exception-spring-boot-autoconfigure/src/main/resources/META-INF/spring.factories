@@ -3,4 +3,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperAutoConfiguration,\
 org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfiguration,\
 org.bremersee.exception.spring.boot.autoconfigure.servlet.ApiExceptionResolverAutoConfiguration,\
+org.bremersee.exception.spring.boot.autoconfigure.servlet.FeignClientExceptionErrorDecoderAutoConfiguration,\
+org.bremersee.exception.spring.boot.autoconfigure.servlet.RestTemplateErrorHandlerAutoConfiguration,\
 org.bremersee.exception.spring.boot.autoconfigure.reactive.ApiExceptionHandlerAutoConfiguration

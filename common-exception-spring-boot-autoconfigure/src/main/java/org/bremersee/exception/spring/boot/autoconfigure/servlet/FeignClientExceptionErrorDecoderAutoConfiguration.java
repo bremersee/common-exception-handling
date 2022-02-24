@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 the original author or authors.
+ * Copyright 2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,40 +14,44 @@
  * limitations under the License.
  */
 
-package org.bremersee.exception.spring.boot.autoconfigure;
+package org.bremersee.exception.spring.boot.autoconfigure.servlet;
 
-import java.nio.charset.Charset;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
+import org.bremersee.exception.feign.FeignClientExceptionErrorDecoder;
+import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.env.Environment;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.ClassUtils;
 
 /**
- * The rest api exception parser autoconfiguration.
+ * The feign client exception error decoder autoconfiguration.
  *
  * @author Christian Bremer
  */
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({
-    Jackson2ObjectMapperBuilder.class,
-    RestApiExceptionParserImpl.class
+    FeignClientExceptionErrorDecoder.class
+})
+@ConditionalOnBean({
+    RestApiExceptionParser.class
+})
+@AutoConfigureAfter({
+    RestApiExceptionParserAutoConfiguration.class
 })
 @Configuration
 @Slf4j
-public class RestApiExceptionParserAutoConfiguration {
+public class FeignClientExceptionErrorDecoderAutoConfiguration {
 
   /**
    * Init.
@@ -62,38 +66,18 @@ public class RestApiExceptionParserAutoConfiguration {
   }
 
   /**
-   * Rest api exception parser rest api exception parser.
+   * Creates feign client exception error decoder bean.
    *
-   * @param objectMapperBuilderProvider the object mapper builder provider
-   * @return the rest api exception parser
+   * @param parserProvider the parser provider
+   * @return the feign client exception error decoder
    */
-  @ConditionalOnWebApplication(type = Type.REACTIVE)
   @ConditionalOnMissingBean
   @Bean
-  public RestApiExceptionParser restApiExceptionParser(
-      ObjectProvider<Jackson2ObjectMapperBuilder> objectMapperBuilderProvider) {
+  public FeignClientExceptionErrorDecoder feignClientExceptionErrorDecoder(
+      ObjectProvider<RestApiExceptionParser> parserProvider) {
 
-    Jackson2ObjectMapperBuilder objectMapperBuilder = objectMapperBuilderProvider.getIfAvailable();
-    return Optional.ofNullable(objectMapperBuilder)
-        .map(RestApiExceptionParserImpl::new)
-        .orElseGet(RestApiExceptionParserImpl::new);
-  }
-
-  @ConditionalOnWebApplication(type = Type.SERVLET)
-  @ConditionalOnMissingBean
-  @Bean
-  public RestApiExceptionParser restApiExceptionParser(
-      Environment environment,
-      ObjectProvider<Jackson2ObjectMapperBuilder> objectMapperBuilderProvider) {
-
-    Jackson2ObjectMapperBuilder objectMapperBuilder = objectMapperBuilderProvider.getIfAvailable();
-    Charset charset = Binder
-        .get(environment)
-        .bindOrCreate("server.servlet.encoding", Encoding.class)
-        .getCharset();
-    return Optional.ofNullable(objectMapperBuilder)
-        .map(builder -> new RestApiExceptionParserImpl(builder, charset))
-        .orElseGet(() -> new RestApiExceptionParserImpl(charset));
+    RestApiExceptionParser parser = parserProvider.getIfAvailable(RestApiExceptionParserImpl::new);
+    return new FeignClientExceptionErrorDecoder(parser);
   }
 
 }

@@ -20,18 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import feign.Request;
 import feign.Request.HttpMethod;
 import feign.Response;
-import feign.Response.Body;
 import feign.RetryableException;
 import feign.Util;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -46,7 +42,6 @@ import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.ServiceException;
 import org.bremersee.exception.model.RestApiException;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -158,7 +153,6 @@ class FeignClientExceptionErrorDecoderTest {
     assertTrue(actual instanceof FeignClientException);
     assertEquals(500, ((FeignClientException) actual).status());
     assertNotNull(((FeignClientException) actual).getRestApiException());
-    //noinspection ConstantConditions
     assertEquals(body, ((FeignClientException) actual).getRestApiException().getMessage());
   }
 
@@ -234,65 +228,7 @@ class FeignClientExceptionErrorDecoderTest {
     assertEquals(500, retryableException.status());
 
     assertNotNull(retryableException.getMessage());
-    assertEquals("status 500 reading theMethodKey", retryableException.getMessage());
-
-    // not set in our implementation: retryableException.contentUTF8()
-  }
-
-  /**
-   * Read body.
-   */
-  @Test
-  void readBody() {
-    assertNull(FeignClientExceptionErrorDecoder.readBody(null));
-    final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-    headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
-    @SuppressWarnings({"unchecked", "rawtypes"}) final Response response = Response
-        .builder()
-        .request(Request
-            .create(
-                HttpMethod.GET,
-                "https://example.org",
-                new HashMap<>(),
-                null,
-                StandardCharsets.UTF_8,
-                null))
-        .body("Not found.".getBytes())
-        .headers((Map) headers)
-        .reason("Nothing found")
-        .status(404)
-        .build();
-    assertEquals("Not found.", FeignClientExceptionErrorDecoder.readBody(response));
-  }
-
-  /**
-   * Read body failed.
-   *
-   * @throws IOException the io exception
-   */
-  @Test
-  void readBodyFailed() throws IOException {
-    assertNull(FeignClientExceptionErrorDecoder.readBody(null));
-    final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-    headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
-    final Body body = Mockito.mock(Body.class);
-    Mockito.when(body.asReader(any(Charset.class))).thenThrow(new IOException("Can happen"));
-    @SuppressWarnings({"unchecked", "rawtypes"}) final Response response = Response
-        .builder()
-        .request(Request
-            .create(
-                HttpMethod.GET,
-                "https://example.org",
-                new HashMap<>(),
-                null,
-                StandardCharsets.UTF_8,
-                null))
-        .body(body)
-        .headers((Map) headers)
-        .reason("Nothing found")
-        .status(404)
-        .build();
-    assertNull(FeignClientExceptionErrorDecoder.readBody(response));
+    assertEquals("Status 500 reading theMethodKey", retryableException.getMessage());
   }
 
   /**
@@ -300,14 +236,15 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void determineRetryAfter() {
-    assertNull(FeignClientExceptionErrorDecoder.determineRetryAfter(null));
-    Date actual = FeignClientExceptionErrorDecoder.determineRetryAfter("30");
+    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
+    assertNull(decoder.determineRetryAfter(null));
+    Date actual = decoder.determineRetryAfter("30");
     assertNotNull(actual);
     assertTrue(actual.before(new Date(System.currentTimeMillis() + 30001)));
     Date expected = Date.from(OffsetDateTime.parse("2007-12-24T18:21Z").toInstant());
     String value = OffsetDateTime.ofInstant(expected.toInstant(), ZoneOffset.UTC)
         .format(DateTimeFormatter.RFC_1123_DATE_TIME);
-    actual = FeignClientExceptionErrorDecoder.determineRetryAfter(value);
+    actual = decoder.determineRetryAfter(value);
     assertNotNull(actual);
     assertEquals(expected.getTime(), actual.getTime());
   }
@@ -317,14 +254,15 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void determineRetryAfterFailed() {
-    assertNull(FeignClientExceptionErrorDecoder.determineRetryAfter(null));
-    Date actual = FeignClientExceptionErrorDecoder.determineRetryAfter("30");
+    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
+    assertNull(decoder.determineRetryAfter(null));
+    Date actual = decoder.determineRetryAfter("30");
     assertNotNull(actual);
     assertTrue(actual.before(new Date(System.currentTimeMillis() + 30001)));
     Date expected = Date.from(OffsetDateTime.parse("2007-12-24T18:21Z").toInstant());
     String value = OffsetDateTime.ofInstant(expected.toInstant(), ZoneOffset.UTC)
         .format(DateTimeFormatter.ISO_DATE_TIME);
-    actual = FeignClientExceptionErrorDecoder.determineRetryAfter(value);
+    actual = decoder.determineRetryAfter(value);
     assertNull(actual);
   }
 
@@ -333,7 +271,8 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void findHttpMethod() {
-    assertNull(FeignClientExceptionErrorDecoder.findHttpMethod(null));
+    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
+    assertNull(decoder.findHttpMethod(null));
     final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
     @SuppressWarnings({"unchecked", "rawtypes"}) final Response response = Response
@@ -351,7 +290,7 @@ class FeignClientExceptionErrorDecoderTest {
         .reason("Nothing found")
         .status(404)
         .build();
-    assertEquals(HttpMethod.GET, FeignClientExceptionErrorDecoder.findHttpMethod(response));
+    assertEquals(HttpMethod.GET, decoder.findHttpMethod(response));
   }
 
   /**

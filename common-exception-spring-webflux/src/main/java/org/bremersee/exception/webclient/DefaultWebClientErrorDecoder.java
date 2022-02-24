@@ -16,23 +16,24 @@
 
 package org.bremersee.exception.webclient;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import static java.util.Objects.nonNull;
+
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
+import org.bremersee.exception.RestApiResponseException;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.web.reactive.function.client.ClientResponse;
 
 /**
- * This web client error decoder generates a {@link WebClientException} from the error response.
+ * This web client error decoder generates a {@link RestApiResponseException} from the error
+ * response.
  *
  * @author Christian Bremer
  */
 @Slf4j
-public class DefaultWebClientErrorDecoder
-    extends AbstractWebClientErrorDecoder<WebClientException> {
+public class DefaultWebClientErrorDecoder implements
+    WebClientErrorDecoder<RestApiResponseException> {
 
   private final RestApiExceptionParser parser;
 
@@ -48,26 +49,23 @@ public class DefaultWebClientErrorDecoder
    *
    * @param parser the parser
    */
-  public DefaultWebClientErrorDecoder(
-      RestApiExceptionParser parser) {
-    this.parser = parser != null ? parser : new RestApiExceptionParserImpl();
+  public DefaultWebClientErrorDecoder(RestApiExceptionParser parser) {
+    this.parser = nonNull(parser) ? parser : new RestApiExceptionParserImpl();
   }
 
   @Override
-  public WebClientException buildException(
-      final ClientResponse clientResponse,
-      final String response) {
+  public RestApiResponseException buildException(
+      ClientResponse clientResponse,
+      String response) {
 
-    final Map<String, ? extends Collection<String>> headers = Collections
-        .unmodifiableMap(clientResponse.headers().asHttpHeaders());
-    final RestApiException restApiException = parser.parseException(
+    RestApiException restApiException = parser.parseException(
         response,
         clientResponse.headers().asHttpHeaders());
-    if (log.isDebugEnabled() && response != null) {
-      log.debug("msg=[Is error formatted as rest api exception? {}]",
-          restApiException != null && !response.equals(restApiException.getMessage()));
+    if (log.isDebugEnabled() && nonNull(response)) {
+      log.debug("Is error formatted as rest api exception? {}",
+          nonNull(restApiException) && !response.equals(restApiException.getMessage()));
     }
-    return new WebClientException(clientResponse.statusCode(), headers, restApiException);
+    return new RestApiResponseException(clientResponse.statusCode(), restApiException);
   }
 
 }

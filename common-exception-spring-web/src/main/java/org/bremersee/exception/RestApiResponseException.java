@@ -16,21 +16,35 @@
 
 package org.bremersee.exception;
 
-import java.util.Collection;
-import java.util.Map;
+import lombok.Getter;
+import org.bremersee.exception.model.RestApiException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Marker interface to get the response headers.
+ * The web client exception.
  *
  * @author Christian Bremer
  */
-public interface HttpResponseHeadersAware {
+public class RestApiResponseException
+    extends ResponseStatusException
+    implements RestApiExceptionAware {
+
+  @Getter
+  private final RestApiException restApiException;
 
   /**
-   * Gets the response headers as multi value map.
+   * Instantiates a new web client exception.
    *
-   * @return the response headers
+   * @param status the status
+   * @param restApiException the rest api exception
    */
-  Map<String, ? extends Collection<String>> getMultiValueHeaders();
+  public RestApiResponseException(
+      final HttpStatus status,
+      final RestApiException restApiException) {
+
+    super(status);
+    this.restApiException = restApiException;
+  }
 
 }

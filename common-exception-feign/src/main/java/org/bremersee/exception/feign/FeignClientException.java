@@ -16,21 +16,19 @@
 
 package org.bremersee.exception.feign;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 import feign.FeignException;
 import feign.Request;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import javax.validation.Valid;
 import lombok.Getter;
-import org.bremersee.exception.ErrorCodeAware;
-import org.bremersee.exception.HttpResponseHeadersAware;
 import org.bremersee.exception.HttpStatusAware;
 import org.bremersee.exception.RestApiExceptionAware;
-import org.bremersee.exception.RestApiExceptionUtils;
+import org.bremersee.exception.RestApiExceptionConstants;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Feign exception that stores the error payload as a {@link RestApiException}. If the error payload
@@ -41,9 +39,7 @@ import org.springframework.util.ObjectUtils;
  */
 @Valid
 public class FeignClientException extends FeignException implements HttpStatusAware,
-    HttpResponseHeadersAware, RestApiExceptionAware, ErrorCodeAware {
-
-  private final Map<String, ? extends Collection<String>> headers;
+    RestApiExceptionAware {
 
   @Getter
   private final RestApiException restApiException;
@@ -68,22 +64,11 @@ public class FeignClientException extends FeignException implements HttpStatusAw
 
     super(
         resolveHttpStatusCode(status),
-        ObjectUtils.isEmpty(message) ? RestApiExceptionUtils.NO_MESSAGE_VALUE : message,
+        isEmpty(message) ? RestApiExceptionConstants.NO_MESSAGE_VALUE : message,
         request,
         responseBody,
         responseHeaders);
-    this.headers = Objects.requireNonNullElseGet(responseHeaders, Map::of);
     this.restApiException = restApiException;
-  }
-
-  @Override
-  public Map<String, ? extends Collection<String>> getMultiValueHeaders() {
-    return headers;
-  }
-
-  @Override
-  public String getErrorCode() {
-    return restApiException != null ? restApiException.getErrorCode() : null;
   }
 
   private static int resolveHttpStatusCode(int httpStatusCode) {

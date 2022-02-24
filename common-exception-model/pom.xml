@@ -43,11 +43,13 @@
   </licenses>
 
   <dependencies>
+    <!--
     <dependency>
       <groupId>org.bremersee</groupId>
       <artifactId>common-exception</artifactId>
       <version>${project.version}</version>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.bremersee</groupId>

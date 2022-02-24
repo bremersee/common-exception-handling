@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,15 @@ package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
-import org.bremersee.exception.RestApiExceptionUtils;
+import org.bremersee.exception.RestApiExceptionConstants;
+import org.bremersee.exception.RestApiResponseType;
 import org.bremersee.exception.model.RestApiException;
-import org.bremersee.http.MediaTypeHelper;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
@@ -75,11 +74,11 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
    * @param restApiExceptionMapper the rest api exception mapper
    */
   public ApiExceptionHandler(
-      @NotNull final ErrorAttributes errorAttributes,
-      @NotNull final WebProperties.Resources resources,
-      @NotNull final ApplicationContext applicationContext,
-      @Nullable final ServerCodecConfigurer serverCodecConfigurer,
-      @NotNull final RestApiExceptionMapper restApiExceptionMapper) {
+      @NotNull ErrorAttributes errorAttributes,
+      @NotNull WebProperties.Resources resources,
+      @NotNull ApplicationContext applicationContext,
+      @Nullable ServerCodecConfigurer serverCodecConfigurer,
+      @NotNull RestApiExceptionMapper restApiExceptionMapper) {
 
     super(errorAttributes, resources, applicationContext);
     if (serverCodecConfigurer != null) {
@@ -91,7 +90,7 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
 
   @Override
   protected RouterFunction<ServerResponse> getRoutingFunction(
-      final ErrorAttributes errorAttributes) {
+      ErrorAttributes errorAttributes) {
 
     return RouterFunctions.route(this::isResponsibleExceptionHandler, this::renderErrorResponse);
   }
@@ -102,7 +101,7 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
    * @param request the request
    * @return {@code true} if it is responsible, otherwise {@code false}
    */
-  protected boolean isResponsibleExceptionHandler(final ServerRequest request) {
+  protected boolean isResponsibleExceptionHandler(ServerRequest request) {
     return getRestApiExceptionMapper().getApiPaths().stream().anyMatch(
         path -> getPathMatcher().match(path, request.path()));
   }
@@ -114,48 +113,52 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
    * @return the server response
    */
   @NonNull
-  protected Mono<ServerResponse> renderErrorResponse(final ServerRequest request) {
+  protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
 
-    final RestApiException response = getRestApiExceptionMapper()
+    RestApiException response = getRestApiExceptionMapper()
         .build(getError(request), request.path(), null);
-    final String accepts = MediaTypeHelper.toString(request.headers().accept());
-    if (MediaTypeHelper.canContentTypeBeJson(accepts)) {
-      return ServerResponse
-          .status(getRestApiExceptionMapper().detectHttpStatus(getError(request), null))
-          .contentType(MediaType.APPLICATION_JSON)
-          .body(BodyInserters.fromValue(response));
-    } else if (MediaTypeHelper.canContentTypeBeXml(accepts)) {
-      return ServerResponse
-          .status(getRestApiExceptionMapper().detectHttpStatus(getError(request), null))
-          .contentType(MediaType.APPLICATION_XML)
-          .body(BodyInserters.fromValue(response));
+
+    RestApiResponseType restApiResponseType = RestApiResponseType
+        .detectByAccepted(request.headers().accept());
+    if (RestApiResponseType.HEADER == restApiResponseType) {
+      return emptyWithHeaders(request, response, restApiResponseType.getContentType());
     } else {
-      final String id = StringUtils.hasText(response.getId())
-          ? response.getId()
-          : RestApiExceptionUtils.NO_ID_VALUE;
-      final String timestamp = response.getTimestamp() != null
-          ? response.getTimestamp().format(RestApiExceptionUtils.TIMESTAMP_FORMATTER)
-          : OffsetDateTime.now(ZoneOffset.UTC).format(RestApiExceptionUtils.TIMESTAMP_FORMATTER);
-      final String msg = StringUtils.hasText(response.getMessage())
-          ? response.getMessage()
-          : RestApiExceptionUtils.NO_MESSAGE_VALUE;
-      final String code = StringUtils.hasText(response.getErrorCode())
-          ? response.getErrorCode()
-          : RestApiExceptionUtils.NO_ERROR_CODE_VALUE;
-      final String cls = StringUtils.hasText(response.getClassName())
-          ? response.getClassName()
-          : RestApiExceptionUtils.NO_CLASS_VALUE;
       return ServerResponse
           .status(getRestApiExceptionMapper().detectHttpStatus(getError(request), null))
-          .header(RestApiExceptionUtils.ID_HEADER_NAME, id)
-          .header(RestApiExceptionUtils.TIMESTAMP_HEADER_NAME, timestamp)
-          .header(RestApiExceptionUtils.MESSAGE_HEADER_NAME, msg)
-          .header(RestApiExceptionUtils.CODE_HEADER_NAME, code)
-          .header(RestApiExceptionUtils.CLASS_HEADER_NAME, cls)
-          .contentType(Objects.requireNonNull(MediaTypeHelper.findContentType(
-              request.headers().accept(), MediaType.TEXT_PLAIN)))
-          .body(BodyInserters.empty());
+          .contentType(restApiResponseType.getContentType())
+          .body(BodyInserters.fromValue(response));
     }
+  }
+
+  private Mono<ServerResponse> emptyWithHeaders(
+      ServerRequest request,
+      RestApiException response,
+      MediaType contentType) {
+
+    String id = StringUtils.hasText(response.getId())
+        ? response.getId()
+        : RestApiExceptionConstants.NO_ID_VALUE;
+    String timestamp = response.getTimestamp() != null
+        ? response.getTimestamp().format(RestApiExceptionConstants.TIMESTAMP_FORMATTER)
+        : OffsetDateTime.now(ZoneOffset.UTC).format(RestApiExceptionConstants.TIMESTAMP_FORMATTER);
+    String msg = StringUtils.hasText(response.getMessage())
+        ? response.getMessage()
+        : RestApiExceptionConstants.NO_MESSAGE_VALUE;
+    String code = StringUtils.hasText(response.getErrorCode())
+        ? response.getErrorCode()
+        : RestApiExceptionConstants.NO_ERROR_CODE_VALUE;
+    String cls = StringUtils.hasText(response.getClassName())
+        ? response.getClassName()
+        : RestApiExceptionConstants.NO_CLASS_VALUE;
+    return ServerResponse
+        .status(getRestApiExceptionMapper().detectHttpStatus(getError(request), null))
+        .header(RestApiExceptionConstants.ID_HEADER_NAME, id)
+        .header(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME, timestamp)
+        .header(RestApiExceptionConstants.MESSAGE_HEADER_NAME, msg)
+        .header(RestApiExceptionConstants.CODE_HEADER_NAME, code)
+        .header(RestApiExceptionConstants.CLASS_HEADER_NAME, cls)
+        .contentType(contentType)
+        .body(BodyInserters.empty());
   }
 
 }

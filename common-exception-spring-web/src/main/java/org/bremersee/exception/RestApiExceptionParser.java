@@ -16,13 +16,39 @@
 
 package org.bremersee.exception;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.bremersee.exception.model.RestApiException;
+import org.springframework.http.HttpHeaders;
 
 /**
  * A http response parser that creates a {@link RestApiException}.
  *
  * @author Christian Bremer
  */
-public interface RestApiExceptionParser extends ExceptionParser<RestApiException> {
+@Valid
+public interface RestApiExceptionParser {
+
+  /**
+   * Parse exception.
+   *
+   * @param response the response
+   * @param headers the headers
+   * @return the parsed exception
+   */
+  RestApiException parseException(
+      String response,
+      @NotNull HttpHeaders headers);
+
+  /**
+   * Parse exception.
+   *
+   * @param response the response
+   * @param headers the headers
+   * @return the parsed exception
+   */
+  RestApiException parseException(
+      byte[] response,
+      @NotNull HttpHeaders headers);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2019-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
-import org.bremersee.exception.RestApiExceptionUtils;
+import org.bremersee.exception.RestApiExceptionConstants;
+import org.bremersee.exception.RestApiResponseType;
 import org.bremersee.exception.model.RestApiException;
-import org.bremersee.http.MediaTypeHelper;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.AntPathMatcher;
@@ -135,12 +135,15 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
 
     RestApiException payload = exceptionMapper.build(ex, request.getRequestURI(), handler);
 
+    ServletServerHttpRequest httpRequest = new ServletServerHttpRequest(request);
+    List<MediaType> accepted = httpRequest.getHeaders().getAccept();
+    RestApiResponseType responseType = RestApiResponseType.detectByAccepted(accepted);
+
     ModelAndView modelAndView;
-    ResponseFormatAndContentType chooser = new ResponseFormatAndContentType(request);
-    switch (chooser.getResponseFormat()) {
+    switch (responseType) {
       case JSON:
         MappingJackson2JsonView mjv = new MappingJackson2JsonView(objectMapper);
-        mjv.setContentType(chooser.getContentType());
+        mjv.setContentType(responseType.getContentTypeValue());
         mjv.setPrettyPrint(true);
         mjv.setModelKey(MODEL_KEY);
         mjv.setExtractValueFromSingleKeyModel(true); // removes the MODEL_KEY from the output
@@ -149,17 +152,17 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
 
       case XML:
         MappingJackson2XmlView mxv = new MappingJackson2XmlView(xmlMapper);
-        mxv.setContentType(chooser.getContentType());
+        mxv.setContentType(responseType.getContentTypeValue());
         mxv.setPrettyPrint(true);
         mxv.setModelKey(MODEL_KEY);
         modelAndView = new ModelAndView(mxv, MODEL_KEY, payload);
         break;
 
       default:
-        modelAndView = new ModelAndView(new EmptyView(payload, chooser.getContentType()));
+        modelAndView = new ModelAndView(new EmptyView(payload, responseType.getContentTypeValue()));
     }
 
-    response.setContentType(chooser.getContentType());
+    response.setContentType(responseType.getContentTypeValue());
     int statusCode = exceptionMapper.detectHttpStatus(ex, handler).value();
     modelAndView.setStatus(HttpStatus.resolve(statusCode));
     applyStatusCodeIfPossible(request, response, statusCode);
@@ -203,7 +206,6 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
    * @param response the response
    * @param statusCode the status code
    */
-  @SuppressWarnings("WeakerAccess")
   protected final void applyStatusCodeIfPossible(
       HttpServletRequest request,
       HttpServletResponse response,
@@ -215,64 +217,6 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
       }
       response.setStatus(statusCode);
       request.setAttribute(WebUtils.ERROR_STATUS_CODE_ATTRIBUTE, statusCode);
-    }
-  }
-
-  /**
-   * The response format.
-   */
-  enum ResponseFormat {
-
-    /**
-     * Json response format.
-     */
-    JSON,
-
-    /**
-     * Xml response format.
-     */
-    XML,
-
-    /**
-     * Empty response format.
-     */
-    EMPTY
-  }
-
-  /**
-   * The response format and content type.
-   */
-  static class ResponseFormatAndContentType {
-
-    @Getter(AccessLevel.PROTECTED)
-    private final ResponseFormat responseFormat;
-
-    @Getter(AccessLevel.PROTECTED)
-    private final String contentType;
-
-    /**
-     * Instantiates a new response format and content type.
-     *
-     * @param request the request
-     */
-    ResponseFormatAndContentType(@NotNull HttpServletRequest request) {
-      String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
-      if (MediaTypeHelper.canContentTypeBeJson(acceptHeader)) {
-        responseFormat = ResponseFormat.JSON;
-        contentType = MediaType.APPLICATION_JSON_VALUE;
-      } else if (MediaTypeHelper.canContentTypeBeXml(acceptHeader)) {
-        responseFormat = ResponseFormat.XML;
-        contentType = MediaType.APPLICATION_XML_VALUE;
-      } else {
-        responseFormat = ResponseFormat.EMPTY;
-        if (StringUtils.hasText(acceptHeader)) {
-          List<MediaType> accepts = MediaType.parseMediaTypes(acceptHeader);
-          contentType = String
-              .valueOf(MediaTypeHelper.findContentType(accepts, MediaType.TEXT_PLAIN));
-        } else {
-          contentType = MediaType.TEXT_PLAIN_VALUE;
-        }
-      }
     }
   }
 
@@ -303,31 +247,31 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
         @NonNull HttpServletRequest httpServletRequest,
         HttpServletResponse httpServletResponse) {
 
-      httpServletResponse.addHeader(RestApiExceptionUtils.ID_HEADER_NAME,
+      httpServletResponse.addHeader(RestApiExceptionConstants.ID_HEADER_NAME,
           StringUtils.hasText(restApiException.getId())
               ? restApiException.getId()
-              : RestApiExceptionUtils.NO_ID_VALUE);
+              : RestApiExceptionConstants.NO_ID_VALUE);
 
-      httpServletResponse.addHeader(RestApiExceptionUtils.TIMESTAMP_HEADER_NAME,
+      httpServletResponse.addHeader(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME,
           restApiException.getTimestamp() != null
-              ? restApiException.getTimestamp().format(RestApiExceptionUtils.TIMESTAMP_FORMATTER)
+              ? restApiException.getTimestamp().format(RestApiExceptionConstants.TIMESTAMP_FORMATTER)
               : OffsetDateTime.now(ZoneId.of("UTC")).format(
-                  RestApiExceptionUtils.TIMESTAMP_FORMATTER));
+                  RestApiExceptionConstants.TIMESTAMP_FORMATTER));
 
-      httpServletResponse.addHeader(RestApiExceptionUtils.MESSAGE_HEADER_NAME,
+      httpServletResponse.addHeader(RestApiExceptionConstants.MESSAGE_HEADER_NAME,
           StringUtils.hasText(restApiException.getMessage())
               ? restApiException.getMessage()
-              : RestApiExceptionUtils.NO_MESSAGE_VALUE);
+              : RestApiExceptionConstants.NO_MESSAGE_VALUE);
 
-      httpServletResponse.addHeader(RestApiExceptionUtils.CODE_HEADER_NAME,
+      httpServletResponse.addHeader(RestApiExceptionConstants.CODE_HEADER_NAME,
           StringUtils.hasText(restApiException.getErrorCode())
               ? restApiException.getErrorCode()
-              : RestApiExceptionUtils.NO_ERROR_CODE_VALUE);
+              : RestApiExceptionConstants.NO_ERROR_CODE_VALUE);
 
-      httpServletResponse.addHeader(RestApiExceptionUtils.CLASS_HEADER_NAME,
+      httpServletResponse.addHeader(RestApiExceptionConstants.CLASS_HEADER_NAME,
           StringUtils.hasText(restApiException.getClassName())
               ? restApiException.getClassName()
-              : RestApiExceptionUtils.NO_CLASS_VALUE);
+              : RestApiExceptionConstants.NO_CLASS_VALUE);
     }
 
   }

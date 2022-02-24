@@ -29,6 +29,14 @@ import reactor.core.publisher.Mono;
 public interface WebClientErrorDecoder<E extends Throwable>
     extends Function<ClientResponse, Mono<? extends Throwable>> {
 
+  @Override
+  default Mono<E> apply(ClientResponse clientResponse) {
+    return clientResponse
+        .bodyToMono(String.class)
+        .switchIfEmpty(Mono.just(""))
+        .map(response -> buildException(clientResponse, response));
+  }
+
   /**
    * Build exception.
    *

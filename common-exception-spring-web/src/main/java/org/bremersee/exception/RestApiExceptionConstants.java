@@ -16,18 +16,16 @@
 
 package org.bremersee.exception;
 
-import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Some utilities.
+ * The rest api exception constants.
  *
  * @author Christian Bremer
  */
 @Slf4j
-public abstract class RestApiExceptionUtils {
+public abstract class RestApiExceptionConstants {
 
   /**
    * The header name for the 'id' attribute.
@@ -79,27 +77,7 @@ public abstract class RestApiExceptionUtils {
    */
   public static final String NO_CLASS_VALUE = "UNSPECIFIED";
 
-  private RestApiExceptionUtils() {
-  }
-
-  /**
-   * Parse the 'timestamp' header value.
-   *
-   * @param value the 'timestamp' header value
-   * @return the timestamp
-   */
-  public static OffsetDateTime parseHeaderValue(String value) { // TODO rename
-    OffsetDateTime time = null;
-    if (Objects.nonNull(value)) {
-      try {
-        time = OffsetDateTime.parse(value, TIMESTAMP_FORMATTER);
-      } catch (final Exception e) {
-        if (log.isDebugEnabled()) {
-          log.debug("msg=[Parsing timestamp failed.] timestamp=[{}]", value);
-        }
-      }
-    }
-    return time;
+  private RestApiExceptionConstants() {
   }
 
 }

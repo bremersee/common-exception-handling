@@ -22,6 +22,7 @@ import org.bremersee.exception.RestApiExceptionMapperImpl;
 import org.bremersee.exception.RestApiExceptionMapperProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -82,6 +83,7 @@ public class RestApiExceptionMapperAutoConfiguration {
    *
    * @return the rest api exception mapper bean
    */
+  @ConditionalOnMissingBean
   @Bean
   public RestApiExceptionMapper restApiExceptionMapper() {
     return new RestApiExceptionMapperImpl(

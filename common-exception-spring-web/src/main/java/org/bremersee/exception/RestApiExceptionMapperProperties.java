@@ -24,22 +24,39 @@ import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 
 /**
+ * The rest api exception mapper properties.
+ *
  * @author Christian Bremer
  */
 @Value.Immutable
 @Valid
 public interface RestApiExceptionMapperProperties {
 
+  /**
+   * Creates rest api exception mapper properties builder.
+   *
+   * @return the builder
+   */
   static ImmutableRestApiExceptionMapperProperties.Builder builder() {
     return ImmutableRestApiExceptionMapperProperties.builder();
   }
 
+  /**
+   * Gets api paths.
+   *
+   * @return the api paths
+   */
   @Value.Default
   @NotNull
   default List<String> getApiPaths() {
     return List.of();
   }
 
+  /**
+   * Gets default exception mapping.
+   *
+   * @return the default exception mapping
+   */
   @Value.Default
   @NotNull
   default ExceptionMapping getDefaultExceptionMapping() {
@@ -50,6 +67,11 @@ public interface RestApiExceptionMapperProperties {
         .build();
   }
 
+  /**
+   * Gets exception mappings.
+   *
+   * @return the exception mappings
+   */
   @Value.Default
   @NotNull
   default List<ExceptionMapping> getExceptionMappings() {
@@ -72,18 +94,34 @@ public interface RestApiExceptionMapperProperties {
     );
   }
 
+  /**
+   * Gets default exception mapping config.
+   *
+   * @return the default exception mapping config
+   */
   @Value.Default
   @NotNull
   default ExceptionMappingConfig getDefaultExceptionMappingConfig() {
     return ExceptionMappingConfig.builder().build();
   }
 
+  /**
+   * Gets exception mapping configs.
+   *
+   * @return the exception mapping configs
+   */
   @Value.Default
   @NotNull
   default List<ExceptionMappingConfig> getExceptionMappingConfigs() {
     return List.of();
   }
 
+  /**
+   * Find exception mapping exception mapping.
+   *
+   * @param throwable the throwable
+   * @return the exception mapping
+   */
   @NotNull
   default ExceptionMapping findExceptionMapping(Throwable throwable) {
     return getExceptionMappings()
@@ -94,6 +132,12 @@ public interface RestApiExceptionMapperProperties {
         .orElseGet(this::getDefaultExceptionMapping);
   }
 
+  /**
+   * Find exception mapping config exception mapping config.
+   *
+   * @param throwable the throwable
+   * @return the exception mapping config
+   */
   @NotNull
   default ExceptionMappingConfig findExceptionMappingConfig(Throwable throwable) {
     return getExceptionMappingConfigs()
@@ -139,69 +183,145 @@ public interface RestApiExceptionMapperProperties {
     return matches(exceptionClass.getSuperclass(), exceptionClassName);
   }
 
+  /**
+   * The interface Exception mapping.
+   */
   @Value.Immutable
   interface ExceptionMapping {
 
+    /**
+     * Builder immutable exception mapping . builder.
+     *
+     * @return the immutable exception mapping . builder
+     */
     static ImmutableExceptionMapping.Builder builder() {
       return ImmutableExceptionMapping.builder();
     }
 
+    /**
+     * Gets exception class name.
+     *
+     * @return the exception class name
+     */
     @NotNull
     String getExceptionClassName();
 
+    /**
+     * Gets status.
+     *
+     * @return the status
+     */
     @Value.Default
     default int getStatus() {
       return HttpStatus.INTERNAL_SERVER_ERROR.value();
     }
 
+    /**
+     * Gets message.
+     *
+     * @return the message
+     */
     @Nullable
     String getMessage();
 
+    /**
+     * Gets code.
+     *
+     * @return the code
+     */
     @Nullable
     String getCode();
 
   }
 
+  /**
+   * The interface Exception mapping config.
+   */
   @Value.Immutable
   interface ExceptionMappingConfig {
 
+    /**
+     * Builder immutable exception mapping config . builder.
+     *
+     * @return the immutable exception mapping config . builder
+     */
     static ImmutableExceptionMappingConfig.Builder builder() {
       return ImmutableExceptionMappingConfig.builder();
     }
 
+    /**
+     * Gets exception class name.
+     *
+     * @return the exception class name
+     */
     @Nullable
     String getExceptionClassName();
 
+    /**
+     * Is include exception class name boolean.
+     *
+     * @return the boolean
+     */
     @Value.Default
     default boolean isIncludeExceptionClassName() {
       return true;
     }
 
+    /**
+     * Is include application name boolean.
+     *
+     * @return the boolean
+     */
     @Value.Default
     default boolean isIncludeApplicationName() {
       return true;
     }
 
+    /**
+     * Is include path boolean.
+     *
+     * @return the boolean
+     */
     @Value.Default
     default boolean isIncludePath() {
       return true;
     }
 
+    /**
+     * Is include handler boolean.
+     *
+     * @return the boolean
+     */
     @Value.Default
     default boolean isIncludeHandler() {
       return false;
     }
 
+    /**
+     * Is include stack trace boolean.
+     *
+     * @return the boolean
+     */
     @Value.Default
     default boolean isIncludeStackTrace() {
       return false;
     }
 
+    /**
+     * Is include cause boolean.
+     *
+     * @return the boolean
+     */
     @Value.Default
     default boolean isIncludeCause() {
       return true;
     }
 
+    /**
+     * Is evaluate annotation first boolean.
+     *
+     * @return the boolean
+     */
     @Value.Default
     default boolean isEvaluateAnnotationFirst() {
       return false;

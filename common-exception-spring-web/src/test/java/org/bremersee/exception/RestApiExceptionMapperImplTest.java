@@ -204,7 +204,7 @@ class RestApiExceptionMapperImplTest {
   }
 
   private static class ExampleException extends ResponseStatusException
-      implements RestApiExceptionAware, ErrorCodeAware, HttpResponseHeadersAware {
+      implements RestApiExceptionAware {
 
     private final Map<String, ? extends Collection<String>> headers;
 
@@ -235,15 +235,6 @@ class RestApiExceptionMapperImplTest {
       return httpHeaders;
     }
 
-    @Override
-    public Map<String, ? extends Collection<String>> getMultiValueHeaders() {
-      return headers;
-    }
-
-    @Override
-    public String getErrorCode() {
-      return getRestApiException() != null ? getRestApiException().getErrorCode() : null;
-    }
-
   }
+
 }

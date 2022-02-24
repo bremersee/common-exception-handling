@@ -17,21 +17,21 @@
 package org.bremersee.exception.feign;
 
 import static feign.Util.RETRY_AFTER;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.bremersee.http.HttpHeadersHelper.buildHttpHeaders;
-import static org.bremersee.http.HttpHeadersHelper.getContentCharset;
 
 import feign.Request.HttpMethod;
 import feign.Response;
 import feign.RetryableException;
-import feign.Util;
 import feign.codec.ErrorDecoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +39,7 @@ import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * This error decoder produces either a {@link FeignClientException} or a {@link
@@ -64,35 +65,34 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
    * @param parser the parser
    */
   public FeignClientExceptionErrorDecoder(RestApiExceptionParser parser) {
-    this.parser = parser != null ? parser : new RestApiExceptionParserImpl();
+    this.parser = nonNull(parser) ? parser : new RestApiExceptionParserImpl();
   }
 
   @Override
-  public Exception decode(final String methodKey, final Response response) {
+  public Exception decode(String methodKey, Response response) {
 
     if (log.isDebugEnabled()) {
       log.debug("Decoding feign exception at {}", methodKey);
     }
-    final String body = readBody(response);
-    final String message = String.format("status %s reading %s", response.status(), methodKey);
-    final Map<String, Collection<String>> headers = Objects
+    Map<String, Collection<String>> headers = Objects
         .requireNonNullElseGet(response.headers(), Map::of);
-    final RestApiException restApiException = parser.parseException(
-        body, response.headers());
-    if (log.isDebugEnabled() && body != null) {
-      log.debug("Is error formatted as rest api exception? {}",
-          restApiException != null && !body.equals(restApiException.getMessage()));
-    }
+    HttpHeaders httpHeaders = headers.entrySet()
+        .stream()
+        .collect(
+            HttpHeaders::new,
+            (a, b) -> a.addAll(b.getKey(), List.copyOf(b.getValue())),
+            HttpHeaders::putAll);
+    byte[] body = getResponseBody(response);
+    RestApiException restApiException = parser.parseException(body, httpHeaders);
     FeignClientException feignClientException = new FeignClientException(
         response.status(),
-        message,
+        String.format("Status %s reading %s", response.status(), methodKey),
         response.request(),
         headers,
-        Objects.isNull(body) ? new byte[0] : body.getBytes(StandardCharsets.UTF_8),
+        body,
         restApiException);
-    HttpHeaders httpHeaders = buildHttpHeaders(headers);
     Date retryAfter = determineRetryAfter(httpHeaders.getFirst(RETRY_AFTER));
-    if (retryAfter != null) {
+    if (nonNull(retryAfter)) {
       return new RetryableException(
           response.status(),
           feignClientException.getMessage(),
@@ -104,20 +104,21 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
     return feignClientException;
   }
 
-  static String readBody(Response response) {
-    if (response == null || response.body() == null) {
-      return null;
+  byte[] getResponseBody(Response response) {
+    byte[] body;
+    if (isNull(response.body())) {
+      body = new byte[0];
+    } else {
+      try (InputStream in = response.body().asInputStream()) {
+        body = FileCopyUtils.copyToByteArray(in);
+      } catch (IOException e) {
+        body = new byte[0];
+      }
     }
-    Charset charset = getContentCharset(buildHttpHeaders(response.headers()),
-        StandardCharsets.UTF_8);
-    try {
-      return Util.toString(response.body().asReader(charset));
-    } catch (Exception ignored) {
-      return null;
-    }
+    return body;
   }
 
-  static Date determineRetryAfter(String retryAfter) {
+  Date determineRetryAfter(String retryAfter) {
     if (retryAfter == null) {
       return null;
     }
@@ -135,7 +136,7 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
     }
   }
 
-  static HttpMethod findHttpMethod(Response response) {
+  HttpMethod findHttpMethod(Response response) {
     if (response == null || response.request() == null) {
       return null;
     }

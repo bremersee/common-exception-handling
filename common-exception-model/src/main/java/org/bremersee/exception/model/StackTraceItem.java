@@ -31,7 +31,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -50,6 +52,8 @@ import lombok.ToString;
 @JsonInclude(Include.NON_EMPTY)
 @EqualsAndHashCode
 @ToString
+@Getter
+@Setter
 @NoArgsConstructor
 public class StackTraceItem implements Serializable {
 
@@ -57,19 +61,23 @@ public class StackTraceItem implements Serializable {
 
   @JsonProperty("declaringClass")
   @JacksonXmlProperty(localName = "declaringClass")
-  private String declaringClass = null;
+  @Schema(description = "The declaring class.")
+  private String declaringClass;
 
   @JsonProperty("methodName")
   @JacksonXmlProperty(localName = "methodName")
-  private String methodName = null;
+  @Schema(description = "The method name.")
+  private String methodName;
 
   @JsonProperty("fileName")
   @JacksonXmlProperty(localName = "fileName")
-  private String fileName = null;
+  @Schema(description = "The file name.")
+  private String fileName;
 
   @JsonProperty("lineNumber")
   @JacksonXmlProperty(localName = "lineNumber")
-  private Integer lineNumber = null;
+  @Schema(description = "The line number.")
+  private Integer lineNumber;
 
   /**
    * Instantiates a new stack trace item.
@@ -80,7 +88,6 @@ public class StackTraceItem implements Serializable {
    * @param lineNumber the line number
    */
   @Builder(toBuilder = true)
-  @SuppressWarnings("unused")
   public StackTraceItem(
       String declaringClass,
       String methodName,
@@ -89,82 +96,6 @@ public class StackTraceItem implements Serializable {
     this.declaringClass = declaringClass;
     this.methodName = methodName;
     this.fileName = fileName;
-    this.lineNumber = lineNumber;
-  }
-
-  /**
-   * The declaring class.
-   *
-   * @return declaringClass declaring class
-   */
-  @Schema(description = "The declaring class.")
-  public String getDeclaringClass() {
-    return declaringClass;
-  }
-
-  /**
-   * Sets declaring class.
-   *
-   * @param declaringClass the declaring class
-   */
-  public void setDeclaringClass(String declaringClass) {
-    this.declaringClass = declaringClass;
-  }
-
-  /**
-   * The method name.
-   *
-   * @return methodName method name
-   */
-  @Schema(description = "The method name.")
-  public String getMethodName() {
-    return methodName;
-  }
-
-  /**
-   * Sets method name.
-   *
-   * @param methodName the method name
-   */
-  public void setMethodName(String methodName) {
-    this.methodName = methodName;
-  }
-
-  /**
-   * The file name.
-   *
-   * @return fileName file name
-   */
-  @Schema(description = "The file name.")
-  public String getFileName() {
-    return fileName;
-  }
-
-  /**
-   * Sets file name.
-   *
-   * @param fileName the file name
-   */
-  public void setFileName(String fileName) {
-    this.fileName = fileName;
-  }
-
-  /**
-   * The line number.
-   *
-   * @return lineNumber line number
-   */
-  @Schema(description = "The line number.")
-  public Integer getLineNumber() {
-    return lineNumber;
-  }
-
-  /**
-   * Sets line number.
-   *
-   * @param lineNumber the line number
-   */
-  public void setLineNumber(Integer lineNumber) {
     this.lineNumber = lineNumber;
   }
 

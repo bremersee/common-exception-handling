@@ -19,7 +19,6 @@ package org.bremersee.exception.spring.boot.autoconfigure.servlet;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
-import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperAutoConfiguration;
 import org.bremersee.exception.servlet.ApiExceptionResolver;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -48,7 +47,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
     Jackson2ObjectMapperBuilder.class
 })
 @AutoConfigureAfter({
-    RestApiExceptionMapperAutoConfiguration.class
+    RestApiExceptionMapperForWebAutoConfiguration.class
 })
 @Configuration
 @Slf4j

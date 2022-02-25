@@ -16,33 +16,37 @@
 
 package org.bremersee.exception.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import static java.util.Objects.nonNull;
+
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.bremersee.xml.adapter.OffsetDateTimeXmlAdapter;
 
@@ -54,87 +58,129 @@ import org.bremersee.xml.adapter.OffsetDateTimeXmlAdapter;
 @SuppressWarnings("SameNameButDifferent")
 @Schema(description = "The serialized exception.")
 @Valid
-@JsonTypeInfo(include = As.EXISTING_PROPERTY, use = Id.CLASS, property = "_type", visible = true)
-@JacksonXmlRootElement(localName = "RestApiException")
-@XmlRootElement(name = "RestApiException")
+@JacksonXmlRootElement(localName = "Map")
+@XmlRootElement(name = "Map")
 @XmlType(name = "restApiExceptionType")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({Handler.class, StackTraceItem.class})
-@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_EMPTY)
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"furtherDetails"})
 @ToString
 @NoArgsConstructor
 public class RestApiException implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  @Schema(
-      name = "_type",
-      description = "The type specifier, must always be "
-          + "'org.bremersee.exception.model.RestApiException'.",
-      example = "org.bremersee.exception.model.RestApiException")
-  @JsonProperty("_type")
-  @JacksonXmlProperty(localName = "_type", isAttribute = true)
-  @XmlAttribute(name = "_type")
-  private String type = RestApiException.class.getName();
-
   @JsonProperty("id")
   @JacksonXmlProperty(localName = "id")
-  private String id = null;
+  @Schema(description = "The id of the exception.")
+  @Getter
+  @Setter
+  private String id;
 
   @JsonProperty("timestamp")
   @JacksonXmlProperty(localName = "timestamp")
   @XmlJavaTypeAdapter(OffsetDateTimeXmlAdapter.class)
+  @Schema(description = "The timestamp.")
+  @Getter
+  @Setter
   private OffsetDateTime timestamp;
 
-  @JsonProperty("message")
-  @JacksonXmlProperty(localName = "message")
-  private String message = "No message present.";
+  @JsonProperty("status")
+  @JacksonXmlProperty(localName = "status")
+  @Schema(description = "The http status code.")
+  @Getter
+  @Setter
+  private Integer status;
+
+  @JsonProperty("error")
+  @JacksonXmlProperty(localName = "error")
+  @Schema(description = "The http error message.")
+  @Getter
+  @Setter
+  private String error;
 
   @JsonProperty("errorCode")
   @JacksonXmlProperty(localName = "errorCode")
-  private String errorCode = null;
+  @Schema(description = "A service specific error code.")
+  @Getter
+  @Setter
+  private String errorCode;
 
   @JsonProperty("errorCodeInherited")
   @JacksonXmlProperty(localName = "errorCodeInherited")
-  private Boolean errorCodeInherited = Boolean.FALSE;
+  @Schema(description = "Determines whether the error code is inherited from the cause or not.")
+  @Setter
+  private Boolean errorCodeInherited;
 
-  @JsonProperty("className")
-  @JacksonXmlProperty(localName = "className")
-  private String className = null;
+  @JsonProperty("message")
+  @JacksonXmlProperty(localName = "message")
+  @Schema(description = "A human readable exception message.")
+  @Getter
+  @Setter
+  private String message;
+
+  @JsonProperty("exception")
+  @JacksonXmlProperty(localName = "exception")
+  @XmlElement(name = "exception")
+  @Schema(description = "The class name of the exception.")
+  @Getter
+  @Setter
+  private String className;
 
   @JsonProperty("application")
   @JacksonXmlProperty(localName = "application")
-  private String application = null;
+  @Schema(description = "The name of the application.")
+  @Getter
+  @Setter
+  private String application;
 
   @JsonProperty("path")
   @JacksonXmlProperty(localName = "path")
-  private String path = null;
+  @Schema(description = "The request path.")
+  @Getter
+  @Setter
+  private String path;
 
   @JsonProperty("handler")
   @JacksonXmlProperty(localName = "handler")
-  private Handler handler = null;
+  @Schema(description = "The handler.")
+  @Getter
+  @Setter
+  private Handler handler;
 
   @JsonProperty("stackTrace")
   @JacksonXmlElementWrapper(localName = "stackTrace")
   @JacksonXmlProperty(localName = "stackTraceItem")
   @XmlElementWrapper(name = "stackTrace")
   @XmlElement(name = "stackTraceItem")
-  private List<StackTraceItem> stackTrace = null;
+  @Schema(description = "The stack trace.")
+  @Getter
+  @Setter
+  private List<StackTraceItem> stackTrace;
 
   @JsonProperty("cause")
   @JacksonXmlProperty(localName = "cause")
-  private RestApiException cause = null;
+  @Schema(description = "The cause.")
+  @Getter
+  @Setter
+  private RestApiException cause;
+
+  @Schema(hidden = true)
+  @JsonIgnore
+  @XmlTransient
+  private final Map<String, Object> furtherDetails = new LinkedHashMap<>();
 
   /**
    * Instantiates a new rest api exception.
    *
    * @param id the id
    * @param timestamp the timestamp
-   * @param message the message
+   * @param status the status
+   * @param error the error
    * @param errorCode the error code
    * @param errorCodeInherited the error code inherited
+   * @param message the message
    * @param className the class name
    * @param application the application
    * @param path the path
@@ -143,106 +189,37 @@ public class RestApiException implements Serializable {
    * @param cause the cause
    */
   @Builder(toBuilder = true)
-  @SuppressWarnings("unused")
-  public RestApiException(
+  protected RestApiException(
       String id,
       OffsetDateTime timestamp,
-      String message,
+      Integer status,
+      String error,
       String errorCode,
       Boolean errorCodeInherited,
+      String message,
       String className,
       String application,
       String path,
       Handler handler,
       List<StackTraceItem> stackTrace,
-      RestApiException cause) {
+      RestApiException cause,
+      Map<String, Object> furtherDetails) {
     this.id = id;
     this.timestamp = timestamp;
-    this.message = message;
+    this.status = status;
+    this.error = error;
     this.errorCode = errorCode;
-    this.errorCodeInherited = Boolean.TRUE.equals(errorCodeInherited);
+    this.errorCodeInherited = errorCodeInherited;
+    this.message = message;
     this.className = className;
     this.application = application;
     this.path = path;
     this.handler = handler;
     this.stackTrace = stackTrace;
     this.cause = cause;
-  }
-
-  /**
-   * The id of the exception.
-   *
-   * @return id id
-   */
-  @Schema(description = "The id of the exception.")
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * Sets id.
-   *
-   * @param id the id
-   */
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  /**
-   * The timestamp.
-   *
-   * @return timestamp timestamp
-   */
-  @Schema(description = "The timestamp.")
-  public OffsetDateTime getTimestamp() {
-    return timestamp;
-  }
-
-  /**
-   * Sets timestamp.
-   *
-   * @param timestamp the timestamp
-   */
-  public void setTimestamp(OffsetDateTime timestamp) {
-    this.timestamp = timestamp;
-  }
-
-  /**
-   * A human readable exception message.
-   *
-   * @return message message
-   */
-  @Schema(description = "A human readable exception message.")
-  public String getMessage() {
-    return message;
-  }
-
-  /**
-   * Sets message.
-   *
-   * @param message the message
-   */
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  /**
-   * A service specific error code.
-   *
-   * @return errorCode error code
-   */
-  @Schema(description = "A service specific error code.")
-  public String getErrorCode() {
-    return errorCode;
-  }
-
-  /**
-   * Sets error code.
-   *
-   * @param errorCode the error code
-   */
-  public void setErrorCode(String errorCode) {
-    this.errorCode = errorCode;
+    if (nonNull(furtherDetails)) {
+      this.furtherDetails.putAll(furtherDetails);
+    }
   }
 
   /**
@@ -250,132 +227,31 @@ public class RestApiException implements Serializable {
    *
    * @return errorCodeInherited error code inherited
    */
-  @Schema(description = "Is the error code inherited from the cause?")
   public Boolean getErrorCodeInherited() {
-    return errorCodeInherited;
+    return Boolean.TRUE.equals(errorCodeInherited);
   }
 
   /**
-   * Sets error code inherited.
+   * Any json setter.
    *
-   * @param errorCodeInherited the error code inherited
+   * @param name the name
+   * @param value the value
    */
-  public void setErrorCodeInherited(Boolean errorCodeInherited) {
-    this.errorCodeInherited = Boolean.TRUE.equals(errorCodeInherited);
+  @JsonAnySetter
+  public void furtherDetails(String name, Object value) {
+    if (nonNull(name) && !name.isBlank()) {
+      furtherDetails.put(name, value);
+    }
   }
 
   /**
-   * The class name of the exception.
+   * Further details map.
    *
-   * @return className class name
+   * @return the map
    */
-  @Schema(description = "The class name of the exception.")
-  public String getClassName() {
-    return className;
-  }
-
-  /**
-   * Sets class name.
-   *
-   * @param className the class name
-   */
-  public void setClassName(String className) {
-    this.className = className;
-  }
-
-  /**
-   * The name of the application.
-   *
-   * @return application application
-   */
-  @Schema(description = "The name of the application.")
-  public String getApplication() {
-    return application;
-  }
-
-  /**
-   * Sets application.
-   *
-   * @param application the application
-   */
-  public void setApplication(String application) {
-    this.application = application;
-  }
-
-  /**
-   * The request path.
-   *
-   * @return path path
-   */
-  @Schema(description = "The request path.")
-  public String getPath() {
-    return path;
-  }
-
-  /**
-   * Sets path.
-   *
-   * @param path the path
-   */
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  /**
-   * Get handler.
-   *
-   * @return handler handler
-   */
-  @Schema(description = "The handler.")
-  public Handler getHandler() {
-    return handler;
-  }
-
-  /**
-   * Sets handler.
-   *
-   * @param handler the handler
-   */
-  public void setHandler(Handler handler) {
-    this.handler = handler;
-  }
-
-  /**
-   * The stack trace.
-   *
-   * @return stackTrace stack trace
-   */
-  @Schema(description = "The stack trace.")
-  public List<StackTraceItem> getStackTrace() {
-    return stackTrace;
-  }
-
-  /**
-   * Sets stack trace.
-   *
-   * @param stackTrace the stack trace
-   */
-  public void setStackTrace(List<StackTraceItem> stackTrace) {
-    this.stackTrace = stackTrace;
-  }
-
-  /**
-   * Get cause.
-   *
-   * @return cause cause
-   */
-  @Schema(description = "The cause.")
-  public RestApiException getCause() {
-    return cause;
-  }
-
-  /**
-   * Sets cause.
-   *
-   * @param cause the cause
-   */
-  public void setCause(RestApiException cause) {
-    this.cause = cause;
+  @JsonAnySetter
+  public Map<String, Object> furtherDetails() {
+    return furtherDetails;
   }
 
 }

@@ -257,6 +257,11 @@ public interface RestApiExceptionMapperProperties {
     @Nullable
     String getExceptionClassName();
 
+    @Value.Default
+    default boolean isIncludeMessage() {
+      return true;
+    }
+
     /**
      * Is include exception class name boolean.
      *

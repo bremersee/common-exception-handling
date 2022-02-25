@@ -195,7 +195,7 @@ public class RestApiExceptionMapperBootProperties {
         null));
   }
 
-  RestApiExceptionMapperProperties toRestApiExceptionMapperProperties() {
+  public RestApiExceptionMapperProperties toRestApiExceptionMapperProperties() {
     return RestApiExceptionMapperProperties.builder()
         .apiPaths(getApiPaths())
         .defaultExceptionMapping(getDefaultExceptionMapping())
@@ -273,6 +273,10 @@ public class RestApiExceptionMapperBootProperties {
     @Getter
     @Setter
     private String exceptionClassName;
+
+    @Getter
+    @Setter
+    private boolean isIncludeMessage = true;
 
     @Getter
     @Setter

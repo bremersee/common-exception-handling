@@ -400,6 +400,7 @@ class RestApiExceptionTest {
         .application("junit")
         .timestamp(OffsetDateTime.parse("2007-12-24T18:21Z", ISO_OFFSET_DATE_TIME))
         .build();
+    model.furtherDetails("custom", "A custom information");
 
     XmlMapper xmlMapper = new XmlMapper();
     xmlMapper.registerModule(new Jdk8Module());
@@ -410,7 +411,8 @@ class RestApiExceptionTest {
     String xml = xmlMapper
         .writerWithDefaultPrettyPrinter()
         .writeValueAsString(model);
-    // System.out.println(xml);
+    System.out.println("Plain jackson without jaxb module:");
+    System.out.println(xml);
 
     RestApiException actualModel = xmlMapper
         .readValue(new StringReader(xml), RestApiException.class);
@@ -421,6 +423,9 @@ class RestApiExceptionTest {
     String xmlWithJaxbModule = xmlMapper
         .writerWithDefaultPrettyPrinter()
         .writeValueAsString(model);
+    System.out.println("Plain jackson with jaxb module:");
+    System.out.println(xmlWithJaxbModule);
+
     actualModel = xmlMapper
         .readValue(new StringReader(xml), RestApiException.class);
     softly.assertThat(actualModel).isEqualTo(model);
@@ -438,7 +443,8 @@ class RestApiExceptionTest {
     StringWriter sw = new StringWriter();
     jaxbContextBuilder.buildMarshaller(model).marshal(model, sw);
     String jaxbXml = sw.toString();
-    // System.out.println(jaxbXml);
+    System.out.println("Jaxb:");
+    System.out.println(jaxbXml);
 
     actualModel = xmlMapper
         .readValue(new StringReader(jaxbXml), RestApiException.class);

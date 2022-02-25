@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.bremersee.exception.spring.boot.autoconfigure;
+package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
-import org.bremersee.exception.RestApiExceptionMapperImpl;
+import org.bremersee.exception.RestApiExceptionMapperForWeb;
 import org.bremersee.exception.RestApiExceptionMapperProperties;
+import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperBootProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,12 +38,12 @@ import org.springframework.util.ClassUtils;
  *
  * @author Christian Bremer
  */
-@ConditionalOnWebApplication(type = Type.ANY)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass(RestApiExceptionMapperProperties.class)
 @Configuration
 @EnableConfigurationProperties({RestApiExceptionMapperBootProperties.class})
 @Slf4j
-public class RestApiExceptionMapperAutoConfiguration {
+public class RestApiExceptionMapperForWebFluxAutoConfiguration {
 
   private final String applicationName;
 
@@ -54,7 +55,7 @@ public class RestApiExceptionMapperAutoConfiguration {
    * @param applicationName the application name
    * @param properties the properties
    */
-  public RestApiExceptionMapperAutoConfiguration(
+  public RestApiExceptionMapperForWebFluxAutoConfiguration(
       @Value("${spring.application.name:application}") String applicationName,
       RestApiExceptionMapperBootProperties properties) {
     this.applicationName = applicationName;
@@ -86,7 +87,7 @@ public class RestApiExceptionMapperAutoConfiguration {
   @ConditionalOnMissingBean
   @Bean
   public RestApiExceptionMapper restApiExceptionMapper() {
-    return new RestApiExceptionMapperImpl(
+    return new RestApiExceptionMapperForWeb(
         properties.toRestApiExceptionMapperProperties(),
         applicationName);
   }

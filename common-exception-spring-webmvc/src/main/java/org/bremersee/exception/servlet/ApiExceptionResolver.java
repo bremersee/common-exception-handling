@@ -16,6 +16,8 @@
 
 package org.bremersee.exception.servlet;
 
+import static java.util.Objects.requireNonNullElse;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.time.OffsetDateTime;
@@ -29,8 +31,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.bremersee.exception.RestApiExceptionMapper;
 import org.bremersee.exception.RestApiExceptionConstants;
+import org.bremersee.exception.RestApiExceptionMapper;
 import org.bremersee.exception.RestApiResponseType;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -163,7 +165,9 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
     }
 
     response.setContentType(responseType.getContentTypeValue());
-    int statusCode = exceptionMapper.detectHttpStatus(ex, handler).value();
+    int statusCode = requireNonNullElse(
+        payload.getStatus(),
+        HttpStatus.INTERNAL_SERVER_ERROR.value());
     modelAndView.setStatus(HttpStatus.resolve(statusCode));
     applyStatusCodeIfPossible(request, response, statusCode);
     return modelAndView;
@@ -254,7 +258,8 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
 
       httpServletResponse.addHeader(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME,
           restApiException.getTimestamp() != null
-              ? restApiException.getTimestamp().format(RestApiExceptionConstants.TIMESTAMP_FORMATTER)
+              ? restApiException.getTimestamp()
+              .format(RestApiExceptionConstants.TIMESTAMP_FORMATTER)
               : OffsetDateTime.now(ZoneId.of("UTC")).format(
                   RestApiExceptionConstants.TIMESTAMP_FORMATTER));
 

@@ -58,7 +58,7 @@ class RestApiExceptionMapperImplTest {
     RestApiExceptionMapperProperties properties = RestApiExceptionMapperProperties.builder()
         .apiPaths(List.of("/api/**"))
         .build();
-    mapper = new RestApiExceptionMapperImpl(properties, "test");
+    mapper = new RestApiExceptionMapperForWeb(properties, "test");
   }
 
   /**
@@ -155,7 +155,7 @@ class RestApiExceptionMapperImplTest {
             .isEvaluateAnnotationFirst(true)
             .build())
         .build();
-    final RestApiExceptionMapper configuredMapper = new RestApiExceptionMapperImpl(
+    final RestApiExceptionMapper configuredMapper = new RestApiExceptionMapperForWeb(
         properties, "configured");
 
     final NullPointerException exception = new NullPointerException();
@@ -181,6 +181,7 @@ class RestApiExceptionMapperImplTest {
     final RestApiException cause = new RestApiException();
     cause.setApplication("cause");
     cause.setClassName(ServiceException.class.getName());
+    cause.setError("Something");
     cause.setErrorCode("CBR:0123");
     cause.setErrorCodeInherited(false);
     cause.setId("1");

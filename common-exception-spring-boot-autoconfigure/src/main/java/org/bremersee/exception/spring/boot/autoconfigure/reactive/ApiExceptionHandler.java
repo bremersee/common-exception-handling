@@ -16,8 +16,11 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 
+import static java.util.Objects.requireNonNullElse;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,6 +34,7 @@ import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.lang.NonNull;
@@ -124,7 +128,9 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
       return emptyWithHeaders(request, response, restApiResponseType.getContentType());
     } else {
       return ServerResponse
-          .status(getRestApiExceptionMapper().detectHttpStatus(getError(request), null))
+          .status(requireNonNullElse(
+              response.getStatus(),
+              HttpStatus.INTERNAL_SERVER_ERROR.value()))
           .contentType(restApiResponseType.getContentType())
           .body(BodyInserters.fromValue(response));
     }

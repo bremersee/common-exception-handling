@@ -35,7 +35,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -54,6 +56,8 @@ import lombok.ToString;
 @JsonInclude(Include.NON_EMPTY)
 @EqualsAndHashCode
 @ToString
+@Getter
+@Setter
 @NoArgsConstructor
 public class Handler implements Serializable {
 
@@ -61,18 +65,21 @@ public class Handler implements Serializable {
 
   @JsonProperty("className")
   @JacksonXmlProperty(localName = "className")
-  private String className = null;
+  @Schema(description = "The class name of the handler.")
+  private String className;
 
   @JsonProperty("methodName")
   @JacksonXmlProperty(localName = "methodName")
-  private String methodName = null;
+  @Schema(description = "The method name of the handler.")
+  private String methodName;
 
   @JsonProperty("methodParameterTypes")
   @JacksonXmlElementWrapper(localName = "methodParameterTypes")
   @JacksonXmlProperty(localName = "methodParameterType")
   @XmlElementWrapper(name = "methodParameterTypes")
   @XmlElement(name = "methodParameterType")
-  private List<String> methodParameterTypes = null;
+  @Schema(description = "The method parameters.")
+  private List<String> methodParameterTypes;
 
   /**
    * Instantiates a new handler.
@@ -82,70 +89,12 @@ public class Handler implements Serializable {
    * @param methodParameterTypes the method parameter types
    */
   @Builder(toBuilder = true)
-  @SuppressWarnings("unused")
   public Handler(
       String className,
       String methodName,
       List<String> methodParameterTypes) {
     this.className = className;
     this.methodName = methodName;
-    this.methodParameterTypes = methodParameterTypes;
-  }
-
-  /**
-   * The class name of the handler.
-   *
-   * @return className class name
-   */
-  @Schema(description = "The class name of the handler.")
-  public String getClassName() {
-    return className;
-  }
-
-  /**
-   * Sets class name.
-   *
-   * @param className the class name
-   */
-  public void setClassName(String className) {
-    this.className = className;
-  }
-
-  /**
-   * The method name of the handler.
-   *
-   * @return methodName method name
-   */
-  @Schema(description = "The method name of the handler.")
-  public String getMethodName() {
-    return methodName;
-  }
-
-  /**
-   * Sets method name.
-   *
-   * @param methodName the method name
-   */
-  public void setMethodName(String methodName) {
-    this.methodName = methodName;
-  }
-
-  /**
-   * The method parameters.
-   *
-   * @return methodParameterTypes method parameter types
-   */
-  @Schema(description = "The method parameters.")
-  public List<String> getMethodParameterTypes() {
-    return methodParameterTypes;
-  }
-
-  /**
-   * Sets method parameter types.
-   *
-   * @param methodParameterTypes the method parameter types
-   */
-  public void setMethodParameterTypes(List<String> methodParameterTypes) {
     this.methodParameterTypes = methodParameterTypes;
   }
 

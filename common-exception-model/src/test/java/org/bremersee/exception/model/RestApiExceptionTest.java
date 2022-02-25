@@ -24,9 +24,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator.Feature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,7 +32,6 @@ import java.util.List;
 import java.util.UUID;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.bremersee.xml.JaxbContextBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -346,14 +343,6 @@ class RestApiExceptionTest {
 
     RestApiException actualModel = objectMapper.readValue(json, RestApiException.class);
     softly.assertThat(actualModel).isEqualTo(model);
-
-    // now with jaxb annotation module
-    objectMapper.registerModule(new JaxbAnnotationModule());
-    actualModel = objectMapper.readValue(json, RestApiException.class);
-    softly.assertThat(actualModel).isEqualTo(model);
-
-    String anotherJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(model);
-    softly.assertThat(anotherJson).isEqualTo(json);
   }
 
   /**
@@ -416,38 +405,6 @@ class RestApiExceptionTest {
 
     RestApiException actualModel = xmlMapper
         .readValue(new StringReader(xml), RestApiException.class);
-    softly.assertThat(actualModel).isEqualTo(model);
-
-    xmlMapper.registerModule(new JaxbAnnotationModule());
-
-    String xmlWithJaxbModule = xmlMapper
-        .writerWithDefaultPrettyPrinter()
-        .writeValueAsString(model);
-    System.out.println("Plain jackson with jaxb module:");
-    System.out.println(xmlWithJaxbModule);
-
-    actualModel = xmlMapper
-        .readValue(new StringReader(xml), RestApiException.class);
-    softly.assertThat(actualModel).isEqualTo(model);
-    softly.assertThat(xmlWithJaxbModule).isEqualTo(xml);
-
-    JaxbContextBuilder jaxbContextBuilder = JaxbContextBuilder
-        .newInstance()
-        .withFormattedOutput(true);
-
-    actualModel = (RestApiException) jaxbContextBuilder
-        .buildUnmarshaller(RestApiException.class)
-        .unmarshal(new StringReader(xml));
-    softly.assertThat(actualModel).isEqualTo(model);
-
-    StringWriter sw = new StringWriter();
-    jaxbContextBuilder.buildMarshaller(model).marshal(model, sw);
-    String jaxbXml = sw.toString();
-    System.out.println("Jaxb:");
-    System.out.println(jaxbXml);
-
-    actualModel = xmlMapper
-        .readValue(new StringReader(jaxbXml), RestApiException.class);
     softly.assertThat(actualModel).isEqualTo(model);
   }
 

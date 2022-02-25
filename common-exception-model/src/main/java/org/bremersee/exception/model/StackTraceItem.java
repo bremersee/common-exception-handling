@@ -19,16 +19,8 @@ package org.bremersee.exception.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import javax.validation.Valid;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -43,11 +35,6 @@ import lombok.ToString;
  */
 @SuppressWarnings("SameNameButDifferent")
 @Schema(description = "A stack trace element of an exception.")
-@Valid
-@JacksonXmlRootElement(localName = "StackTraceItem")
-@XmlRootElement(name = "StackTraceItem")
-@XmlType(name = "stackTraceItemType")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_EMPTY)
 @EqualsAndHashCode
@@ -59,23 +46,15 @@ public class StackTraceItem implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  @JsonProperty("declaringClass")
-  @JacksonXmlProperty(localName = "declaringClass")
   @Schema(description = "The declaring class.")
   private String declaringClass;
 
-  @JsonProperty("methodName")
-  @JacksonXmlProperty(localName = "methodName")
   @Schema(description = "The method name.")
   private String methodName;
 
-  @JsonProperty("fileName")
-  @JacksonXmlProperty(localName = "fileName")
   @Schema(description = "The file name.")
   private String fileName;
 
-  @JsonProperty("lineNumber")
-  @JacksonXmlProperty(localName = "lineNumber")
   @Schema(description = "The line number.")
   private Integer lineNumber;
 
@@ -88,7 +67,7 @@ public class StackTraceItem implements Serializable {
    * @param lineNumber the line number
    */
   @Builder(toBuilder = true)
-  public StackTraceItem(
+  protected StackTraceItem(
       String declaringClass,
       String methodName,
       String fileName,

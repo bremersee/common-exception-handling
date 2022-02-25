@@ -36,9 +36,6 @@
     <github.repo>common-exception-handling</github.repo>
     <!--suppress UnresolvedMavenProperty -->
     <gh-pages-staging-dir>${maven.multiModuleProjectDirectory}/target/staging</gh-pages-staging-dir>
-
-    <common-autoconfigure.version>0.0.1-SNAPSHOT</common-autoconfigure.version>
-    <common-xml.version>2.5.0-SNAPSHOT</common-xml.version>
   </properties>
 
   <developers>
@@ -94,16 +91,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.bremersee</groupId>
-        <artifactId>common-spring-boot-autoconfigure</artifactId>
-        <version>${common-autoconfigure.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.bremersee</groupId>
-        <artifactId>common-xml-adapter</artifactId>
-        <version>${common-xml.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.bremersee</groupId>
         <artifactId>common-xml</artifactId>

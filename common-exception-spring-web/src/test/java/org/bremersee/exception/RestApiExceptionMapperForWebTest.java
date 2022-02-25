@@ -16,6 +16,7 @@
 
 package org.bremersee.exception;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,11 +29,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMapping;
 import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMappingConfig;
 import org.bremersee.exception.model.RestApiException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,7 +49,10 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * @author Christian Bremer
  */
-class RestApiExceptionMapperImplTest {
+@ExtendWith(SoftAssertionsExtension.class)
+class RestApiExceptionMapperForWebTest {
+
+  private static final String APPLICATION_NAME = "test";
 
   private static RestApiExceptionMapper mapper;
 
@@ -61,12 +67,21 @@ class RestApiExceptionMapperImplTest {
     mapper = new RestApiExceptionMapperForWeb(properties, "test");
   }
 
+  private RestApiExceptionMapperForWeb newInstance(RestApiExceptionMapperProperties properties) {
+    return new RestApiExceptionMapperForWeb(properties, APPLICATION_NAME);
+  }
+
   /**
    * Test get api paths.
    */
   @Test
   void testGetApiPaths() {
-    assertTrue(mapper.getApiPaths().contains("/api/**"));
+    RestApiExceptionMapperProperties properties = RestApiExceptionMapperProperties.builder()
+        .apiPaths(List.of("/api/**"))
+        .build();
+    RestApiExceptionMapperForWeb target = newInstance(properties);
+    assertThat(target.getApiPaths())
+        .containsExactly("/api/**");
   }
 
   /**
@@ -74,14 +89,35 @@ class RestApiExceptionMapperImplTest {
    */
   @Test
   void testBuild409() {
-    ServiceException exception = new ServiceException(409, "Either a or b", "TEST:4711");
-    RestApiException model = mapper.build(exception, "/api/something", null);
-    assertNotNull(model);
-    assertEquals(exception.getErrorCode(), model.getErrorCode());
-    assertFalse(model.getErrorCodeInherited());
-    assertEquals(exception.getMessage(), model.getMessage());
-    assertEquals("/api/something", model.getPath());
-    assertNull(model.getId());
+    HttpStatus httpStatus = HttpStatus.CONFLICT;
+    String errorCode = "TEST:4711";
+    String message = "Either a or b";
+    String path = "/api/something";
+
+    ServiceException exception = new ServiceException(httpStatus.value(), errorCode, message);
+
+    RestApiExceptionMapperProperties properties = RestApiExceptionMapperProperties.builder()
+        .apiPaths(List.of("/api/**"))
+        .build();
+    RestApiExceptionMapperForWeb target = newInstance(properties);
+
+    RestApiException actual = target.build(exception, path, null);
+
+    RestApiException expected = RestApiException.builder()
+        .status(httpStatus.value())
+        .error(httpStatus.getReasonPhrase())
+        .errorCode(errorCode)
+        .errorCodeInherited(false)
+        .message(message)
+        .exception(ServiceException.class.getName())
+        .application(APPLICATION_NAME)
+        .path(path)
+        .build();
+
+    assertThat(actual)
+        .usingRecursiveComparison()
+        .ignoringFieldsOfTypes(OffsetDateTime.class)
+        .isEqualTo(expected);
   }
 
   /**

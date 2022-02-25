@@ -20,6 +20,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
 import org.bremersee.exception.servlet.ApiExceptionResolver;
+import org.bremersee.exception.servlet.HttpServletRequestIdProvider;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -60,20 +61,19 @@ public class ApiExceptionResolverAutoConfiguration implements WebMvcConfigurer {
    *
    * @param apiExceptionMapper the api exception mapper
    * @param objectMapperBuilder the object mapper builder
+   * @param restApiIdProvider the rest api id provider
    */
   public ApiExceptionResolverAutoConfiguration(
       ObjectProvider<RestApiExceptionMapper> apiExceptionMapper,
-      ObjectProvider<Jackson2ObjectMapperBuilder> objectMapperBuilder) {
+      ObjectProvider<Jackson2ObjectMapperBuilder> objectMapperBuilder,
+      ObjectProvider<HttpServletRequestIdProvider> restApiIdProvider) {
 
-    Assert.notNull(
-        apiExceptionMapper.getIfAvailable(),
-        "Api exception resolver must be present.");
-    Assert.notNull(
-        objectMapperBuilder.getIfAvailable(),
-        "Object mapper builder must be present.");
-    apiExceptionResolver = new ApiExceptionResolver(
-        apiExceptionMapper.getIfAvailable(),
-        objectMapperBuilder.getIfAvailable());
+    RestApiExceptionMapper mapper = apiExceptionMapper.getIfAvailable();
+    Jackson2ObjectMapperBuilder omBuilder = objectMapperBuilder.getIfAvailable();
+    Assert.notNull(mapper, "Api exception resolver must be present.");
+    Assert.notNull(omBuilder, "Object mapper builder must be present.");
+    this.apiExceptionResolver = new ApiExceptionResolver(mapper, omBuilder);
+    this.apiExceptionResolver.setRestApiExceptionIdProvider(restApiIdProvider.getIfAvailable());
   }
 
   /**

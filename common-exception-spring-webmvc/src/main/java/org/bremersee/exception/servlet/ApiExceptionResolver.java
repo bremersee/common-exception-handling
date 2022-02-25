@@ -26,6 +26,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -72,6 +73,10 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
   @Getter(AccessLevel.PROTECTED)
   @Setter
   private PathMatcher pathMatcher = new AntPathMatcher();
+
+  @Getter(AccessLevel.PROTECTED)
+  @Setter
+  private Function<HttpServletRequest, String> restApiExceptionIdProvider;
 
   @Getter(AccessLevel.PROTECTED)
   private final RestApiExceptionMapper exceptionMapper;
@@ -136,6 +141,9 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
     }
 
     RestApiException payload = exceptionMapper.build(ex, request.getRequestURI(), handler);
+    if (nonNull(restApiExceptionIdProvider)) {
+      payload.setId(restApiExceptionIdProvider.apply(request));
+    }
 
     ServletServerHttpRequest httpRequest = new ServletServerHttpRequest(request);
     List<MediaType> accepted = httpRequest.getHeaders().getAccept();

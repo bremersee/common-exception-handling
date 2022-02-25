@@ -97,6 +97,12 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  /**
+   * From status optional.
+   *
+   * @param status the status
+   * @return the optional
+   */
   protected Optional<HttpStatus> fromStatus(Integer status) {
     return Optional.ofNullable(status)
         .map(HttpStatus::resolve);
@@ -167,6 +173,15 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .map(h -> ((HandlerMethod) h).getMethod());
   }
 
+  /**
+   * Sets error code.
+   *
+   * @param restApiException the rest api exception
+   * @param exception the exception
+   * @param handler the handler
+   * @param config the config
+   * @return the error code
+   */
   protected RestApiException setErrorCode(
       RestApiException restApiException,
       Throwable exception,
@@ -191,6 +206,15 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .orElse(restApiException);
   }
 
+  /**
+   * Sets message.
+   *
+   * @param restApiException the rest api exception
+   * @param exception the exception
+   * @param handler the handler
+   * @param config the config
+   * @return the message
+   */
   protected RestApiException setMessage(
       RestApiException restApiException,
       Throwable exception,
@@ -213,6 +237,14 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .orElse(restApiException);
   }
 
+  /**
+   * Sets class name.
+   *
+   * @param restApiException the rest api exception
+   * @param exception the exception
+   * @param config the config
+   * @return the class name
+   */
   protected RestApiException setClassName(
       RestApiException restApiException,
       Throwable exception,
@@ -226,6 +258,13 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .build();
   }
 
+  /**
+   * Sets application.
+   *
+   * @param restApiException the rest api exception
+   * @param config the config
+   * @return the application
+   */
   protected RestApiException setApplication(
       RestApiException restApiException,
       ExceptionMappingConfig config) {
@@ -236,6 +275,14 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
     return restApiException.toBuilder().application(getApplicationName()).build();
   }
 
+  /**
+   * Sets path.
+   *
+   * @param restApiException the rest api exception
+   * @param path the path
+   * @param config the config
+   * @return the path
+   */
   protected RestApiException setPath(
       RestApiException restApiException,
       String path,
@@ -247,6 +294,14 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
     return restApiException.toBuilder().path(path).build();
   }
 
+  /**
+   * Sets handler.
+   *
+   * @param restApiException the rest api exception
+   * @param handler the handler
+   * @param config the config
+   * @return the handler
+   */
   protected RestApiException setHandler(
       RestApiException restApiException,
       Object handler,
@@ -268,6 +323,14 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .orElse(restApiException);
   }
 
+  /**
+   * Sets stack trace.
+   *
+   * @param restApiException the rest api exception
+   * @param stackTrace the stack trace
+   * @param config the config
+   * @return the stack trace
+   */
   protected RestApiException setStackTrace(
       RestApiException restApiException,
       StackTraceElement[] stackTrace,
@@ -289,6 +352,14 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .build();
   }
 
+  /**
+   * Sets cause.
+   *
+   * @param restApiException the rest api exception
+   * @param exception the exception
+   * @param config the config
+   * @return the cause
+   */
   protected RestApiException setCause(
       RestApiException restApiException,
       Throwable exception,
@@ -326,6 +397,13 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .orElse(restApiException);
   }
 
+  /**
+   * Reconfigure rest api exception rest api exception.
+   *
+   * @param source the source
+   * @param config the config
+   * @return the rest api exception
+   */
   protected RestApiException reconfigureRestApiException(
       RestApiException source,
       ExceptionMappingConfig config) {

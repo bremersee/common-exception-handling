@@ -16,7 +16,8 @@
 
 package org.bremersee.exception.model;
 
-import java.util.Collections;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
@@ -80,7 +81,7 @@ class HandlerTest {
    */
   @Test
   void getMethodParameterTypes(SoftAssertions softly) {
-    List<String> value = Collections.singletonList("value");
+    List<String> value = List.of("value");
     Handler model = new Handler();
     model.setMethodParameterTypes(value);
     softly.assertThat(model.getMethodParameterTypes()).isEqualTo(value);
@@ -92,5 +93,21 @@ class HandlerTest {
     softly.assertThat(model).isEqualTo(model.toBuilder().methodParameterTypes(value).build());
 
     softly.assertThat(model.toString()).contains("value");
+  }
+
+  /**
+   * Builder.
+   */
+  @Test
+  void builder() {
+    String className = "org.bremersee.Example";
+    String methodName = "doSomething";
+    List<String> methodParameterNames = List.of("a", "b", "c");
+    assertThat(Handler.builder()
+        .className(className)
+        .methodName(methodName)
+        .methodParameterTypes(methodParameterNames)
+        .build())
+        .isEqualTo(new Handler(className, methodName, methodParameterNames));
   }
 }

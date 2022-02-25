@@ -16,6 +16,8 @@
 
 package org.bremersee.exception.model;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.Test;
@@ -119,5 +121,23 @@ class StackTraceItemTest {
     softly.assertThat(model).isEqualTo(model.toBuilder().lineNumber(value).build());
 
     softly.assertThat(model.toString()).contains(value.toString());
+  }
+
+  /**
+   * Builder.
+   */
+  @Test
+  void builder() {
+    String className = "org.bremersee.Example";
+    String methodName = "doSomething";
+    String fileName = "unknown";
+    Integer lineNumber = 234;
+    assertThat(StackTraceItem.builder()
+        .declaringClass(className)
+        .methodName(methodName)
+        .fileName(fileName)
+        .lineNumber(lineNumber)
+        .build())
+        .isEqualTo(new StackTraceItem(className, methodName, fileName, lineNumber));
   }
 }

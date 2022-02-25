@@ -46,7 +46,6 @@ import org.springframework.web.client.RestTemplate;
     properties = {
         "spring.main.web-application-type=servlet",
         "spring.application.name=junit",
-        // {"timestamp":"2022-02-24T11:10:53.995+00:00","status":500,"error":"Internal Server Error","path":"/spring-error"}
         "server.error.include-exception=true", // "exception":"java.lang.IllegalStateException"
         "server.error.include-message=always", // "message":"Something must be valid"
         //"server.error.include-stacktrace=always" // "trace":"java.lang.IllegalStateException: Something must be valid\n\tat org.breme
@@ -83,31 +82,43 @@ public class RestApiExceptionIntegrationTest {
   RestTemplate restTemplate() {
     return restTemplateBuilder
         .rootUri(baseUrl())
-        .errorHandler(new ResponseErrorHandler() {
-          @Override
-          public boolean hasError(@NonNull ClientHttpResponse response) throws IOException {
-            System.out.println("Is error? " + response.getStatusCode().isError());
-            return false;
-          }
-
-          @Override
-          public void handleError(@NonNull ClientHttpResponse response) {
-
-          }
-        })
+        .errorHandler(new IgnoreErrorsHandler())
         .build();
   }
 
   @Test
-  void springError() {
+  void springErrorAsXml() {
 
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(List.of(MediaType.APPLICATION_XML));
     HttpEntity<?> httpEntity = new HttpEntity<>(null, headers);
     ResponseEntity<RestApiException> response = restTemplate()
         .exchange("/spring-error", HttpMethod.GET, httpEntity, RestApiException.class);
+    RestApiException expected = RestApiException.builder()
+        .status(500)
+        .error("Internal Server Error")
+        .message("Something must be valid")
+        .path("/spring-error")
+        .build();
+    expected.furtherDetails("", "");
     System.out.println("Status   = " + response.getStatusCode());
     System.out.println("Response = " + response.getBody());
+  }
+
+  private static class IgnoreErrorsHandler implements ResponseErrorHandler {
+
+    private IgnoreErrorsHandler() {
+    }
+
+    @Override
+    public boolean hasError(ClientHttpResponse response) {
+      return false;
+    }
+
+    @Override
+    public void handleError(ClientHttpResponse response) {
+
+    }
   }
 
 }

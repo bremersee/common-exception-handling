@@ -17,6 +17,7 @@
 package org.bremersee.exception.model;
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -87,23 +88,45 @@ class RestApiExceptionTest {
   }
 
   /**
-   * Gets message.
+   * Gets status.
    *
    * @param softly the soft assertions
    */
   @Test
-  void getMessage(SoftAssertions softly) {
+  void getStatus(SoftAssertions softly) {
+    Integer value = 404;
     RestApiException model = new RestApiException();
-    model.setMessage("value");
-    softly.assertThat(model.getMessage()).isEqualTo("value");
+    model.setStatus(value);
+    softly.assertThat(model.getStatus()).isEqualTo(value);
 
-    model = RestApiException.builder().message("value").build();
-    softly.assertThat(model.getMessage()).isEqualTo("value");
+    model = RestApiException.builder().status(value).build();
+    softly.assertThat(model.getStatus()).isEqualTo(value);
 
     softly.assertThat(model).isEqualTo(model);
-    softly.assertThat(model).isEqualTo(model.toBuilder().message("value").build());
+    softly.assertThat(model).isEqualTo(model.toBuilder().status(value).build());
 
-    softly.assertThat(model.toString()).contains("value");
+    softly.assertThat(model.toString()).contains(value.toString());
+  }
+
+  /**
+   * Gets error.
+   *
+   * @param softly the soft assertions
+   */
+  @Test
+  void getError(SoftAssertions softly) {
+    String value = "not found";
+    RestApiException model = new RestApiException();
+    model.setError(value);
+    softly.assertThat(model.getError()).isEqualTo(value);
+
+    model = RestApiException.builder().error(value).build();
+    softly.assertThat(model.getError()).isEqualTo(value);
+
+    softly.assertThat(model).isEqualTo(model);
+    softly.assertThat(model).isEqualTo(model.toBuilder().error(value).build());
+
+    softly.assertThat(model.toString()).contains(value);
   }
 
   /**
@@ -148,6 +171,26 @@ class RestApiExceptionTest {
     softly.assertThat(model).isEqualTo(model.toBuilder().errorCodeInherited(Boolean.TRUE).build());
 
     softly.assertThat(model.toString()).contains(Boolean.TRUE.toString());
+  }
+
+  /**
+   * Gets message.
+   *
+   * @param softly the soft assertions
+   */
+  @Test
+  void getMessage(SoftAssertions softly) {
+    RestApiException model = new RestApiException();
+    model.setMessage("value");
+    softly.assertThat(model.getMessage()).isEqualTo("value");
+
+    model = RestApiException.builder().message("value").build();
+    softly.assertThat(model.getMessage()).isEqualTo("value");
+
+    softly.assertThat(model).isEqualTo(model);
+    softly.assertThat(model).isEqualTo(model.toBuilder().message("value").build());
+
+    softly.assertThat(model.toString()).contains("value");
   }
 
   /**
@@ -211,6 +254,30 @@ class RestApiExceptionTest {
   }
 
   /**
+   * Gets handler.
+   *
+   * @param softly the soft assertions
+   */
+  @Test
+  void getHandler(SoftAssertions softly) {
+    Handler value = Handler.builder()
+        .className("org.example.FooBar")
+        .methodName("getFooBar")
+        .build();
+    RestApiException model = new RestApiException();
+    model.setHandler(value);
+    softly.assertThat(model.getHandler()).isEqualTo(value);
+
+    model = RestApiException.builder().handler(value).build();
+    softly.assertThat(model.getHandler()).isEqualTo(value);
+
+    softly.assertThat(model).isEqualTo(model);
+    softly.assertThat(model).isEqualTo(model.toBuilder().handler(value).build());
+
+    softly.assertThat(model.toString()).contains(value.toString());
+  }
+
+  /**
    * Gets stack trace.
    *
    * @param softly the soft assertions
@@ -264,27 +331,13 @@ class RestApiExceptionTest {
   }
 
   /**
-   * Gets handler.
-   *
-   * @param softly the soft assertions
+   * Builder.
    */
   @Test
-  void getHandler(SoftAssertions softly) {
-    Handler value = Handler.builder()
-        .className("org.example.FooBar")
-        .methodName("getFooBar")
-        .build();
-    RestApiException model = new RestApiException();
-    model.setHandler(value);
-    softly.assertThat(model.getHandler()).isEqualTo(value);
-
-    model = RestApiException.builder().handler(value).build();
-    softly.assertThat(model.getHandler()).isEqualTo(value);
-
-    softly.assertThat(model).isEqualTo(model);
-    softly.assertThat(model).isEqualTo(model.toBuilder().handler(value).build());
-
-    softly.assertThat(model.toString()).contains(value.toString());
+  void builder() {
+    assertThat(RestApiException.builder().build())
+        .isEqualTo(new RestApiException(
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null));
   }
 
   /**

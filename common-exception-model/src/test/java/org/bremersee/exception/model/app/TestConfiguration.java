@@ -21,7 +21,6 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
@@ -32,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 /**
+ * The test configuration.
+ *
  * @author Christian Bremer
  */
 @SpringBootConfiguration
@@ -39,27 +40,35 @@ import org.springframework.web.context.request.WebRequest;
 @ComponentScan(basePackageClasses = {TestConfiguration.class})
 public class TestConfiguration {
 
+  /**
+   * The custom test error attributes.
+   */
   @Component
-  public static class MyCustomErrorAttributes extends DefaultErrorAttributes {
+  public static class CustomTestErrorAttributes extends DefaultErrorAttributes {
 
     @Override
     public Map<String, Object> getErrorAttributes(
         WebRequest webRequest, ErrorAttributeOptions options) {
 
-      System.out.println("Included? " + options.isIncluded(Include.STACK_TRACE));
       Map<String, Object> errorAttributes =
           super.getErrorAttributes(webRequest, options);
-      errorAttributes.put("locale", webRequest.getLocale()
-          .toString());
-      //errorAttributes.remove("error");
+      errorAttributes.put("locale", "de-DE");
       errorAttributes.put("custom", Map.of("key", "value"));
       return errorAttributes;
     }
   }
 
+  /**
+   * The error rest controller.
+   */
   @RestController
   public static class ErrorRestController {
 
+    /**
+     * Produce spring error response entity.
+     *
+     * @return the response entity
+     */
     @GetMapping(path = "/spring-error", produces = {
         MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE
     })

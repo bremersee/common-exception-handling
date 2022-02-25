@@ -319,7 +319,7 @@ public interface RestApiExceptionMapperProperties {
      */
     @Value.Default
     default boolean isIncludeCause() {
-      return true;
+      return false;
     }
 
     /**

@@ -305,7 +305,7 @@ public class RestApiExceptionMapperBootProperties {
 
     @Getter
     @Setter
-    private boolean includeCause = true;
+    private boolean includeCause = false;
 
     @Getter
     @Setter

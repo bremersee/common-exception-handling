@@ -58,8 +58,8 @@ import org.bremersee.xml.adapter.OffsetDateTimeXmlAdapter;
 @SuppressWarnings("SameNameButDifferent")
 @Schema(description = "The serialized exception.")
 @Valid
-@JacksonXmlRootElement(localName = "Map")
-@XmlRootElement(name = "Map")
+@JacksonXmlRootElement(localName = "RestApiException")
+@XmlRootElement(name = "RestApiException")
 @XmlType(name = "restApiExceptionType")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({Handler.class, StackTraceItem.class})

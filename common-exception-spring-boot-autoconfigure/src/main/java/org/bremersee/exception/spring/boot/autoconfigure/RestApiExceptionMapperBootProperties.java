@@ -110,7 +110,7 @@ public class RestApiExceptionMapperBootProperties {
    * </thead>
    * <tbody>
    * <tr>
-   * <td style="border: 1px solid">includeExceptionClassName</td>
+   * <td style="border: 1px solid">includeException</td>
    * <td style="border: 1px solid">true</td>
    * </tr>
    * <tr>
@@ -195,6 +195,11 @@ public class RestApiExceptionMapperBootProperties {
         null));
   }
 
+  /**
+   * To rest api exception mapper properties rest api exception mapper properties.
+   *
+   * @return the rest api exception mapper properties
+   */
   public RestApiExceptionMapperProperties toRestApiExceptionMapperProperties() {
     return RestApiExceptionMapperProperties.builder()
         .apiPaths(getApiPaths())
@@ -280,7 +285,7 @@ public class RestApiExceptionMapperBootProperties {
 
     @Getter
     @Setter
-    private boolean includeExceptionClassName = true;
+    private boolean includeException = true;
 
     @Getter
     @Setter

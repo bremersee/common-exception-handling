@@ -16,12 +16,17 @@
 
 package org.bremersee.exception.model;
 
-import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.bremersee.exception.model.app.TestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -33,11 +38,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.lang.NonNull;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * The rest api exception integration test.
+ *
  * @author Christian Bremer
  */
 @SpringBootTest(
@@ -46,15 +52,15 @@ import org.springframework.web.client.RestTemplate;
     properties = {
         "spring.main.web-application-type=servlet",
         "spring.application.name=junit",
-        "server.error.include-exception=true", // "exception":"java.lang.IllegalStateException"
-        "server.error.include-message=always", // "message":"Something must be valid"
-        //"server.error.include-stacktrace=always" // "trace":"java.lang.IllegalStateException: Something must be valid\n\tat org.breme
+        "server.error.include-exception=true",
+        "server.error.include-message=always"
     })
 @TestInstance(Lifecycle.PER_CLASS) // allows us to use @BeforeAll with a non-static method
+@ExtendWith(SoftAssertionsExtension.class)
 public class RestApiExceptionIntegrationTest {
 
   /**
-   * The Rest template builder.
+   * The rest template builder.
    */
   @Autowired
   RestTemplateBuilder restTemplateBuilder;
@@ -75,7 +81,7 @@ public class RestApiExceptionIntegrationTest {
   }
 
   /**
-   * Rest template rest template.
+   * Rest template.
    *
    * @return the rest template
    */
@@ -86,9 +92,44 @@ public class RestApiExceptionIntegrationTest {
         .build();
   }
 
+  /**
+   * Spring error as json.
+   *
+   * @param softly the softly
+   */
   @Test
-  void springErrorAsXml() {
+  void springErrorAsJson(SoftAssertions softly) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    HttpEntity<?> httpEntity = new HttpEntity<>(null, headers);
+    ResponseEntity<RestApiException> response = restTemplate()
+        .exchange("/spring-error", HttpMethod.GET, httpEntity, RestApiException.class);
+    RestApiException expected = RestApiException.builder()
+        .status(500)
+        .error("Internal Server Error")
+        .message("Something must be valid")
+        .exception("java.lang.IllegalStateException")
+        .path("/spring-error")
+        .build();
+    expected.furtherDetails("locale", "de-DE");
+    expected.furtherDetails("custom", Map.of("key", "value"));
+    softly.assertThat(response.getBody())
+        .usingRecursiveComparison()
+        .ignoringFieldsOfTypes(OffsetDateTime.class)
+        .isEqualTo(expected);
+    softly.assertThat(response.getBody())
+        .extracting(RestApiException::furtherDetails,
+            InstanceOfAssertFactories.map(String.class, Object.class))
+        .containsAllEntriesOf(expected.furtherDetails());
+  }
 
+  /**
+   * Spring error as xml.
+   *
+   * @param softly the softly
+   */
+  @Test
+  void springErrorAsXml(SoftAssertions softly) {
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(List.of(MediaType.APPLICATION_XML));
     HttpEntity<?> httpEntity = new HttpEntity<>(null, headers);
@@ -98,11 +139,19 @@ public class RestApiExceptionIntegrationTest {
         .status(500)
         .error("Internal Server Error")
         .message("Something must be valid")
+        .exception("java.lang.IllegalStateException")
         .path("/spring-error")
         .build();
-    expected.furtherDetails("", "");
-    System.out.println("Status   = " + response.getStatusCode());
-    System.out.println("Response = " + response.getBody());
+    expected.furtherDetails("locale", "de-DE");
+    expected.furtherDetails("custom", Map.of("key", "value"));
+    softly.assertThat(response.getBody())
+        .usingRecursiveComparison()
+        .ignoringFieldsOfTypes(OffsetDateTime.class)
+        .isEqualTo(expected);
+    softly.assertThat(response.getBody())
+        .extracting(RestApiException::furtherDetails,
+            InstanceOfAssertFactories.map(String.class, Object.class))
+        .containsAllEntriesOf(expected.furtherDetails());
   }
 
   private static class IgnoreErrorsHandler implements ResponseErrorHandler {

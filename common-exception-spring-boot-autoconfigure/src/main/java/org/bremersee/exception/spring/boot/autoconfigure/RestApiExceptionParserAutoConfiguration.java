@@ -62,7 +62,7 @@ public class RestApiExceptionParserAutoConfiguration {
   }
 
   /**
-   * Rest api exception parser rest api exception parser.
+   * Creates rest api exception parser for reactive web application.
    *
    * @param objectMapperBuilderProvider the object mapper builder provider
    * @return the rest api exception parser
@@ -79,6 +79,13 @@ public class RestApiExceptionParserAutoConfiguration {
         .orElseGet(RestApiExceptionParserImpl::new);
   }
 
+  /**
+   * Creates rest api exception parser for servlet based web application.
+   *
+   * @param environment the environment
+   * @param objectMapperBuilderProvider the object mapper builder provider
+   * @return the rest api exception parser
+   */
   @ConditionalOnWebApplication(type = Type.SERVLET)
   @ConditionalOnMissingBean
   @Bean

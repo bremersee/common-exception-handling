@@ -23,7 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * The web client exception.
+ * The rest api response exception.
  *
  * @author Christian Bremer
  */

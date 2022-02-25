@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +43,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * The default implementation of a rest api exception mapper.
+ * The implementation of a rest api exception mapper for spring web.
  *
  * @author Christian Bremer
  */
@@ -169,10 +168,10 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
   }
 
   protected RestApiException setErrorCode(
-      @NotNull RestApiException restApiException,
-      @NotNull Throwable exception,
+      RestApiException restApiException,
+      Throwable exception,
       Object handler,
-      @NotNull ExceptionMappingConfig config) {
+      ExceptionMappingConfig config) {
 
     return Optional.of(exception)
         .filter(exc -> (exc instanceof ErrorCodeAware) && !config.isEvaluateAnnotationFirst())
@@ -193,10 +192,10 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
   }
 
   protected RestApiException setMessage(
-      @NotNull RestApiException restApiException,
-      @NotNull Throwable exception,
+      RestApiException restApiException,
+      Throwable exception,
       Object handler,
-      @NotNull ExceptionMappingConfig config) {
+      ExceptionMappingConfig config) {
 
     if (!config.isIncludeMessage()) {
       return restApiException;
@@ -215,11 +214,11 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
   }
 
   protected RestApiException setClassName(
-      @NotNull RestApiException restApiException,
-      @NotNull Throwable exception,
-      @NotNull ExceptionMappingConfig config) {
+      RestApiException restApiException,
+      Throwable exception,
+      ExceptionMappingConfig config) {
 
-    if (!config.isIncludeExceptionClassName()) {
+    if (!config.isIncludeException()) {
       return restApiException;
     }
     return restApiException.toBuilder()
@@ -228,8 +227,8 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
   }
 
   protected RestApiException setApplication(
-      @NotNull RestApiException restApiException,
-      @NotNull ExceptionMappingConfig config) {
+      RestApiException restApiException,
+      ExceptionMappingConfig config) {
 
     if (!config.isIncludeApplicationName()) {
       return restApiException;
@@ -238,9 +237,9 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
   }
 
   protected RestApiException setPath(
-      @NotNull RestApiException restApiException,
+      RestApiException restApiException,
       String path,
-      @NotNull ExceptionMappingConfig config) {
+      ExceptionMappingConfig config) {
 
     if (!config.isIncludePath() || isNull(path)) {
       return restApiException;
@@ -249,9 +248,9 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
   }
 
   protected RestApiException setHandler(
-      @NotNull RestApiException restApiException,
+      RestApiException restApiException,
       Object handler,
-      @NotNull ExceptionMappingConfig config) {
+      ExceptionMappingConfig config) {
 
     if (!config.isIncludeHandler() || isNull(handler)) {
       return restApiException;
@@ -270,9 +269,9 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
   }
 
   protected RestApiException setStackTrace(
-      @NotNull RestApiException restApiException,
+      RestApiException restApiException,
       StackTraceElement[] stackTrace,
-      @NotNull ExceptionMappingConfig config) {
+      ExceptionMappingConfig config) {
 
     if (!config.isIncludeStackTrace() || isNull(stackTrace) || stackTrace.length == 0) {
       return restApiException;
@@ -291,9 +290,9 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
   }
 
   protected RestApiException setCause(
-      @NotNull RestApiException restApiException,
+      RestApiException restApiException,
       Throwable exception,
-      @NotNull ExceptionMappingConfig config) {
+      ExceptionMappingConfig config) {
 
     if (!config.isIncludeCause() || isNull(exception)) {
       return restApiException;
@@ -315,8 +314,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
             }))
         .map(cause -> {
           String causeErrorCode = cause.getErrorCode();
-          if (nonNull(causeErrorCode) && !causeErrorCode.isBlank()
-              && !RestApiExceptionConstants.NO_ERROR_CODE_VALUE.equals(causeErrorCode)) {
+          if (nonNull(causeErrorCode) && !causeErrorCode.isBlank()) {
             return restApiException.toBuilder()
                 .errorCode(causeErrorCode)
                 .errorCodeInherited(true)
@@ -329,23 +327,22 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
   }
 
   protected RestApiException reconfigureRestApiException(
-      @NotNull RestApiException source,
-      @NotNull ExceptionMappingConfig config) {
+      RestApiException source,
+      ExceptionMappingConfig config) {
 
     RestApiException target = new RestApiException();
     target.setId(source.getId());
     target.setTimestamp(source.getTimestamp());
     target.setStatus(source.getStatus());
     target.setError(source.getError());
-    if (nonNull(source.getErrorCode()) && !source.getErrorCode().isBlank()
-        && !RestApiExceptionConstants.NO_ERROR_CODE_VALUE.equals(source.getErrorCode())) {
+    if (nonNull(source.getErrorCode()) && !source.getErrorCode().isBlank()) {
       target.setErrorCode(source.getErrorCode());
       target.setErrorCodeInherited(source.getErrorCodeInherited());
     }
     if (config.isIncludeMessage()) {
       target.setMessage(source.getMessage());
     }
-    if (config.isIncludeExceptionClassName()) {
+    if (config.isIncludeException()) {
       target.setException(source.getException());
     }
     if (config.isIncludeApplicationName()) {

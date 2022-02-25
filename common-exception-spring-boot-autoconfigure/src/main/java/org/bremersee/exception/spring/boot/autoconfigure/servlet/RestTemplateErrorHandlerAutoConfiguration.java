@@ -55,7 +55,7 @@ public class RestTemplateErrorHandlerAutoConfiguration implements RestTemplateCu
   private final RestApiExceptionParser restApiExceptionParser;
 
   /**
-   * Instantiates a new Rest template error handler autoconfiguration.
+   * Instantiates a new rest template error handler autoconfiguration.
    *
    * @param restApiExceptionParser the rest api exception parser
    */

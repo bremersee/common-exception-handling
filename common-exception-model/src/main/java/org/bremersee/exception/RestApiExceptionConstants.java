@@ -41,14 +41,19 @@ public abstract class RestApiExceptionConstants {
   public static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.RFC_1123_DATE_TIME;
 
   /**
+   * The header name for the 'errorCode' attribute.
+   */
+  public static final String CODE_HEADER_NAME = "X-ERROR-CODE";
+
+  /**
+   * The header name for the 'errorCodeInherited' attribute.
+   */
+  public static final String CODE_INHERITED_HEADER_NAME = "X-ERROR-CODE-INHERITED";
+
+  /**
    * The header name for the 'message' attribute.
    */
   public static final String MESSAGE_HEADER_NAME = "X-ERROR-MESSAGE";
-
-  /**
-   * The header name for the 'code' attribute.
-   */
-  public static final String CODE_HEADER_NAME = "X-ERROR-CODE";
 
   /**
    * The header name for the 'class name' attribute.
@@ -56,24 +61,14 @@ public abstract class RestApiExceptionConstants {
   public static final String EXCEPTION_HEADER_NAME = "X-ERROR-EXCEPTION";
 
   /**
-   * The default value of the 'id' attribute.
+   * The header name for the 'application' attribute.
    */
-  public static final String NO_ID_VALUE = "UNSPECIFIED";
+  public static final String APPLICATION_HEADER_NAME = "X-ERROR-APPLICATION";
 
   /**
-   * The default value of the 'code' attribute.
+   * The header name for the 'path' attribute.
    */
-  public static final String NO_ERROR_CODE_VALUE = ErrorCodeAware.NO_ERROR_CODE_VALUE;
-
-  /**
-   * The default value of the 'message' attribute.
-   */
-  public static final String NO_MESSAGE_VALUE = "No message present.";
-
-  /**
-   * The default value of the 'class name attribute.
-   */
-  public static final String NO_EXCEPTION_VALUE = "UNSPECIFIED";
+  public static final String PATH_HEADER_NAME = "X-ERROR-PATH";
 
   private RestApiExceptionConstants() {
   }

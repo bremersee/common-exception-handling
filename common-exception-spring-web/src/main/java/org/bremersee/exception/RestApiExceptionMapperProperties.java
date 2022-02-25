@@ -117,7 +117,7 @@ public interface RestApiExceptionMapperProperties {
   }
 
   /**
-   * Find exception mapping exception mapping.
+   * Find exception mapping.
    *
    * @param throwable the throwable
    * @return the exception mapping
@@ -133,7 +133,7 @@ public interface RestApiExceptionMapperProperties {
   }
 
   /**
-   * Find exception mapping config exception mapping config.
+   * Find exception mapping config.
    *
    * @param throwable the throwable
    * @return the exception mapping config
@@ -184,7 +184,7 @@ public interface RestApiExceptionMapperProperties {
   }
 
   /**
-   * The interface Exception mapping.
+   * The exception mapping.
    */
   @Value.Immutable
   interface ExceptionMapping {
@@ -235,15 +235,15 @@ public interface RestApiExceptionMapperProperties {
   }
 
   /**
-   * The interface Exception mapping config.
+   * The exception mapping config.
    */
   @Value.Immutable
   interface ExceptionMappingConfig {
 
     /**
-     * Builder immutable exception mapping config . builder.
+     * Creates builder.
      *
-     * @return the immutable exception mapping config . builder
+     * @return the builder
      */
     static ImmutableExceptionMappingConfig.Builder builder() {
       return ImmutableExceptionMappingConfig.builder();
@@ -263,17 +263,17 @@ public interface RestApiExceptionMapperProperties {
     }
 
     /**
-     * Is include exception class name boolean.
+     * Is include exception class name.
      *
      * @return the boolean
      */
     @Value.Default
-    default boolean isIncludeExceptionClassName() {
+    default boolean isIncludeException() {
       return true;
     }
 
     /**
-     * Is include application name boolean.
+     * Is include application name.
      *
      * @return the boolean
      */
@@ -283,7 +283,7 @@ public interface RestApiExceptionMapperProperties {
     }
 
     /**
-     * Is include path boolean.
+     * Is include path.
      *
      * @return the boolean
      */
@@ -293,7 +293,7 @@ public interface RestApiExceptionMapperProperties {
     }
 
     /**
-     * Is include handler boolean.
+     * Is include handler.
      *
      * @return the boolean
      */
@@ -303,7 +303,7 @@ public interface RestApiExceptionMapperProperties {
     }
 
     /**
-     * Is include stack trace boolean.
+     * Is include stack trace.
      *
      * @return the boolean
      */
@@ -313,7 +313,7 @@ public interface RestApiExceptionMapperProperties {
     }
 
     /**
-     * Is include cause boolean.
+     * Is include cause.
      *
      * @return the boolean
      */
@@ -323,7 +323,7 @@ public interface RestApiExceptionMapperProperties {
     }
 
     /**
-     * Is evaluate annotation first boolean.
+     * Is evaluate annotation first.
      *
      * @return the boolean
      */

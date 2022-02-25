@@ -20,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
+ * The implementation of a rest api exception mapper for spring web flux.
+ *
  * @author Christian Bremer
  */
 public class RestApiExceptionMapperForWebFlux extends RestApiExceptionMapperForWeb {

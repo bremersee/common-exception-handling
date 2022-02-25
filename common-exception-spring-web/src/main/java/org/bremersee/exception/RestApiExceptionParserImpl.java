@@ -47,12 +47,20 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
 
   private final Charset defaultCharset;
 
+  /**
+   * Instantiates a new rest api exception parser.
+   */
   public RestApiExceptionParserImpl() {
     this(
         Jackson2ObjectMapperBuilder.json().build(),
         Jackson2ObjectMapperBuilder.xml().createXmlMapper(true).build());
   }
 
+  /**
+   * Instantiates a new rest api exception parser.
+   *
+   * @param defaultCharset the default charset
+   */
   public RestApiExceptionParserImpl(Charset defaultCharset) {
     this(
         Jackson2ObjectMapperBuilder.json().build(),
@@ -69,18 +77,37 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
     this(objectMapperBuilder.build(), objectMapperBuilder.createXmlMapper(true).build());
   }
 
+  /**
+   * Instantiates a new rest api exception parser.
+   *
+   * @param objectMapperBuilder the object mapper builder
+   * @param charset the charset
+   */
   public RestApiExceptionParserImpl(
       Jackson2ObjectMapperBuilder objectMapperBuilder,
       Charset charset) {
     this(objectMapperBuilder.build(), objectMapperBuilder.createXmlMapper(true).build(), charset);
   }
 
+  /**
+   * Instantiates a new rest api exception parser.
+   *
+   * @param objectMapper the object mapper
+   * @param xmlMapper the xml mapper
+   */
   public RestApiExceptionParserImpl(
       ObjectMapper objectMapper,
       XmlMapper xmlMapper) {
     this(objectMapper, xmlMapper, null);
   }
 
+  /**
+   * Instantiates a new rest api exception parser.
+   *
+   * @param objectMapper the object mapper
+   * @param xmlMapper the xml mapper
+   * @param defaultCharset the default charset
+   */
   public RestApiExceptionParserImpl(
       ObjectMapper objectMapper,
       XmlMapper xmlMapper,
@@ -108,7 +135,12 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
     return Optional.empty();
   }
 
-  public Charset getDefaultCharset() {
+  /**
+   * Gets default charset.
+   *
+   * @return the default charset
+   */
+  protected Charset getDefaultCharset() {
     return defaultCharset;
   }
 
@@ -149,44 +181,64 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
         .orElseGet(() -> getRestApiExceptionFromHeaders(response, httpStatus, headers));
   }
 
-  private RestApiException getRestApiExceptionFromHeaders(
+  protected RestApiException getRestApiExceptionFromHeaders(
       String response,
       HttpStatus httpStatus,
       HttpHeaders httpHeaders) {
 
     RestApiException restApiException = new RestApiException();
 
-    String id = httpHeaders.getFirst(RestApiExceptionConstants.ID_HEADER_NAME);
-    if (hasText(id) && !RestApiExceptionConstants.NO_ID_VALUE.equals(id)) {
-      restApiException.setId(id);
+    String tmp = httpHeaders.getFirst(RestApiExceptionConstants.ID_HEADER_NAME);
+    if (hasText(tmp)) {
+      restApiException.setId(tmp);
     }
 
-    String timestamp = httpHeaders.getFirst(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME);
-    restApiException.setTimestamp(parseErrorTimestamp(timestamp));
+    tmp = httpHeaders.getFirst(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME);
+    restApiException.setTimestamp(parseErrorTimestamp(tmp));
 
-    if (hasText(response)) {
-      restApiException.setMessage(response);
+    tmp = httpHeaders.getFirst(RestApiExceptionConstants.CODE_HEADER_NAME);
+    if (hasText(tmp)) {
+      restApiException.setErrorCode(tmp);
+
+      tmp = httpHeaders.getFirst(RestApiExceptionConstants.CODE_INHERITED_HEADER_NAME);
+      if (hasText(tmp)) {
+        restApiException.setErrorCodeInherited(Boolean.valueOf(tmp));
+      }
+    }
+
+    tmp = httpHeaders.getFirst(RestApiExceptionConstants.MESSAGE_HEADER_NAME);
+    if (hasText(tmp)) {
+      restApiException.setMessage(tmp);
     } else {
-      String message = httpHeaders.getFirst(RestApiExceptionConstants.MESSAGE_HEADER_NAME);
-      restApiException.setMessage(
-          hasText(message) ? message : RestApiExceptionConstants.NO_MESSAGE_VALUE);
+      restApiException.setMessage(response);
     }
 
-    String errorCode = httpHeaders.getFirst(RestApiExceptionConstants.CODE_HEADER_NAME);
-    if (hasText(errorCode)
-        && !RestApiExceptionConstants.NO_ERROR_CODE_VALUE.equals(errorCode)) {
-      restApiException.setErrorCode(errorCode);
+    tmp = httpHeaders.getFirst(RestApiExceptionConstants.EXCEPTION_HEADER_NAME);
+    if (hasText(tmp)) {
+      restApiException.setException(tmp);
     }
 
-    String cls = httpHeaders.getFirst(RestApiExceptionConstants.EXCEPTION_HEADER_NAME);
-    if (hasText(cls) && !RestApiExceptionConstants.NO_EXCEPTION_VALUE.equals(cls)) {
-      restApiException.setException(cls);
+    tmp = httpHeaders.getFirst(RestApiExceptionConstants.APPLICATION_HEADER_NAME);
+    if (hasText(tmp)) {
+      restApiException.setApplication(tmp);
+    }
+
+    tmp = httpHeaders.getFirst(RestApiExceptionConstants.PATH_HEADER_NAME);
+    if (hasText(tmp)) {
+      restApiException.setPath(tmp);
     }
 
     return applyHttpStatus(restApiException, httpStatus);
   }
 
-  RestApiException applyHttpStatus(
+  /**
+   * Apply http status rest api exception.
+   *
+   * @param restApiException the rest api exception
+   * @param httpStatus the http status
+   * @return the rest api exception
+   */
+  protected RestApiException applyHttpStatus(
       RestApiException restApiException,
       HttpStatus httpStatus) {
 
@@ -196,7 +248,13 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
         .build();
   }
 
-  Charset getContentTypeCharset(MediaType contentType) {
+  /**
+   * Gets content type charset.
+   *
+   * @param contentType the content type
+   * @return the content type charset
+   */
+  protected Charset getContentTypeCharset(MediaType contentType) {
     return Optional.ofNullable(contentType)
         .flatMap(ct -> Optional.ofNullable(ct.getCharset()))
         .orElseGet(this::getDefaultCharset);
@@ -208,7 +266,7 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
    * @param value the 'timestamp' header value
    * @return the timestamp
    */
-  OffsetDateTime parseErrorTimestamp(String value) {
+  protected OffsetDateTime parseErrorTimestamp(String value) {
     OffsetDateTime time = null;
     if (nonNull(value)) {
       try {

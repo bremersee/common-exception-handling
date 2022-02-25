@@ -22,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -87,8 +85,6 @@ public class RestApiException implements Serializable {
   private String message;
 
   @Schema(description = "The class name of the exception.")
-  @JsonProperty("exception")
-  @JacksonXmlProperty(localName = "exception")
   @Getter
   @Setter
   private String exception;

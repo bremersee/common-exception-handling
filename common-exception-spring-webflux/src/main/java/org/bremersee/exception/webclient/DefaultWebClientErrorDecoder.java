@@ -18,7 +18,6 @@ package org.bremersee.exception.webclient;
 
 import static java.util.Objects.nonNull;
 
-import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.RestApiResponseException;
@@ -31,9 +30,8 @@ import org.springframework.web.reactive.function.client.ClientResponse;
  *
  * @author Christian Bremer
  */
-@Slf4j
-public class DefaultWebClientErrorDecoder implements
-    WebClientErrorDecoder<RestApiResponseException> {
+public class DefaultWebClientErrorDecoder
+    implements WebClientErrorDecoder<RestApiResponseException> {
 
   private final RestApiExceptionParser parser;
 
@@ -62,10 +60,6 @@ public class DefaultWebClientErrorDecoder implements
         response,
         clientResponse.statusCode(),
         clientResponse.headers().asHttpHeaders());
-    if (log.isDebugEnabled() && nonNull(response)) {
-      log.debug("Is error formatted as rest api exception? {}",
-          nonNull(restApiException) && !response.equals(restApiException.getMessage()));
-    }
     return new RestApiResponseException(clientResponse.statusCode(), restApiException);
   }
 

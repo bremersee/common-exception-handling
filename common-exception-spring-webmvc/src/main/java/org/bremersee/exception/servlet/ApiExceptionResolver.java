@@ -16,17 +16,19 @@
 
 package org.bremersee.exception.servlet;
 
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNullElse;
 import static org.springframework.util.StringUtils.hasText;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -42,10 +44,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -60,7 +60,7 @@ import org.springframework.web.util.WebUtils;
  *
  * @author Christian Bremer
  */
-@Validated
+@Valid
 @Slf4j
 public class ApiExceptionResolver implements HandlerExceptionResolver {
 
@@ -128,7 +128,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
   public ModelAndView resolveException(
       @NonNull HttpServletRequest request,
       @NonNull HttpServletResponse response,
-      @Nullable Object handler,
+      Object handler,
       @NonNull Exception ex) {
 
     if (!isExceptionHandlerResponsible(request, handler)) {
@@ -180,10 +180,9 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
    * @param handler the handler
    * @return {@code true} if it is responsible, otherwise {@code false}
    */
-  @SuppressWarnings("WeakerAccess")
   protected boolean isExceptionHandlerResponsible(
       HttpServletRequest request,
-      @Nullable Object handler) {
+      Object handler) {
 
     if (!exceptionMapper.getApiPaths().isEmpty()) {
       return exceptionMapper.getApiPaths().stream().anyMatch(
@@ -227,6 +226,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
   /**
    * The empty view.
    */
+  @Valid
   static class EmptyView extends AbstractView {
 
     /**
@@ -247,36 +247,58 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
 
     @Override
     protected void renderMergedOutputModel(
-        @Nullable Map<String, Object> map,
+        Map<String, Object> map,
         @NonNull HttpServletRequest httpServletRequest,
         HttpServletResponse httpServletResponse) {
 
-      httpServletResponse.addHeader(RestApiExceptionConstants.ID_HEADER_NAME,
-          hasText(restApiException.getId())
-              ? restApiException.getId()
-              : RestApiExceptionConstants.NO_ID_VALUE);
+      if (hasText(restApiException.getId())) {
+        httpServletResponse.addHeader(
+            RestApiExceptionConstants.ID_HEADER_NAME,
+            restApiException.getId());
+      }
 
-      httpServletResponse.addHeader(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME,
-          restApiException.getTimestamp() != null
-              ? restApiException.getTimestamp()
-              .format(RestApiExceptionConstants.TIMESTAMP_FORMATTER)
-              : OffsetDateTime.now(ZoneId.of("UTC")).format(
-                  RestApiExceptionConstants.TIMESTAMP_FORMATTER));
+      String timestamp;
+      if (nonNull(restApiException.getTimestamp())) {
+        timestamp = restApiException.getTimestamp()
+            .format(RestApiExceptionConstants.TIMESTAMP_FORMATTER);
+      } else {
+        timestamp = OffsetDateTime.now(ZoneOffset.UTC)
+            .format(RestApiExceptionConstants.TIMESTAMP_FORMATTER);
+      }
+      httpServletResponse.addHeader(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME, timestamp);
 
-      httpServletResponse.addHeader(RestApiExceptionConstants.MESSAGE_HEADER_NAME,
-          hasText(restApiException.getMessage())
-              ? restApiException.getMessage()
-              : RestApiExceptionConstants.NO_MESSAGE_VALUE);
+      if (hasText(restApiException.getErrorCode())) {
+        httpServletResponse.addHeader(
+            RestApiExceptionConstants.CODE_HEADER_NAME,
+            restApiException.getErrorCode());
+        httpServletResponse.addHeader(
+            RestApiExceptionConstants.CODE_INHERITED_HEADER_NAME,
+            String.valueOf(restApiException.getErrorCodeInherited()));
+      }
 
-      httpServletResponse.addHeader(RestApiExceptionConstants.CODE_HEADER_NAME,
-          hasText(restApiException.getErrorCode())
-              ? restApiException.getErrorCode()
-              : RestApiExceptionConstants.NO_ERROR_CODE_VALUE);
+      if (hasText(restApiException.getMessage())) {
+        httpServletResponse.addHeader(
+            RestApiExceptionConstants.MESSAGE_HEADER_NAME,
+            restApiException.getMessage());
+      }
 
-      httpServletResponse.addHeader(RestApiExceptionConstants.EXCEPTION_HEADER_NAME,
-          hasText(restApiException.getException())
-              ? restApiException.getException()
-              : RestApiExceptionConstants.NO_EXCEPTION_VALUE);
+      if (hasText(restApiException.getException())) {
+        httpServletResponse.addHeader(
+            RestApiExceptionConstants.EXCEPTION_HEADER_NAME,
+            restApiException.getException());
+      }
+
+      if (hasText(restApiException.getApplication())) {
+        httpServletResponse.addHeader(
+            RestApiExceptionConstants.APPLICATION_HEADER_NAME,
+            restApiException.getApplication());
+      }
+
+      if (hasText(restApiException.getPath())) {
+        httpServletResponse.addHeader(
+            RestApiExceptionConstants.PATH_HEADER_NAME,
+            restApiException.getPath());
+      }
     }
 
   }

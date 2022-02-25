@@ -146,7 +146,7 @@ class RestApiExceptionMapperImplTest {
             .build())
         .addExceptionMappingConfigs(ExceptionMappingConfig.builder()
             .exceptionClassName(NullPointerException.class.getName())
-            .isIncludeExceptionClassName(false)
+            .isIncludeException(false)
             .isIncludeApplicationName(true)
             .isIncludePath(true)
             .isIncludeHandler(true)

@@ -16,17 +16,20 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNullElse;
+import static org.springframework.util.StringUtils.hasText;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.bremersee.exception.RestApiExceptionMapper;
 import org.bremersee.exception.RestApiExceptionConstants;
+import org.bremersee.exception.RestApiExceptionMapper;
 import org.bremersee.exception.RestApiResponseType;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.boot.autoconfigure.web.WebProperties;
@@ -37,11 +40,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
@@ -54,7 +54,7 @@ import reactor.core.publisher.Mono;
  *
  * @author Christian Bremer
  */
-@Validated
+@Valid
 @Slf4j
 public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
 
@@ -80,7 +80,7 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
       @NotNull ErrorAttributes errorAttributes,
       @NotNull WebProperties.Resources resources,
       @NotNull ApplicationContext applicationContext,
-      @Nullable ServerCodecConfigurer serverCodecConfigurer,
+      ServerCodecConfigurer serverCodecConfigurer,
       @NotNull RestApiExceptionMapper restApiExceptionMapper) {
 
     super(errorAttributes, resources, applicationContext);
@@ -140,28 +140,57 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
       RestApiException response,
       MediaType contentType) {
 
-    String id = StringUtils.hasText(response.getId())
-        ? response.getId()
-        : RestApiExceptionConstants.NO_ID_VALUE;
-    String timestamp = response.getTimestamp() != null
-        ? response.getTimestamp().format(RestApiExceptionConstants.TIMESTAMP_FORMATTER)
-        : OffsetDateTime.now(ZoneOffset.UTC).format(RestApiExceptionConstants.TIMESTAMP_FORMATTER);
-    String msg = StringUtils.hasText(response.getMessage())
-        ? response.getMessage()
-        : RestApiExceptionConstants.NO_MESSAGE_VALUE;
-    String code = StringUtils.hasText(response.getErrorCode())
-        ? response.getErrorCode()
-        : RestApiExceptionConstants.NO_ERROR_CODE_VALUE;
-    String exceptionName = StringUtils.hasText(response.getException())
-        ? response.getException()
-        : RestApiExceptionConstants.NO_EXCEPTION_VALUE;
-    return ServerResponse
-        .status(getRestApiExceptionMapper().detectHttpStatus(getError(request), null))
-        .header(RestApiExceptionConstants.ID_HEADER_NAME, id)
-        .header(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME, timestamp)
-        .header(RestApiExceptionConstants.MESSAGE_HEADER_NAME, msg)
-        .header(RestApiExceptionConstants.CODE_HEADER_NAME, code)
-        .header(RestApiExceptionConstants.EXCEPTION_HEADER_NAME, exceptionName)
+    ServerResponse.BodyBuilder builder = ServerResponse
+        .status(getRestApiExceptionMapper().detectHttpStatus(getError(request), null));
+
+    if (hasText(response.getId())) {
+      builder = builder.header(RestApiExceptionConstants.ID_HEADER_NAME, response.getId());
+    }
+
+    String timestamp;
+    if (nonNull(response.getTimestamp())) {
+      timestamp = response.getTimestamp()
+          .format(RestApiExceptionConstants.TIMESTAMP_FORMATTER);
+    } else {
+      timestamp = OffsetDateTime.now(ZoneOffset.UTC)
+          .format(RestApiExceptionConstants.TIMESTAMP_FORMATTER);
+    }
+    builder = builder.header(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME, timestamp);
+
+    if (hasText(response.getErrorCode())) {
+      builder = builder.header(
+          RestApiExceptionConstants.CODE_HEADER_NAME,
+          response.getErrorCode());
+      builder = builder.header(
+          RestApiExceptionConstants.CODE_INHERITED_HEADER_NAME,
+          String.valueOf(response.getErrorCodeInherited()));
+    }
+
+    if (hasText(response.getMessage())) {
+      builder = builder.header(
+          RestApiExceptionConstants.MESSAGE_HEADER_NAME,
+          response.getMessage());
+    }
+
+    if (hasText(response.getException())) {
+      builder = builder.header(
+          RestApiExceptionConstants.EXCEPTION_HEADER_NAME,
+          response.getException());
+    }
+
+    if (hasText(response.getApplication())) {
+      builder = builder.header(
+          RestApiExceptionConstants.APPLICATION_HEADER_NAME,
+          response.getApplication());
+    }
+
+    if (hasText(response.getPath())) {
+      builder = builder.header(
+          RestApiExceptionConstants.PATH_HEADER_NAME,
+          response.getPath());
+    }
+
+    return builder
         .contentType(contentType)
         .body(BodyInserters.empty());
   }

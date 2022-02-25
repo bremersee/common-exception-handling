@@ -53,7 +53,7 @@ public abstract class RestApiExceptionConstants {
   /**
    * The header name for the 'class name' attribute.
    */
-  public static final String CLASS_HEADER_NAME = "X-ERROR-CLASS-NAME";
+  public static final String EXCEPTION_HEADER_NAME = "X-ERROR-EXCEPTION";
 
   /**
    * The default value of the 'id' attribute.
@@ -73,7 +73,7 @@ public abstract class RestApiExceptionConstants {
   /**
    * The default value of the 'class name attribute.
    */
-  public static final String NO_CLASS_VALUE = "UNSPECIFIED";
+  public static final String NO_EXCEPTION_VALUE = "UNSPECIFIED";
 
   private RestApiExceptionConstants() {
   }

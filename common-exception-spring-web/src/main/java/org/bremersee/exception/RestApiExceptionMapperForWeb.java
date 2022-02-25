@@ -223,7 +223,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       return restApiException;
     }
     return restApiException.toBuilder()
-        .className(getUserClass(exception).getName())
+        .exception(getUserClass(exception).getName())
         .build();
   }
 
@@ -346,7 +346,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       target.setMessage(source.getMessage());
     }
     if (config.isIncludeExceptionClassName()) {
-      target.setClassName(source.getClassName());
+      target.setException(source.getException());
     }
     if (config.isIncludeApplicationName()) {
       target.setApplication(source.getApplication());

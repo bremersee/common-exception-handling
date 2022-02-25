@@ -128,7 +128,7 @@ class RestApiExceptionMapperImplTest {
     assertEquals(HttpStatus.BAD_REQUEST.getReasonPhrase(), model.getMessage());
     assertEquals("/api/illegal", model.getPath());
     assertNull(model.getId());
-    assertEquals(IllegalArgumentException.class.getName(), model.getClassName());
+    assertEquals(IllegalArgumentException.class.getName(), model.getException());
   }
 
   /**
@@ -167,7 +167,7 @@ class RestApiExceptionMapperImplTest {
     assertEquals("A variable is null.", model.getMessage());
     assertEquals("/null-api/something", model.getPath());
     assertNotNull(model.getId());
-    assertNull(model.getClassName());
+    assertNull(model.getException());
   }
 
   /**
@@ -180,7 +180,7 @@ class RestApiExceptionMapperImplTest {
 
     RestApiException cause = new RestApiException();
     cause.setApplication("cause");
-    cause.setClassName(ServiceException.class.getName());
+    cause.setException(ServiceException.class.getName());
     cause.setError("Something");
     cause.setErrorCode("CBR:0123");
     cause.setErrorCodeInherited(false);

@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNullElse;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -153,16 +152,16 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
     String code = StringUtils.hasText(response.getErrorCode())
         ? response.getErrorCode()
         : RestApiExceptionConstants.NO_ERROR_CODE_VALUE;
-    String cls = StringUtils.hasText(response.getClassName())
-        ? response.getClassName()
-        : RestApiExceptionConstants.NO_CLASS_VALUE;
+    String exceptionName = StringUtils.hasText(response.getException())
+        ? response.getException()
+        : RestApiExceptionConstants.NO_EXCEPTION_VALUE;
     return ServerResponse
         .status(getRestApiExceptionMapper().detectHttpStatus(getError(request), null))
         .header(RestApiExceptionConstants.ID_HEADER_NAME, id)
         .header(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME, timestamp)
         .header(RestApiExceptionConstants.MESSAGE_HEADER_NAME, msg)
         .header(RestApiExceptionConstants.CODE_HEADER_NAME, code)
-        .header(RestApiExceptionConstants.CLASS_HEADER_NAME, cls)
+        .header(RestApiExceptionConstants.EXCEPTION_HEADER_NAME, exceptionName)
         .contentType(contentType)
         .body(BodyInserters.empty());
   }

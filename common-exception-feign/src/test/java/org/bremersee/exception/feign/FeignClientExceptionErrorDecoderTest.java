@@ -323,7 +323,7 @@ class FeignClientExceptionErrorDecoderTest {
     restApiException.setStatus(status.value());
     restApiException.setError(status.getReasonPhrase());
     restApiException.setApplication("test");
-    restApiException.setClassName(ServiceException.class.getName());
+    restApiException.setException(ServiceException.class.getName());
     restApiException.setErrorCode("TEST:4711");
     restApiException.setErrorCodeInherited(false);
     restApiException.setId(UUID.randomUUID().toString());

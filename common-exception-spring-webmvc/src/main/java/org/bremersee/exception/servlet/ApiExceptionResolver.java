@@ -17,6 +17,7 @@
 package org.bremersee.exception.servlet;
 
 import static java.util.Objects.requireNonNullElse;
+import static org.springframework.util.StringUtils.hasText;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -44,7 +45,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
@@ -252,7 +252,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
         HttpServletResponse httpServletResponse) {
 
       httpServletResponse.addHeader(RestApiExceptionConstants.ID_HEADER_NAME,
-          StringUtils.hasText(restApiException.getId())
+          hasText(restApiException.getId())
               ? restApiException.getId()
               : RestApiExceptionConstants.NO_ID_VALUE);
 
@@ -264,19 +264,19 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
                   RestApiExceptionConstants.TIMESTAMP_FORMATTER));
 
       httpServletResponse.addHeader(RestApiExceptionConstants.MESSAGE_HEADER_NAME,
-          StringUtils.hasText(restApiException.getMessage())
+          hasText(restApiException.getMessage())
               ? restApiException.getMessage()
               : RestApiExceptionConstants.NO_MESSAGE_VALUE);
 
       httpServletResponse.addHeader(RestApiExceptionConstants.CODE_HEADER_NAME,
-          StringUtils.hasText(restApiException.getErrorCode())
+          hasText(restApiException.getErrorCode())
               ? restApiException.getErrorCode()
               : RestApiExceptionConstants.NO_ERROR_CODE_VALUE);
 
-      httpServletResponse.addHeader(RestApiExceptionConstants.CLASS_HEADER_NAME,
-          StringUtils.hasText(restApiException.getClassName())
-              ? restApiException.getClassName()
-              : RestApiExceptionConstants.NO_CLASS_VALUE);
+      httpServletResponse.addHeader(RestApiExceptionConstants.EXCEPTION_HEADER_NAME,
+          hasText(restApiException.getException())
+              ? restApiException.getException()
+              : RestApiExceptionConstants.NO_EXCEPTION_VALUE);
     }
 
   }

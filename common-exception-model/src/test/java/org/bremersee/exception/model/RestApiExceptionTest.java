@@ -201,14 +201,14 @@ class RestApiExceptionTest {
   @Test
   void getClassName(SoftAssertions softly) {
     RestApiException model = new RestApiException();
-    model.setClassName("value");
-    softly.assertThat(model.getClassName()).isEqualTo("value");
+    model.setException("value");
+    softly.assertThat(model.getException()).isEqualTo("value");
 
-    model = RestApiException.builder().className("value").build();
-    softly.assertThat(model.getClassName()).isEqualTo("value");
+    model = RestApiException.builder().exception("value").build();
+    softly.assertThat(model.getException()).isEqualTo("value");
 
     softly.assertThat(model).isEqualTo(model);
-    softly.assertThat(model).isEqualTo(model.toBuilder().className("value").build());
+    softly.assertThat(model).isEqualTo(model.toBuilder().exception("value").build());
 
     softly.assertThat(model.toString()).contains("value");
   }

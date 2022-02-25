@@ -178,9 +178,9 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
       restApiException.setErrorCode(errorCode);
     }
 
-    String cls = httpHeaders.getFirst(RestApiExceptionConstants.CLASS_HEADER_NAME);
-    if (hasText(cls) && !RestApiExceptionConstants.NO_CLASS_VALUE.equals(cls)) {
-      restApiException.setClassName(cls);
+    String cls = httpHeaders.getFirst(RestApiExceptionConstants.EXCEPTION_HEADER_NAME);
+    if (hasText(cls) && !RestApiExceptionConstants.NO_EXCEPTION_VALUE.equals(cls)) {
+      restApiException.setException(cls);
     }
 
     return applyHttpStatus(restApiException, httpStatus);

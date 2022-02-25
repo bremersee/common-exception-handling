@@ -91,7 +91,7 @@ public class RestApiException implements Serializable {
   @JacksonXmlProperty(localName = "exception")
   @Getter
   @Setter
-  private String className;
+  private String exception;
 
   @Schema(description = "The name of the application.")
   @Getter
@@ -132,7 +132,7 @@ public class RestApiException implements Serializable {
    * @param errorCode the error code
    * @param errorCodeInherited the error code inherited
    * @param message the message
-   * @param className the class name
+   * @param exception the class name
    * @param application the application
    * @param path the path
    * @param handler the handler
@@ -148,7 +148,7 @@ public class RestApiException implements Serializable {
       String errorCode,
       Boolean errorCodeInherited,
       String message,
-      String className,
+      String exception,
       String application,
       String path,
       Handler handler,
@@ -162,7 +162,7 @@ public class RestApiException implements Serializable {
     this.errorCode = errorCode;
     this.errorCodeInherited = errorCodeInherited;
     this.message = message;
-    this.className = className;
+    this.exception = exception;
     this.application = application;
     this.path = path;
     this.handler = handler;

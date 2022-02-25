@@ -63,20 +63,20 @@ class ServiceExceptionTest {
     assertEquals(500, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final String reason = "Some reason";
+    String reason = "Some reason";
     serviceException = ServiceException.internalServerError(reason);
     assertEquals(reason, serviceException.getMessage());
     assertEquals(500, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final Exception cause = new Exception();
+    Exception cause = new Exception();
     serviceException = ServiceException.internalServerError(reason, cause);
     assertEquals(reason, serviceException.getMessage());
     assertEquals(cause, serviceException.getCause());
     assertEquals(500, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final String errorCode = "TEST:4711";
+    String errorCode = "TEST:4711";
     serviceException = ServiceException.internalServerError(reason, errorCode);
     assertEquals(reason, serviceException.getMessage());
     assertEquals(errorCode, serviceException.getErrorCode());
@@ -99,20 +99,20 @@ class ServiceExceptionTest {
     assertEquals(400, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final String reason = "Some reason";
+    String reason = "Some reason";
     serviceException = ServiceException.badRequest(reason);
     assertEquals(reason, serviceException.getMessage());
     assertEquals(400, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final Exception cause = new Exception();
+    Exception cause = new Exception();
     serviceException = ServiceException.badRequest(reason, cause);
     assertEquals(reason, serviceException.getMessage());
     assertEquals(cause, serviceException.getCause());
     assertEquals(400, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final String errorCode = "TEST:4711";
+    String errorCode = "TEST:4711";
     serviceException = ServiceException.badRequest(reason, errorCode);
     assertEquals(reason, serviceException.getMessage());
     assertEquals(errorCode, serviceException.getErrorCode());
@@ -135,7 +135,7 @@ class ServiceExceptionTest {
     assertEquals(404, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final Object entityName = UUID.randomUUID();
+    Object entityName = UUID.randomUUID();
     serviceException = ServiceException.notFound(entityName);
     assertEquals(
         String.format("Entity with identifier [%s] was not found.", entityName),
@@ -143,7 +143,7 @@ class ServiceExceptionTest {
     assertEquals(404, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final String entityType = "Person";
+    String entityType = "Person";
     serviceException = ServiceException.notFound(entityType, entityName);
     assertEquals(
         String.format("%s with identifier [%s] was not found.", entityType, entityName),
@@ -151,7 +151,7 @@ class ServiceExceptionTest {
     assertEquals(404, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final String errorCode = "NF:5678";
+    String errorCode = "NF:5678";
     serviceException = ServiceException.notFoundWithErrorCode(entityName, errorCode);
     assertEquals(
         String.format("Entity with identifier [%s] was not found.", entityName),
@@ -177,7 +177,7 @@ class ServiceExceptionTest {
     assertEquals(409, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final Object entityName = UUID.randomUUID();
+    Object entityName = UUID.randomUUID();
     serviceException = ServiceException.alreadyExists(entityName);
     assertEquals(
         String.format("Entity with identifier [%s] already exists.", entityName),
@@ -185,7 +185,7 @@ class ServiceExceptionTest {
     assertEquals(409, serviceException.status());
     assertEquals(ServiceException.ERROR_CODE_ALREADY_EXISTS, serviceException.getErrorCode());
 
-    final String entityType = "Person";
+    String entityType = "Person";
     serviceException = ServiceException.alreadyExists(entityType, entityName);
     assertEquals(
         String.format("%s with identifier [%s] already exists.", entityType, entityName),
@@ -193,7 +193,7 @@ class ServiceExceptionTest {
     assertEquals(409, serviceException.status());
     assertEquals(ServiceException.ERROR_CODE_ALREADY_EXISTS, serviceException.getErrorCode());
 
-    final String errorCode = "NF:5678";
+    String errorCode = "NF:5678";
     serviceException = ServiceException.alreadyExistsWithErrorCode(entityName, errorCode);
     assertEquals(
         String.format("Entity with identifier [%s] already exists.", entityName),
@@ -220,7 +220,7 @@ class ServiceExceptionTest {
     assertEquals(403, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final Object entityName = UUID.randomUUID();
+    Object entityName = UUID.randomUUID();
     serviceException = ServiceException.forbidden(entityName);
     assertEquals(
         String.format("Access to entity with identifier [%s] is forbidden.", entityName),
@@ -228,7 +228,7 @@ class ServiceExceptionTest {
     assertEquals(403, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final String entityType = "Person";
+    String entityType = "Person";
     serviceException = ServiceException.forbidden(entityType, entityName);
     assertEquals(
         String.format("Access to [%s] with identifier [%s] is forbidden.", entityType, entityName),
@@ -236,7 +236,7 @@ class ServiceExceptionTest {
     assertEquals(403, serviceException.status());
     assertNull(serviceException.getErrorCode());
 
-    final String errorCode = "NF:5678";
+    String errorCode = "NF:5678";
     serviceException = ServiceException.forbiddenWithErrorCode(errorCode);
     assertNull(serviceException.getMessage());
     assertEquals(errorCode, serviceException.getErrorCode());

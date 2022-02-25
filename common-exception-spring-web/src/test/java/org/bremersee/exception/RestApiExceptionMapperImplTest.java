@@ -74,8 +74,8 @@ class RestApiExceptionMapperImplTest {
    */
   @Test
   void testBuild409() {
-    final ServiceException exception = new ServiceException(409, "Either a or b", "TEST:4711");
-    final RestApiException model = mapper.build(exception, "/api/something", null);
+    ServiceException exception = new ServiceException(409, "Either a or b", "TEST:4711");
+    RestApiException model = mapper.build(exception, "/api/something", null);
     assertNotNull(model);
     assertEquals(exception.getErrorCode(), model.getErrorCode());
     assertFalse(model.getErrorCodeInherited());
@@ -89,8 +89,8 @@ class RestApiExceptionMapperImplTest {
    */
   @Test
   void testBuild500() {
-    final ServiceException exception = new ServiceException(500, "Something failed.", "TEST:4711");
-    final RestApiException model = mapper.build(exception, "/api/something", null);
+    ServiceException exception = new ServiceException(500, "Something failed.", "TEST:4711");
+    RestApiException model = mapper.build(exception, "/api/something", null);
     assertNotNull(model);
     assertEquals(exception.getErrorCode(), model.getErrorCode());
     assertFalse(model.getErrorCodeInherited());
@@ -104,8 +104,8 @@ class RestApiExceptionMapperImplTest {
    */
   @Test
   void testBuildWithDefaultExceptionMapping() {
-    final RuntimeException exception = new RuntimeException("Something went wrong");
-    final RestApiException model = mapper.build(
+    RuntimeException exception = new RuntimeException("Something went wrong");
+    RestApiException model = mapper.build(
         exception, "/api/something", null);
     assertNotNull(model);
     assertNull(model.getErrorCode());
@@ -120,8 +120,8 @@ class RestApiExceptionMapperImplTest {
    */
   @Test
   void testBuildWithDefaultExceptionMappingAndIllegalArgumentException() {
-    final IllegalArgumentException exception = new IllegalArgumentException();
-    final RestApiException model = mapper.build(exception, "/api/illegal", null);
+    IllegalArgumentException exception = new IllegalArgumentException();
+    RestApiException model = mapper.build(exception, "/api/illegal", null);
     assertNotNull(model);
     assertNull(model.getErrorCode());
     assertFalse(model.getErrorCodeInherited());
@@ -155,11 +155,11 @@ class RestApiExceptionMapperImplTest {
             .isEvaluateAnnotationFirst(true)
             .build())
         .build();
-    final RestApiExceptionMapper configuredMapper = new RestApiExceptionMapperForWeb(
+    RestApiExceptionMapper configuredMapper = new RestApiExceptionMapperForWeb(
         properties, "configured");
 
-    final NullPointerException exception = new NullPointerException();
-    final RestApiException model = configuredMapper.build(
+    NullPointerException exception = new NullPointerException();
+    RestApiException model = configuredMapper.build(
         exception, "/null-api/something", null);
     assertNotNull(model);
     assertEquals("NULLPOINTER", model.getErrorCode());
@@ -175,10 +175,10 @@ class RestApiExceptionMapperImplTest {
    */
   @Test
   void testBuildWithCause() {
-    final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 
-    final RestApiException cause = new RestApiException();
+    RestApiException cause = new RestApiException();
     cause.setApplication("cause");
     cause.setClassName(ServiceException.class.getName());
     cause.setError("Something");
@@ -189,12 +189,12 @@ class RestApiExceptionMapperImplTest {
     cause.setPath("/api/cause");
     cause.setTimestamp(OffsetDateTime.now(ZoneId.of("UTC")));
 
-    final ExampleException exception = new ExampleException(
+    ExampleException exception = new ExampleException(
         HttpStatus.INTERNAL_SERVER_ERROR,
         Collections.unmodifiableMap(headers),
         cause);
 
-    final RestApiException model = mapper.build(exception, "/api/this", null);
+    RestApiException model = mapper.build(exception, "/api/this", null);
     assertNotNull(model);
     assertEquals(cause.getErrorCode(), model.getErrorCode());
     assertTrue(model.getErrorCodeInherited());
@@ -212,9 +212,9 @@ class RestApiExceptionMapperImplTest {
     private final RestApiException restApiException;
 
     private ExampleException(
-        final HttpStatus status,
-        final Map<String, ? extends Collection<String>> headers,
-        final RestApiException restApiException) {
+        HttpStatus status,
+        Map<String, ? extends Collection<String>> headers,
+        RestApiException restApiException) {
 
       super(status);
       this.headers = headers != null ? headers : Collections.emptyMap();

@@ -43,6 +43,7 @@ import org.bremersee.exception.ServiceException;
 import org.bremersee.exception.model.RestApiException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.LinkedMultiValueMap;
@@ -62,11 +63,11 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void testDecodeJson() throws Exception {
-    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
-    final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+    FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-    final RestApiException expected = restApiException();
-    @SuppressWarnings({"unchecked", "rawtypes"}) final Response response = Response
+    RestApiException expected = restApiException(HttpStatus.INTERNAL_SERVER_ERROR);
+    @SuppressWarnings({"unchecked", "rawtypes"}) Response response = Response
         .builder()
         .request(Request
             .create(
@@ -81,7 +82,7 @@ class FeignClientExceptionErrorDecoderTest {
         .reason("Something bad")
         .status(500)
         .build();
-    final Exception actual = decoder.decode("getSomething", response);
+    Exception actual = decoder.decode("getSomething", response);
     assertNotNull(actual);
     assertTrue(actual instanceof FeignClientException);
     assertEquals(500, ((FeignClientException) actual).status());
@@ -95,12 +96,12 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void testDecodeXml() throws Exception {
-    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder(
+    FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder(
         new RestApiExceptionParserImpl());
-    final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
-    final RestApiException expected = restApiException();
-    @SuppressWarnings({"unchecked", "rawtypes"}) final Response response = Response
+    RestApiException expected = restApiException(HttpStatus.NOT_FOUND);
+    @SuppressWarnings({"unchecked", "rawtypes"}) Response response = Response
         .builder()
         .request(Request
             .create(
@@ -115,7 +116,7 @@ class FeignClientExceptionErrorDecoderTest {
         .reason("Nothing found")
         .status(404)
         .build();
-    final Exception actual = decoder.decode("getSomethingThatNotExists", response);
+    Exception actual = decoder.decode("getSomethingThatNotExists", response);
     assertNotNull(actual);
     assertTrue(actual instanceof FeignClientException);
     assertEquals(404, ((FeignClientException) actual).status());
@@ -129,11 +130,11 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void testDecodeSomethingElse() throws Exception {
-    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder(null);
-    final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+    FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder(null);
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
-    final String body = getXmlMapper().writeValueAsString(otherResponse());
-    @SuppressWarnings({"unchecked", "rawtypes"}) final Response response = Response
+    String body = getXmlMapper().writeValueAsString(otherResponse());
+    @SuppressWarnings({"unchecked", "rawtypes"}) Response response = Response
         .builder()
         .request(Request
             .create(
@@ -148,7 +149,7 @@ class FeignClientExceptionErrorDecoderTest {
         .reason("Something bad")
         .status(500)
         .build();
-    final Exception actual = decoder.decode("getSomething", response);
+    Exception actual = decoder.decode("getSomething", response);
     assertNotNull(actual);
     assertTrue(actual instanceof FeignClientException);
     assertEquals(500, ((FeignClientException) actual).status());
@@ -162,11 +163,11 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void testDecodeEmptyResponse() {
-    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder(null);
-    final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+    FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder(null);
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
-    final String body = "";
-    @SuppressWarnings({"unchecked", "rawtypes"}) final Response response = Response
+    String body = "";
+    @SuppressWarnings({"unchecked", "rawtypes"}) Response response = Response
         .builder()
         .request(Request
             .create(
@@ -181,7 +182,7 @@ class FeignClientExceptionErrorDecoderTest {
         .reason("Something bad")
         .status(500)
         .build();
-    final Exception actual = decoder.decode("getNothing", response);
+    Exception actual = decoder.decode("getNothing", response);
     assertNotNull(actual);
     assertTrue(actual instanceof FeignClientException);
     assertEquals(500, ((FeignClientException) actual).status());
@@ -194,12 +195,12 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void testDecodeRetryableException() throws Exception {
-    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
-    final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+    FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
     headers.add(Util.RETRY_AFTER, "30");
-    final RestApiException restException = restApiException();
-    @SuppressWarnings({"unchecked", "rawtypes"}) final Response response = Response
+    RestApiException restException = restApiException(HttpStatus.INTERNAL_SERVER_ERROR);
+    @SuppressWarnings({"unchecked", "rawtypes"}) Response response = Response
         .builder()
         .request(Request
             .create(
@@ -214,7 +215,7 @@ class FeignClientExceptionErrorDecoderTest {
         .reason("Something went wrong.")
         .status(500)
         .build();
-    final Exception actual = decoder.decode("theMethodKey", response);
+    Exception actual = decoder.decode("theMethodKey", response);
     assertNotNull(actual);
     assertTrue(actual instanceof RetryableException);
 
@@ -237,7 +238,7 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void determineRetryAfter() {
-    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
+    FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
     assertNull(decoder.determineRetryAfter(null));
     Date actual = decoder.determineRetryAfter("30");
     assertNotNull(actual);
@@ -255,7 +256,7 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void determineRetryAfterFailed() {
-    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
+    FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
     assertNull(decoder.determineRetryAfter(null));
     Date actual = decoder.determineRetryAfter("30");
     assertNotNull(actual);
@@ -272,11 +273,11 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void findHttpMethod() {
-    final FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
+    FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
     assertNull(decoder.findHttpMethod(null));
-    final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
-    @SuppressWarnings({"unchecked", "rawtypes"}) final Response response = Response
+    @SuppressWarnings({"unchecked", "rawtypes"}) Response response = Response
         .builder()
         .request(Request
             .create(
@@ -317,8 +318,10 @@ class FeignClientExceptionErrorDecoderTest {
    *
    * @return the rest api exception
    */
-  private static RestApiException restApiException() {
+  private static RestApiException restApiException(HttpStatus status) {
     RestApiException restApiException = new RestApiException();
+    restApiException.setStatus(status.value());
+    restApiException.setError(status.getReasonPhrase());
     restApiException.setApplication("test");
     restApiException.setClassName(ServiceException.class.getName());
     restApiException.setErrorCode("TEST:4711");
@@ -344,7 +347,7 @@ class FeignClientExceptionErrorDecoderTest {
         "message", "Was read?"
     );
     */
-    final Map<String, Object> map = new LinkedHashMap<>();
+    Map<String, Object> map = new LinkedHashMap<>();
     map.put("timestamp", OffsetDateTime.now(ZoneId.of("UTC")));
     map.put("status", 404);
     map.put("reason", "Not found");

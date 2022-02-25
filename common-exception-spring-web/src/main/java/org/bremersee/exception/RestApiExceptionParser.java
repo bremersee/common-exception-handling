@@ -16,10 +16,14 @@
 
 package org.bremersee.exception;
 
+import java.io.IOException;
+import java.io.InputStream;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * A http response parser that creates a {@link RestApiException}.
@@ -33,22 +37,43 @@ public interface RestApiExceptionParser {
    * Parse exception.
    *
    * @param response the response
+   * @param httpStatus the http status
    * @param headers the headers
    * @return the parsed exception
    */
   RestApiException parseException(
       String response,
+      @NotNull HttpStatus httpStatus,
       @NotNull HttpHeaders headers);
 
   /**
    * Parse exception.
    *
    * @param response the response
+   * @param httpStatus the http status
    * @param headers the headers
    * @return the parsed exception
    */
   RestApiException parseException(
       byte[] response,
+      @NotNull HttpStatus httpStatus,
       @NotNull HttpHeaders headers);
+
+  /**
+   * Parse exception.
+   *
+   * @param response the response
+   * @param httpStatus the http status
+   * @param headers the headers
+   * @return the rest api exception
+   * @throws IOException the io exception
+   */
+  default RestApiException parseException(
+      InputStream response,
+      @NotNull HttpStatus httpStatus,
+      @NotNull HttpHeaders headers) throws IOException {
+
+    return parseException(FileCopyUtils.copyToByteArray(response), httpStatus, headers);
+  }
 
 }

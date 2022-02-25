@@ -16,6 +16,7 @@
 
 package org.bremersee.exception;
 
+import java.util.Optional;
 import lombok.Getter;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpStatus;
@@ -34,17 +35,36 @@ public class RestApiResponseException
   private final RestApiException restApiException;
 
   /**
-   * Instantiates a new web client exception.
+   * Instantiates a new rest api response exception.
+   *
+   * @param restApiException the rest api exception
+   */
+  public RestApiResponseException(
+      RestApiException restApiException) {
+
+    super(detectHttpStatus(restApiException));
+    this.restApiException = restApiException;
+  }
+
+  /**
+   * Instantiates a new rest api response exception.
    *
    * @param status the status
    * @param restApiException the rest api exception
    */
   public RestApiResponseException(
-      final HttpStatus status,
-      final RestApiException restApiException) {
+      HttpStatus status,
+      RestApiException restApiException) {
 
     super(status);
     this.restApiException = restApiException;
+  }
+
+  private static HttpStatus detectHttpStatus(RestApiException restApiException) {
+    return Optional.ofNullable(restApiException)
+        .map(RestApiException::getStatus)
+        .map(HttpStatus::resolve)
+        .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
 }

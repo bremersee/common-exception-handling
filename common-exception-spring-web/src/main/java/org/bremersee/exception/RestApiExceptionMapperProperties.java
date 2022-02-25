@@ -148,7 +148,7 @@ public interface RestApiExceptionMapperProperties {
         .orElseGet(this::getDefaultExceptionMappingConfig);
   }
 
-  private boolean matches(final Throwable throwable, final String exceptionClassName) {
+  private boolean matches(Throwable throwable, String exceptionClassName) {
     if (throwable == null || exceptionClassName == null) {
       return false;
     }
@@ -156,7 +156,7 @@ public interface RestApiExceptionMapperProperties {
       return true;
     }
     if (exceptionClassName.endsWith(".*")) {
-      final String packagePrefix = exceptionClassName.substring(0, exceptionClassName.length() - 1);
+      String packagePrefix = exceptionClassName.substring(0, exceptionClassName.length() - 1);
       if (throwable.getClass().getName().startsWith(packagePrefix)) {
         return true;
       }
@@ -167,7 +167,7 @@ public interface RestApiExceptionMapperProperties {
     return matches(throwable.getClass().getSuperclass(), exceptionClassName);
   }
 
-  private boolean matches(final Class<?> exceptionClass, final String exceptionClassName) {
+  private boolean matches(Class<?> exceptionClass, String exceptionClassName) {
     if (exceptionClass == null || exceptionClassName == null) {
       return false;
     }
@@ -175,7 +175,7 @@ public interface RestApiExceptionMapperProperties {
       return true;
     }
     if (exceptionClassName.endsWith(".*")) {
-      final String packagePrefix = exceptionClassName.substring(0, exceptionClassName.length() - 1);
+      String packagePrefix = exceptionClassName.substring(0, exceptionClassName.length() - 1);
       if (exceptionClass.getName().startsWith(packagePrefix)) {
         return true;
       }

@@ -17,12 +17,10 @@
 package org.bremersee.exception;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Objects;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.NonNull;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.client.ResponseErrorHandler;
 
 /**
@@ -35,14 +33,14 @@ public class RestApiResponseErrorHandler implements ResponseErrorHandler {
   private final RestApiExceptionParser restApiExceptionParser;
 
   /**
-   * Instantiates a new Rest api response error handler.
+   * Instantiates a new rest api response error handler.
    */
   public RestApiResponseErrorHandler() {
     this(null);
   }
 
   /**
-   * Instantiates a new Rest api response error handler.
+   * Instantiates a new rest api response error handler.
    *
    * @param restApiExceptionParser the rest api exception parser
    */
@@ -60,22 +58,11 @@ public class RestApiResponseErrorHandler implements ResponseErrorHandler {
 
   @Override
   public void handleError(@NonNull ClientHttpResponse response) throws IOException {
-    RestApiException restApiException = restApiExceptionParser
-        .parseException(getResponseBody(response), response.getHeaders());
+    RestApiException restApiException = restApiExceptionParser.parseException(
+        response.getBody(),
+        response.getStatusCode(),
+        response.getHeaders());
     throw new RestApiResponseException(response.getStatusCode(), restApiException);
   }
 
-  /**
-   * Get response body byte [ ].
-   *
-   * @param response the response
-   * @return the byte [ ]
-   */
-  byte[] getResponseBody(ClientHttpResponse response) {
-    try (InputStream in = response.getBody()) {
-      return FileCopyUtils.copyToByteArray(in);
-    } catch (IOException e) {
-      return new byte[0];
-    }
-  }
 }

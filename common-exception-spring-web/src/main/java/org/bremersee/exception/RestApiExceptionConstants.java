@@ -17,14 +17,12 @@
 package org.bremersee.exception;
 
 import java.time.format.DateTimeFormatter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * The rest api exception constants.
  *
  * @author Christian Bremer
  */
-@Slf4j
 public abstract class RestApiExceptionConstants {
 
   /**

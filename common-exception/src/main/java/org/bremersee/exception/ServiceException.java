@@ -57,7 +57,7 @@ public class ServiceException extends RuntimeException
    * @param httpStatus the http status
    * @param errorCode the error code
    */
-  protected ServiceException(final int httpStatus, final String errorCode) {
+  protected ServiceException(int httpStatus, String errorCode) {
     super();
     this.httpStatus = httpStatus;
     this.errorCode = errorCode;
@@ -70,7 +70,7 @@ public class ServiceException extends RuntimeException
    * @param errorCode the error code
    * @param reason the reason
    */
-  protected ServiceException(final int httpStatus, final String errorCode, final String reason) {
+  protected ServiceException(int httpStatus, String errorCode, String reason) {
     super(reason);
     this.httpStatus = httpStatus;
     this.errorCode = errorCode;
@@ -83,7 +83,7 @@ public class ServiceException extends RuntimeException
    * @param errorCode the error code
    * @param cause the cause
    */
-  protected ServiceException(final int httpStatus, final String errorCode, final Throwable cause) {
+  protected ServiceException(int httpStatus, String errorCode, Throwable cause) {
     super(cause);
     this.httpStatus = httpStatus;
     this.errorCode = errorCode;
@@ -98,10 +98,10 @@ public class ServiceException extends RuntimeException
    * @param cause the cause
    */
   protected ServiceException(
-      final int httpStatus,
-      final String errorCode,
-      final String reason,
-      final Throwable cause) {
+      int httpStatus,
+      String errorCode,
+      String reason,
+      Throwable cause) {
     super(reason, cause);
     this.httpStatus = httpStatus;
     this.errorCode = errorCode;
@@ -132,7 +132,7 @@ public class ServiceException extends RuntimeException
    * @param reason the reason
    * @return the service exception
    */
-  public static ServiceException internalServerError(final String reason) {
+  public static ServiceException internalServerError(String reason) {
     return internalServerError(reason, (String) null);
   }
 
@@ -143,7 +143,7 @@ public class ServiceException extends RuntimeException
    * @param cause the cause
    * @return the service exception
    */
-  public static ServiceException internalServerError(final String reason, final Throwable cause) {
+  public static ServiceException internalServerError(String reason, Throwable cause) {
     return internalServerError(reason, null, cause);
   }
 
@@ -154,7 +154,7 @@ public class ServiceException extends RuntimeException
    * @param errorCode the error code
    * @return the service exception
    */
-  public static ServiceException internalServerError(final String reason, final String errorCode) {
+  public static ServiceException internalServerError(String reason, String errorCode) {
     return internalServerError(reason, errorCode, null);
   }
 
@@ -167,9 +167,9 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException internalServerError(
-      final String reason,
-      final String errorCode,
-      final Throwable cause) {
+      String reason,
+      String errorCode,
+      Throwable cause) {
     return ServiceException.builder()
         .httpStatus(500)
         .reason(reason)
@@ -194,7 +194,7 @@ public class ServiceException extends RuntimeException
    * @param reason the reason
    * @return the service exception
    */
-  public static ServiceException badRequest(final String reason) {
+  public static ServiceException badRequest(String reason) {
     return badRequest(reason, (String) null);
   }
 
@@ -205,7 +205,7 @@ public class ServiceException extends RuntimeException
    * @param cause the cause
    * @return the service exception
    */
-  public static ServiceException badRequest(final String reason, final Throwable cause) {
+  public static ServiceException badRequest(String reason, Throwable cause) {
     return badRequest(reason, null, cause);
   }
 
@@ -216,7 +216,7 @@ public class ServiceException extends RuntimeException
    * @param errorCode the error code
    * @return the service exception
    */
-  public static ServiceException badRequest(final String reason, final String errorCode) {
+  public static ServiceException badRequest(String reason, String errorCode) {
     return badRequest(reason, errorCode, null);
   }
 
@@ -229,9 +229,9 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException badRequest(
-      final String reason,
-      final String errorCode,
-      final Throwable cause) {
+      String reason,
+      String errorCode,
+      Throwable cause) {
     return ServiceException.builder()
         .httpStatus(400)
         .reason(reason)

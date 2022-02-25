@@ -24,7 +24,6 @@ import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.RestApiResponseException;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.WebClientException;
 
 /**
  * This web client error decoder generates a {@link RestApiResponseException} from the error
@@ -52,7 +51,6 @@ public class DefaultWebClientErrorDecoder implements
    */
   public DefaultWebClientErrorDecoder(RestApiExceptionParser parser) {
     this.parser = nonNull(parser) ? parser : new RestApiExceptionParserImpl();
-    WebClientException n;
   }
 
   @Override
@@ -62,6 +60,7 @@ public class DefaultWebClientErrorDecoder implements
 
     RestApiException restApiException = parser.parseException(
         response,
+        clientResponse.statusCode(),
         clientResponse.headers().asHttpHeaders());
     if (log.isDebugEnabled() && nonNull(response)) {
       log.debug("Is error formatted as rest api exception? {}",

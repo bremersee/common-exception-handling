@@ -18,21 +18,20 @@ package org.bremersee.exception;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.springframework.util.StringUtils.hasText;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 /**
  * The default implementation of a http response parser that creates a {@link RestApiException}.
@@ -115,7 +114,8 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
 
   @Override
   public RestApiException parseException(
-      @Nullable byte[] response,
+      byte[] response,
+      HttpStatus httpStatus,
       HttpHeaders headers) {
 
     String responseStr;
@@ -124,12 +124,13 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
     } else {
       responseStr = new String(response, getContentTypeCharset(headers.getContentType()));
     }
-    return parseException(responseStr, headers);
+    return parseException(responseStr, httpStatus, headers);
   }
 
   @Override
   public RestApiException parseException(
-      @Nullable String response,
+      String response,
+      HttpStatus httpStatus,
       HttpHeaders headers) {
 
     RestApiResponseType responseType = RestApiResponseType
@@ -144,43 +145,55 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
             return Optional.empty();
           }
         }))
-        .orElseGet(() -> getRestApiExceptionFromHeaders(response, headers));
+        .map(restApiException -> applyHttpStatus(restApiException, httpStatus))
+        .orElseGet(() -> getRestApiExceptionFromHeaders(response, httpStatus, headers));
   }
 
   private RestApiException getRestApiExceptionFromHeaders(
       String response,
+      HttpStatus httpStatus,
       HttpHeaders httpHeaders) {
 
     RestApiException restApiException = new RestApiException();
 
     String id = httpHeaders.getFirst(RestApiExceptionConstants.ID_HEADER_NAME);
-    if (StringUtils.hasText(id) && !RestApiExceptionConstants.NO_ID_VALUE.equals(id)) {
+    if (hasText(id) && !RestApiExceptionConstants.NO_ID_VALUE.equals(id)) {
       restApiException.setId(id);
     }
 
     String timestamp = httpHeaders.getFirst(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME);
     restApiException.setTimestamp(parseErrorTimestamp(timestamp));
 
-    if (StringUtils.hasText(response)) {
+    if (hasText(response)) {
       restApiException.setMessage(response);
     } else {
       String message = httpHeaders.getFirst(RestApiExceptionConstants.MESSAGE_HEADER_NAME);
       restApiException.setMessage(
-          StringUtils.hasText(message) ? message : RestApiExceptionConstants.NO_MESSAGE_VALUE);
+          hasText(message) ? message : RestApiExceptionConstants.NO_MESSAGE_VALUE);
     }
 
     String errorCode = httpHeaders.getFirst(RestApiExceptionConstants.CODE_HEADER_NAME);
-    if (StringUtils.hasText(errorCode)
+    if (hasText(errorCode)
         && !RestApiExceptionConstants.NO_ERROR_CODE_VALUE.equals(errorCode)) {
       restApiException.setErrorCode(errorCode);
     }
 
     String cls = httpHeaders.getFirst(RestApiExceptionConstants.CLASS_HEADER_NAME);
-    if (StringUtils.hasText(cls) && !RestApiExceptionConstants.NO_CLASS_VALUE.equals(cls)) {
+    if (hasText(cls) && !RestApiExceptionConstants.NO_CLASS_VALUE.equals(cls)) {
       restApiException.setClassName(cls);
     }
 
-    return restApiException;
+    return applyHttpStatus(restApiException, httpStatus);
+  }
+
+  RestApiException applyHttpStatus(
+      RestApiException restApiException,
+      HttpStatus httpStatus) {
+
+    return restApiException.toBuilder()
+        .status(httpStatus.value())
+        .error(httpStatus.getReasonPhrase())
+        .build();
   }
 
   Charset getContentTypeCharset(MediaType contentType) {
@@ -197,12 +210,12 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
    */
   OffsetDateTime parseErrorTimestamp(String value) {
     OffsetDateTime time = null;
-    if (Objects.nonNull(value)) {
+    if (nonNull(value)) {
       try {
         time = OffsetDateTime.parse(value, RestApiExceptionConstants.TIMESTAMP_FORMATTER);
       } catch (final Exception e) {
         if (log.isDebugEnabled()) {
-          log.debug("msg=[Parsing timestamp failed.] timestamp=[{}]", value);
+          log.debug("Parsing timestamp failed, timestamp = '{}'.", value);
         }
       }
     }

@@ -34,11 +34,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -83,7 +85,11 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
             (a, b) -> a.addAll(b.getKey(), List.copyOf(b.getValue())),
             HttpHeaders::putAll);
     byte[] body = getResponseBody(response);
-    RestApiException restApiException = parser.parseException(body, httpHeaders);
+    RestApiException restApiException = parser.parseException(
+        body,
+        Optional.ofNullable(HttpStatus.resolve(response.status()))
+            .orElse(HttpStatus.INTERNAL_SERVER_ERROR),
+        httpHeaders);
     FeignClientException feignClientException = new FeignClientException(
         response.status(),
         String.format("Status %s reading %s", response.status(), methodKey),

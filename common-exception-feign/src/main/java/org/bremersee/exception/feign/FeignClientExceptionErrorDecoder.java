@@ -27,6 +27,8 @@ import feign.RetryableException;
 import feign.codec.ErrorDecoder;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -97,17 +99,15 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
         headers,
         body,
         restApiException);
-    Date retryAfter = determineRetryAfter(httpHeaders.getFirst(RETRY_AFTER));
-    if (nonNull(retryAfter)) {
-      return new RetryableException(
-          response.status(),
-          feignClientException.getMessage(),
-          findHttpMethod(response),
-          feignClientException,
-          retryAfter,
-          response.request());
-    }
-    return feignClientException;
+    return determineRetryAfter(httpHeaders.getFirst(RETRY_AFTER))
+        .map(retryAfter -> (Exception) new RetryableException(
+            response.status(),
+            feignClientException.getMessage(),
+            findHttpMethod(response),
+            feignClientException,
+            Date.from(retryAfter),
+            response.request()))
+        .orElse(feignClientException);
   }
 
   byte[] getResponseBody(Response response) {
@@ -124,26 +124,26 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
     return body;
   }
 
-  Date determineRetryAfter(String retryAfter) {
-    if (retryAfter == null) {
-      return null;
-    }
+  Optional<Instant> determineRetryAfter(String retryAfter) {
     try {
-      if (retryAfter.matches("^[0-9]+\\.?0*$")) {
-        String parsedRetryAfter = retryAfter.replaceAll("\\.0*$", "");
-        long deltaMillis = SECONDS.toMillis(Long.parseLong(parsedRetryAfter));
-        return new Date(System.currentTimeMillis() + deltaMillis);
-      }
-      return Date.from(OffsetDateTime.parse(retryAfter,
-          DateTimeFormatter.RFC_1123_DATE_TIME).toInstant());
+      return Optional.ofNullable(retryAfter)
+          .filter(retryAfterValue -> retryAfterValue.matches("^[0-9]+\\.?0*$"))
+          .map(retryAfterValue -> retryAfterValue.replaceAll("\\.0*$", ""))
+          .map(retryAfterValue -> SECONDS.toMillis(Long.parseLong(retryAfterValue)))
+          .map(deltaMillis -> Instant.now().plus(Duration.ofMillis(deltaMillis)))
+          .or(() -> Optional.ofNullable(retryAfter)
+              .map(retryAfterValue -> OffsetDateTime.parse(
+                  retryAfterValue,
+                  DateTimeFormatter.RFC_1123_DATE_TIME).toInstant()));
+
     } catch (Exception e) {
-      log.warn("Parsing retry after date for feign's RetryableException failed.", e);
-      return null;
+      log.warn("Parsing retry after date for feigns RetryableException failed.", e);
+      return Optional.empty();
     }
   }
 
   HttpMethod findHttpMethod(Response response) {
-    if (response == null || response.request() == null) {
+    if (isNull(response) || isNull(response.request())) {
       return null;
     }
     return response.request().httpMethod();

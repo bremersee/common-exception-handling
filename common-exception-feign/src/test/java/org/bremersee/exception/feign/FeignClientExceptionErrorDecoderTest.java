@@ -16,6 +16,7 @@
 
 package org.bremersee.exception.feign;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -29,19 +30,25 @@ import feign.Response;
 import feign.RetryableException;
 import feign.Util;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.ServiceException;
 import org.bremersee.exception.model.RestApiException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -54,6 +61,7 @@ import org.springframework.util.MultiValueMap;
  *
  * @author Christian Bremer
  */
+@ExtendWith(SoftAssertionsExtension.class)
 class FeignClientExceptionErrorDecoderTest {
 
   /**
@@ -237,18 +245,26 @@ class FeignClientExceptionErrorDecoderTest {
    * Determine retry after.
    */
   @Test
-  void determineRetryAfter() {
+  void determineRetryAfter(SoftAssertions softly) {
     FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
-    assertNull(decoder.determineRetryAfter(null));
-    Date actual = decoder.determineRetryAfter("30");
+
+    Optional<Instant> actual = decoder.determineRetryAfter(null);
+    softly.assertThat(actual)
+        .isEmpty();
+
+    actual = decoder.determineRetryAfter("30");
     assertNotNull(actual);
-    assertTrue(actual.before(new Date(System.currentTimeMillis() + 30001)));
-    Date expected = Date.from(OffsetDateTime.parse("2007-12-24T18:21Z").toInstant());
-    String value = OffsetDateTime.ofInstant(expected.toInstant(), ZoneOffset.UTC)
-        .format(DateTimeFormatter.RFC_1123_DATE_TIME);
+    softly.assertThat(actual)
+        .isPresent()
+        .get(InstanceOfAssertFactories.INSTANT)
+        .isBefore(Instant.now().plus(Duration.ofMillis(30001)));
+
+    OffsetDateTime expected = OffsetDateTime.parse("2007-12-24T18:21Z");
+    String value = expected.format(DateTimeFormatter.RFC_1123_DATE_TIME);
     actual = decoder.determineRetryAfter(value);
-    assertNotNull(actual);
-    assertEquals(expected.getTime(), actual.getTime());
+    softly.assertThat(actual)
+        .isPresent()
+        .hasValue(expected.toInstant());
   }
 
   /**
@@ -257,15 +273,11 @@ class FeignClientExceptionErrorDecoderTest {
   @Test
   void determineRetryAfterFailed() {
     FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
-    assertNull(decoder.determineRetryAfter(null));
-    Date actual = decoder.determineRetryAfter("30");
-    assertNotNull(actual);
-    assertTrue(actual.before(new Date(System.currentTimeMillis() + 30001)));
-    Date expected = Date.from(OffsetDateTime.parse("2007-12-24T18:21Z").toInstant());
-    String value = OffsetDateTime.ofInstant(expected.toInstant(), ZoneOffset.UTC)
-        .format(DateTimeFormatter.ISO_DATE_TIME);
-    actual = decoder.determineRetryAfter(value);
-    assertNull(actual);
+    OffsetDateTime expected = OffsetDateTime.parse("2007-12-24T18:21Z");
+    String value = expected.format(DateTimeFormatter.ISO_DATE_TIME);
+    Optional<Instant> actual = decoder.determineRetryAfter(value);
+    assertThat(actual)
+        .isEmpty();
   }
 
   /**

@@ -19,7 +19,6 @@ package org.bremersee.exception;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.bremersee.exception.model.RestApiException;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 
 /**
@@ -44,13 +43,4 @@ public interface RestApiExceptionMapper {
       @Nullable String requestPath,
       @Nullable Object handler);
 
-  /**
-   * Detects the http status.
-   *
-   * @param exception the exception (required)
-   * @param handler the handler (optional)
-   * @return the http status
-   */
-  @NotNull
-  HttpStatus detectHttpStatus(@NotNull Throwable exception, @Nullable Object handler);
 }

@@ -68,8 +68,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
     this.applicationName = applicationName;
   }
 
-  @Override
-  public HttpStatus detectHttpStatus(Throwable exception, Object handler) {
+  protected HttpStatus detectHttpStatus(Throwable exception, Object handler) {
 
     return Optional.of(exception)
         .flatMap(exc -> {

@@ -131,7 +131,7 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
     RestApiResponseType restApiResponseType = RestApiResponseType
         .detectByAccepted(request.headers().accept());
     if (RestApiResponseType.HEADER == restApiResponseType) {
-      return emptyWithHeaders(request, response, restApiResponseType.getContentType());
+      return emptyWithHeaders(response, restApiResponseType.getContentType());
     } else {
       return ServerResponse
           .status(requireNonNullElse(
@@ -143,12 +143,13 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
   }
 
   private Mono<ServerResponse> emptyWithHeaders(
-      ServerRequest request,
       RestApiException response,
       MediaType contentType) {
 
     ServerResponse.BodyBuilder builder = ServerResponse
-        .status(getRestApiExceptionMapper().detectHttpStatus(getError(request), null));
+        .status(requireNonNullElse(
+            response.getStatus(),
+            HttpStatus.INTERNAL_SERVER_ERROR.value()));
 
     if (hasText(response.getId())) {
       builder = builder.header(RestApiExceptionConstants.ID_HEADER_NAME, response.getId());

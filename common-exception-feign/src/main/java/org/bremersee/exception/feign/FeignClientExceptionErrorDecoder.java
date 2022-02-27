@@ -47,7 +47,7 @@ import org.springframework.util.FileCopyUtils;
 
 /**
  * This error decoder produces either a {@link FeignClientException} or a {@link
- * feign.RetryableException}.
+ * feign.RetryableException}**.
  *
  * @author Christian Bremer
  */
@@ -64,7 +64,7 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
   }
 
   /**
-   * Instantiates a new Feign client exception error decoder.
+   * Instantiates a new feign client exception error decoder.
    *
    * @param parser the parser
    */
@@ -103,14 +103,20 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
         .map(retryAfter -> (Exception) new RetryableException(
             response.status(),
             feignClientException.getMessage(),
-            findHttpMethod(response),
+            getHttpMethod(response),
             feignClientException,
             Date.from(retryAfter),
             response.request()))
         .orElse(feignClientException);
   }
 
-  byte[] getResponseBody(Response response) {
+  /**
+   * Get response body.
+   *
+   * @param response the response
+   * @return the body as byte array
+   */
+  protected byte[] getResponseBody(Response response) {
     byte[] body;
     if (isNull(response.body())) {
       body = new byte[0];
@@ -124,7 +130,26 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
     return body;
   }
 
-  Optional<Instant> determineRetryAfter(String retryAfter) {
+  /**
+   * Find http method.
+   *
+   * @param response the response
+   * @return the http method
+   */
+  protected HttpMethod getHttpMethod(Response response) {
+    if (isNull(response) || isNull(response.request())) {
+      return null;
+    }
+    return response.request().httpMethod();
+  }
+
+  /**
+   * Determine retry after.
+   *
+   * @param retryAfter the retry after
+   * @return the optional
+   */
+  protected Optional<Instant> determineRetryAfter(String retryAfter) {
     try {
       return Optional.ofNullable(retryAfter)
           .filter(retryAfterValue -> retryAfterValue.matches("^[0-9]+\\.?0*$"))
@@ -140,13 +165,6 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
       log.warn("Parsing retry after date for feigns RetryableException failed.", e);
       return Optional.empty();
     }
-  }
-
-  HttpMethod findHttpMethod(Response response) {
-    if (isNull(response) || isNull(response.request())) {
-      return null;
-    }
-    return response.request().httpMethod();
   }
 
 }

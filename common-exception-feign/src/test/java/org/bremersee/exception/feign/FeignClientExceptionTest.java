@@ -34,7 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 /**
- * The feign client exception test.
+ * Feign client exception test.
  *
  * @author Christian Bremer
  */

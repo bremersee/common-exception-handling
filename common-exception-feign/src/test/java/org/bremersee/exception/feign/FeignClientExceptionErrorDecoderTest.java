@@ -17,10 +17,6 @@
 package org.bremersee.exception.feign;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -35,9 +31,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -67,10 +61,11 @@ class FeignClientExceptionErrorDecoderTest {
   /**
    * Test decode json.
    *
+   * @param softly the softly
    * @throws Exception the exception
    */
   @Test
-  void testDecodeJson() throws Exception {
+  void testDecodeJson(SoftAssertions softly) throws Exception {
     FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
     MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -91,19 +86,26 @@ class FeignClientExceptionErrorDecoderTest {
         .status(500)
         .build();
     Exception actual = decoder.decode("getSomething", response);
-    assertNotNull(actual);
-    assertTrue(actual instanceof FeignClientException);
-    assertEquals(500, ((FeignClientException) actual).status());
-    assertEquals(expected, ((FeignClientException) actual).getRestApiException());
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(FeignClientException.class)
+        .extracting(exc -> ((FeignClientException) exc).status())
+        .isEqualTo(500);
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(FeignClientException.class)
+        .extracting(exc -> ((FeignClientException) exc).getRestApiException())
+        .isEqualTo(expected);
   }
 
   /**
    * Test decode xml.
    *
+   * @param softly the softly
    * @throws Exception the exception
    */
   @Test
-  void testDecodeXml() throws Exception {
+  void testDecodeXml(SoftAssertions softly) throws Exception {
     FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder(
         new RestApiExceptionParserImpl());
     MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
@@ -125,23 +127,29 @@ class FeignClientExceptionErrorDecoderTest {
         .status(404)
         .build();
     Exception actual = decoder.decode("getSomethingThatNotExists", response);
-    assertNotNull(actual);
-    assertTrue(actual instanceof FeignClientException);
-    assertEquals(404, ((FeignClientException) actual).status());
-    assertEquals(expected, ((FeignClientException) actual).getRestApiException());
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(FeignClientException.class)
+        .extracting(exc -> ((FeignClientException) exc).status())
+        .isEqualTo(404);
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(FeignClientException.class)
+        .extracting(exc -> ((FeignClientException) exc).getRestApiException())
+        .isEqualTo(expected);
   }
 
   /**
    * Test decode something else.
    *
-   * @throws Exception the exception
+   * @param softly the softly
    */
   @Test
-  void testDecodeSomethingElse() throws Exception {
+  void testDecodeSomethingElse(SoftAssertions softly) {
     FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder(null);
     MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
-    String body = getXmlMapper().writeValueAsString(otherResponse());
+    String body = "Something failed";
     @SuppressWarnings({"unchecked", "rawtypes"}) Response response = Response
         .builder()
         .request(Request
@@ -157,20 +165,32 @@ class FeignClientExceptionErrorDecoderTest {
         .reason("Something bad")
         .status(500)
         .build();
+
     Exception actual = decoder.decode("getSomething", response);
-    assertNotNull(actual);
-    assertTrue(actual instanceof FeignClientException);
-    assertEquals(500, ((FeignClientException) actual).status());
-    assertNotNull(((FeignClientException) actual).getRestApiException());
-    // TODO Der neue Parser liest den body
-    //assertEquals(body, ((FeignClientException) actual).getRestApiException().getMessage());
+    RestApiException expected = RestApiException.builder()
+        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+        .message("Something failed")
+        .build();
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(FeignClientException.class)
+        .extracting(exc -> ((FeignClientException) exc).status())
+        .isEqualTo(500);
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(FeignClientException.class)
+        .extracting(exc -> ((FeignClientException) exc).getRestApiException())
+        .isEqualTo(expected);
   }
 
   /**
    * Test decode empty response.
+   *
+   * @param softly the softly
    */
   @Test
-  void testDecodeEmptyResponse() {
+  void testDecodeEmptyResponse(SoftAssertions softly) {
     FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder(null);
     MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE);
@@ -191,18 +211,62 @@ class FeignClientExceptionErrorDecoderTest {
         .status(500)
         .build();
     Exception actual = decoder.decode("getNothing", response);
-    assertNotNull(actual);
-    assertTrue(actual instanceof FeignClientException);
-    assertEquals(500, ((FeignClientException) actual).status());
+    RestApiException expected = RestApiException.builder()
+        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+        .build();
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(FeignClientException.class)
+        .extracting(exc -> ((FeignClientException) exc).status())
+        .isEqualTo(500);
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(FeignClientException.class)
+        .extracting(exc -> ((FeignClientException) exc).getRestApiException())
+        .isEqualTo(expected);
+  }
+
+  /**
+   * Get http method.
+   *
+   * @param softly the softly
+   */
+  @Test
+  void testGetHttpMethod(SoftAssertions softly) {
+    FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
+    softly.assertThat(decoder.getHttpMethod(null))
+        .isNull();
+
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+    headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
+    @SuppressWarnings({"unchecked", "rawtypes"}) Response response = Response
+        .builder()
+        .request(Request
+            .create(
+                HttpMethod.GET,
+                "https://example.org",
+                new HashMap<>(),
+                null,
+                StandardCharsets.UTF_8,
+                null))
+        .body("Not found.".getBytes())
+        .headers((Map) headers)
+        .reason("Nothing found")
+        .status(404)
+        .build();
+    softly.assertThat(decoder.getHttpMethod(response))
+        .isEqualTo(HttpMethod.GET);
   }
 
   /**
    * Test decode retryable exception.
    *
+   * @param softly the softly
    * @throws Exception the exception
    */
   @Test
-  void testDecodeRetryableException() throws Exception {
+  void testDecodeRetryableException(SoftAssertions softly) throws Exception {
     FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
     MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -224,28 +288,35 @@ class FeignClientExceptionErrorDecoderTest {
         .status(500)
         .build();
     Exception actual = decoder.decode("theMethodKey", response);
-    assertNotNull(actual);
-    assertTrue(actual instanceof RetryableException);
-
-    RetryableException retryableException = (RetryableException) actual;
-    assertNotNull(retryableException.method());
-    assertEquals(HttpMethod.GET, retryableException.method());
-
-    assertNotNull(retryableException.retryAfter());
-    assertTrue(retryableException.retryAfter()
-        .before(new Date(System.currentTimeMillis() + 30001)));
-
-    assertEquals(500, retryableException.status());
-
-    assertNotNull(retryableException.getMessage());
-    assertEquals("Status 500 reading theMethodKey", retryableException.getMessage());
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(RetryableException.class)
+        .extracting(exc -> ((RetryableException) exc).method())
+        .isEqualTo(HttpMethod.GET);
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(RetryableException.class)
+        .extracting(exc -> ((RetryableException) exc).retryAfter(), InstanceOfAssertFactories.DATE)
+        .isBefore(Instant.now().plusMillis(30001));
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(RetryableException.class)
+        .extracting(exc -> ((RetryableException) exc).status())
+        .isEqualTo(500);
+    softly.assertThat(actual)
+        .isNotNull()
+        .isInstanceOf(RetryableException.class)
+        .extracting(Throwable::getMessage)
+        .isEqualTo("Status 500 reading theMethodKey");
   }
 
   /**
    * Determine retry after.
+   *
+   * @param softly the softly
    */
   @Test
-  void determineRetryAfter(SoftAssertions softly) {
+  void tesDetermineRetryAfter(SoftAssertions softly) {
     FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
 
     Optional<Instant> actual = decoder.determineRetryAfter(null);
@@ -253,7 +324,6 @@ class FeignClientExceptionErrorDecoderTest {
         .isEmpty();
 
     actual = decoder.determineRetryAfter("30");
-    assertNotNull(actual);
     softly.assertThat(actual)
         .isPresent()
         .get(InstanceOfAssertFactories.INSTANT)
@@ -271,40 +341,13 @@ class FeignClientExceptionErrorDecoderTest {
    * Determine retry after failed.
    */
   @Test
-  void determineRetryAfterFailed() {
+  void testDetermineRetryAfterFailed() {
     FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
     OffsetDateTime expected = OffsetDateTime.parse("2007-12-24T18:21Z");
     String value = expected.format(DateTimeFormatter.ISO_DATE_TIME);
     Optional<Instant> actual = decoder.determineRetryAfter(value);
     assertThat(actual)
         .isEmpty();
-  }
-
-  /**
-   * Find http method.
-   */
-  @Test
-  void findHttpMethod() {
-    FeignClientExceptionErrorDecoder decoder = new FeignClientExceptionErrorDecoder();
-    assertNull(decoder.findHttpMethod(null));
-    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-    headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
-    @SuppressWarnings({"unchecked", "rawtypes"}) Response response = Response
-        .builder()
-        .request(Request
-            .create(
-                HttpMethod.GET,
-                "https://example.org",
-                new HashMap<>(),
-                null,
-                StandardCharsets.UTF_8,
-                null))
-        .body("Not found.".getBytes())
-        .headers((Map) headers)
-        .reason("Nothing found")
-        .status(404)
-        .build();
-    assertEquals(HttpMethod.GET, decoder.findHttpMethod(response));
   }
 
   /**
@@ -343,28 +386,6 @@ class FeignClientExceptionErrorDecoderTest {
     restApiException.setPath("/api/something");
     restApiException.setTimestamp(OffsetDateTime.now(ZoneId.of("UTC")));
     return restApiException;
-  }
-
-  /**
-   * Returns an other response.
-   *
-   * @return the map
-   */
-  private static Map<String, Object> otherResponse() {
-    // TODO
-    /*
-    return Map.of(
-        "status", 404,
-        "reason", "Not found",
-        "message", "Was read?"
-    );
-    */
-    Map<String, Object> map = new LinkedHashMap<>();
-    map.put("timestamp", OffsetDateTime.now(ZoneId.of("UTC")));
-    map.put("status", 404);
-    map.put("reason", "Not found");
-    map.put("message", "Was read?");
-    return map;
   }
 
 }

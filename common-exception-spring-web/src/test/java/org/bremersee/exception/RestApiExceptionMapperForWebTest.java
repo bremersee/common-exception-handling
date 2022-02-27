@@ -21,14 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMapping;
 import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMappingConfig;
@@ -39,10 +34,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  * The rest api exception mapper impl test.
@@ -62,26 +55,12 @@ class RestApiExceptionMapperForWebTest {
   @BeforeAll
   static void setup() {
     RestApiExceptionMapperProperties properties = RestApiExceptionMapperProperties.builder()
-        .apiPaths(List.of("/api/**"))
         .build();
     mapper = new RestApiExceptionMapperForWeb(properties, "test");
   }
 
   private RestApiExceptionMapperForWeb newInstance(RestApiExceptionMapperProperties properties) {
     return new RestApiExceptionMapperForWeb(properties, APPLICATION_NAME);
-  }
-
-  /**
-   * Test get api paths.
-   */
-  @Test
-  void testGetApiPaths() {
-    RestApiExceptionMapperProperties properties = RestApiExceptionMapperProperties.builder()
-        .apiPaths(List.of("/api/**"))
-        .build();
-    RestApiExceptionMapperForWeb target = newInstance(properties);
-    assertThat(target.getApiPaths())
-        .containsExactly("/api/**");
   }
 
   /**
@@ -97,7 +76,6 @@ class RestApiExceptionMapperForWebTest {
     ServiceException exception = new ServiceException(httpStatus.value(), errorCode, message);
 
     RestApiExceptionMapperProperties properties = RestApiExceptionMapperProperties.builder()
-        .apiPaths(List.of("/api/**"))
         .build();
     RestApiExceptionMapperForWeb target = newInstance(properties);
 
@@ -173,7 +151,6 @@ class RestApiExceptionMapperForWebTest {
   @Test
   void testBuildWithConfiguredExceptionMapping() {
     RestApiExceptionMapperProperties properties = RestApiExceptionMapperProperties.builder()
-        .apiPaths(List.of("/null-api/**"))
         .addExceptionMappings(ExceptionMapping.builder()
             .exceptionClassName(NullPointerException.class.getName())
             .status(503)

@@ -42,17 +42,6 @@ public interface RestApiExceptionMapperProperties {
   }
 
   /**
-   * Gets api paths.
-   *
-   * @return the api paths
-   */
-  @Value.Default
-  @NotNull
-  default List<String> getApiPaths() {
-    return List.of();
-  }
-
-  /**
    * Gets default exception mapping.
    *
    * @return the default exception mapping

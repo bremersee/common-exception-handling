@@ -16,7 +16,6 @@
 
 package org.bremersee.exception;
 
-import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.bremersee.exception.model.RestApiException;
@@ -30,13 +29,6 @@ import org.springframework.lang.Nullable;
  */
 @Valid
 public interface RestApiExceptionMapper {
-
-  /**
-   * Gets the paths this mapper is responsible for.
-   *
-   * @return the list of paths (typically ant paths)
-   */
-  @NotNull List<String> getApiPaths();
 
   /**
    * Build the exception model from the exception, the requested path and an handler. Typically, the

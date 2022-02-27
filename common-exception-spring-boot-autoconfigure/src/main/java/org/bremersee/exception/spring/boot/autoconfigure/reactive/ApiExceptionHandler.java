@@ -22,6 +22,7 @@ import static org.springframework.util.StringUtils.hasText;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -59,6 +60,9 @@ import reactor.core.publisher.Mono;
 public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
 
   @Getter(AccessLevel.PROTECTED)
+  private final List<String> apiPaths;
+
+  @Getter(AccessLevel.PROTECTED)
   @Setter
   @NotNull
   private PathMatcher pathMatcher = new AntPathMatcher();
@@ -70,6 +74,7 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
   /**
    * Instantiates a new api exception handler.
    *
+   * @param apiPaths the api paths
    * @param errorAttributes the error attributes
    * @param resources the resources
    * @param applicationContext the application context
@@ -77,6 +82,7 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
    * @param restApiExceptionMapper the rest api exception mapper
    */
   public ApiExceptionHandler(
+      List<String> apiPaths,
       @NotNull ErrorAttributes errorAttributes,
       @NotNull WebProperties.Resources resources,
       @NotNull ApplicationContext applicationContext,
@@ -88,6 +94,7 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
       setMessageReaders(serverCodecConfigurer.getReaders());
       setMessageWriters(serverCodecConfigurer.getWriters());
     }
+    this.apiPaths = nonNull(apiPaths) ? apiPaths : List.of();
     this.restApiExceptionMapper = restApiExceptionMapper;
   }
 
@@ -105,7 +112,7 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
    * @return {@code true} if it is responsible, otherwise {@code false}
    */
   protected boolean isResponsibleExceptionHandler(ServerRequest request) {
-    return getRestApiExceptionMapper().getApiPaths().stream().anyMatch(
+    return apiPaths.stream().anyMatch(
         path -> getPathMatcher().match(path, request.path()));
   }
 

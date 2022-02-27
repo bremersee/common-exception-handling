@@ -63,7 +63,7 @@ class ApiExceptionResolverTest {
    */
   @BeforeEach
   void init() {
-    target = new ApiExceptionResolver(exceptionMapper);
+    target = new ApiExceptionResolver(List.of("/api/**"), exceptionMapper);
   }
 
   /**
@@ -73,8 +73,6 @@ class ApiExceptionResolverTest {
   void resolveExceptionWithNoResponsibility() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     when(request.getServletPath()).thenReturn("/not");
-
-    when(exceptionMapper.getApiPaths()).thenReturn(List.of("/api/**"));
 
     HttpServletResponse response = mock(HttpServletResponse.class);
 
@@ -109,7 +107,6 @@ class ApiExceptionResolverTest {
         .error(HttpStatus.NOT_FOUND.getReasonPhrase())
         .build();
 
-    when(exceptionMapper.getApiPaths()).thenReturn(List.of("/api/**"));
     when(exceptionMapper.build(any(Throwable.class), anyString(), any()))
         .thenReturn(expected);
 
@@ -155,7 +152,6 @@ class ApiExceptionResolverTest {
         .error(HttpStatus.NOT_FOUND.getReasonPhrase())
         .build();
 
-    when(exceptionMapper.getApiPaths()).thenReturn(List.of("/api/**"));
     when(exceptionMapper.build(any(Throwable.class), anyString(), any()))
         .thenReturn(expected);
 
@@ -196,7 +192,6 @@ class ApiExceptionResolverTest {
         .error(HttpStatus.NOT_FOUND.getReasonPhrase())
         .build();
 
-    when(exceptionMapper.getApiPaths()).thenReturn(List.of("/api/**"));
     when(exceptionMapper.build(any(Throwable.class), anyString(), any()))
         .thenReturn(expected);
 
@@ -219,7 +214,6 @@ class ApiExceptionResolverTest {
     HttpServletRequest request = mock(HttpServletRequest.class);
     when(request.getServletPath()).thenReturn("/api/resource");
 
-    when(exceptionMapper.getApiPaths()).thenReturn(List.of("/api/**"));
     boolean actual = target.isExceptionHandlerResponsible(request, new TestRestController());
     assertThat(actual)
         .isTrue();
@@ -233,7 +227,6 @@ class ApiExceptionResolverTest {
     HttpServletRequest request = mock(HttpServletRequest.class);
     when(request.getServletPath()).thenReturn("/not");
 
-    when(exceptionMapper.getApiPaths()).thenReturn(List.of("/api/**"));
     boolean actual = target.isExceptionHandlerResponsible(request, new TestRestController());
     assertThat(actual)
         .isFalse();
@@ -244,9 +237,10 @@ class ApiExceptionResolverTest {
    */
   @Test
   void isExceptionHandlerResponsibleWithNoMatchingServletPathAndNoHandler() {
+    ApiExceptionResolver targetWithNoApiPaths = new ApiExceptionResolver(
+        List.of(), exceptionMapper);
     HttpServletRequest request = mock(HttpServletRequest.class);
-    when(exceptionMapper.getApiPaths()).thenReturn(List.of());
-    boolean actual = target.isExceptionHandlerResponsible(request, null);
+    boolean actual = targetWithNoApiPaths.isExceptionHandlerResponsible(request, null);
     assertThat(actual)
         .isFalse();
   }
@@ -256,10 +250,11 @@ class ApiExceptionResolverTest {
    */
   @Test
   void isExceptionHandlerResponsibleWithNoMatchingServletPathButHandler() {
+    ApiExceptionResolver targetWithNoApiPaths = new ApiExceptionResolver(
+        List.of(), exceptionMapper);
     HttpServletRequest request = mock(HttpServletRequest.class);
-
-    when(exceptionMapper.getApiPaths()).thenReturn(List.of());
-    boolean actual = target.isExceptionHandlerResponsible(request, new TestRestController());
+    boolean actual = targetWithNoApiPaths
+        .isExceptionHandlerResponsible(request, new TestRestController());
     assertThat(actual)
         .isTrue();
   }

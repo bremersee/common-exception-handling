@@ -18,6 +18,7 @@ package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
+import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperBootProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +44,9 @@ import org.springframework.util.ClassUtils;
  * @author Christian Bremer
  */
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@ConditionalOnClass(RestApiExceptionMapper.class)
+@ConditionalOnClass({
+    RestApiExceptionMapper.class
+})
 @ConditionalOnBean({
     ErrorAttributes.class,
     WebProperties.class,
@@ -53,8 +57,21 @@ import org.springframework.util.ClassUtils;
     RestApiExceptionMapperForWebFluxAutoConfiguration.class
 })
 @Configuration
+@EnableConfigurationProperties({RestApiExceptionMapperBootProperties.class})
 @Slf4j
 public class ApiExceptionHandlerAutoConfiguration {
+
+  private final RestApiExceptionMapperBootProperties properties;
+
+  /**
+   * Instantiates a new api exception handler autoconfiguration.
+   *
+   * @param properties the properties
+   */
+  public ApiExceptionHandlerAutoConfiguration(
+      RestApiExceptionMapperBootProperties properties) {
+    this.properties = properties;
+  }
 
   /**
    * Init.
@@ -64,8 +81,11 @@ public class ApiExceptionHandlerAutoConfiguration {
     log.info("\n"
             + "*********************************************************************************\n"
             + "* {}\n"
+            + "*********************************************************************************\n"
+            + "* apiPaths = {}\n"
             + "*********************************************************************************",
-        ClassUtils.getUserClass(getClass()).getSimpleName());
+        ClassUtils.getUserClass(getClass()).getSimpleName(),
+        properties.getApiPaths());
   }
 
   /**
@@ -99,10 +119,9 @@ public class ApiExceptionHandlerAutoConfiguration {
     Assert.notNull(
         restApiExceptionMapper.getIfAvailable(),
         "Rest api exception mapper must be present.");
-    log.info("Creating api exception handler [{}].",
-        ClassUtils.getUserClass(restApiExceptionMapper.getIfAvailable()).getSimpleName());
 
     return new ApiExceptionHandler(
+        properties.getApiPaths(),
         errorAttributes.getIfAvailable(),
         webProperties.getIfAvailable(WebProperties::new).getResources(),
         applicationContext,

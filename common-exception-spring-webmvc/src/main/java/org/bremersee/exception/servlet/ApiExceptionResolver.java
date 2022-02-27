@@ -67,6 +67,9 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
   protected static final String MODEL_KEY = "error";
 
   @Getter(AccessLevel.PROTECTED)
+  private final List<String> apiPaths;
+
+  @Getter(AccessLevel.PROTECTED)
   @Setter
   private PathMatcher pathMatcher = new AntPathMatcher();
 
@@ -89,8 +92,9 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
    * @param exceptionMapper the exception mapper
    */
   public ApiExceptionResolver(
+      List<String> apiPaths,
       RestApiExceptionMapper exceptionMapper) {
-    this(exceptionMapper, new Jackson2ObjectMapperBuilder());
+    this(apiPaths, exceptionMapper, new Jackson2ObjectMapperBuilder());
   }
 
   /**
@@ -100,9 +104,11 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
    * @param objectMapperBuilder the object mapper builder
    */
   public ApiExceptionResolver(
+      List<String> apiPaths,
       RestApiExceptionMapper exceptionMapper,
       Jackson2ObjectMapperBuilder objectMapperBuilder) {
     this(
+        apiPaths,
         exceptionMapper,
         objectMapperBuilder.build(),
         objectMapperBuilder.createXmlMapper(true).build());
@@ -116,9 +122,11 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
    * @param xmlMapper the xml mapper
    */
   public ApiExceptionResolver(
+      List<String> apiPaths,
       RestApiExceptionMapper exceptionMapper,
       ObjectMapper objectMapper,
       XmlMapper xmlMapper) {
+    this.apiPaths = apiPaths;
     this.exceptionMapper = exceptionMapper;
     this.objectMapper = objectMapper;
     this.xmlMapper = xmlMapper;
@@ -187,8 +195,8 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
       HttpServletRequest request,
       Object handler) {
 
-    if (!isEmpty(exceptionMapper.getApiPaths())) {
-      return exceptionMapper.getApiPaths().stream().anyMatch(
+    if (!isEmpty(apiPaths)) {
+      return apiPaths.stream().anyMatch(
           s -> pathMatcher.match(s, request.getServletPath()));
     }
 

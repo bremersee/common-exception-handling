@@ -202,7 +202,6 @@ public class RestApiExceptionMapperBootProperties {
    */
   public RestApiExceptionMapperProperties toRestApiExceptionMapperProperties() {
     return RestApiExceptionMapperProperties.builder()
-        .apiPaths(getApiPaths())
         .defaultExceptionMapping(getDefaultExceptionMapping())
         .exceptionMappings(getExceptionMappings())
         .defaultExceptionMappingConfig(getDefaultExceptionMappingConfig())

@@ -72,11 +72,11 @@ public class RestApiExceptionMapperForWebAutoConfiguration {
             + "* {}\n"
             + "*********************************************************************************\n"
             + "* applicationName = {}\n"
-            + "* apiPaths = {}\n"
+            + "* properties = {}\n"
             + "*********************************************************************************",
         ClassUtils.getUserClass(getClass()).getSimpleName(),
         applicationName,
-        properties.getApiPaths());
+        properties);
   }
 
   /**

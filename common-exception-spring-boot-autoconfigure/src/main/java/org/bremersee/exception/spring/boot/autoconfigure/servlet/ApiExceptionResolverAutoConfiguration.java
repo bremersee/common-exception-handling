@@ -19,8 +19,10 @@ package org.bremersee.exception.spring.boot.autoconfigure.servlet;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
+import org.bremersee.exception.RestApiExceptionMapperProperties;
 import org.bremersee.exception.servlet.ApiExceptionResolver;
 import org.bremersee.exception.servlet.HttpServletRequestIdProvider;
+import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperBootProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -28,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -41,6 +44,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({
+    RestApiExceptionMapperProperties.class,
     ApiExceptionResolver.class
 })
 @ConditionalOnBean({
@@ -51,19 +55,24 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
     RestApiExceptionMapperForWebAutoConfiguration.class
 })
 @Configuration
+@EnableConfigurationProperties({RestApiExceptionMapperBootProperties.class})
 @Slf4j
 public class ApiExceptionResolverAutoConfiguration implements WebMvcConfigurer {
+
+  private final RestApiExceptionMapperBootProperties properties;
 
   private final ApiExceptionResolver apiExceptionResolver;
 
   /**
    * Instantiates a new api exception resolver autoconfiguration.
    *
+   * @param properties the properties
    * @param apiExceptionMapper the api exception mapper
    * @param objectMapperBuilder the object mapper builder
    * @param restApiIdProvider the rest api id provider
    */
   public ApiExceptionResolverAutoConfiguration(
+      RestApiExceptionMapperBootProperties properties,
       ObjectProvider<RestApiExceptionMapper> apiExceptionMapper,
       ObjectProvider<Jackson2ObjectMapperBuilder> objectMapperBuilder,
       ObjectProvider<HttpServletRequestIdProvider> restApiIdProvider) {
@@ -72,7 +81,11 @@ public class ApiExceptionResolverAutoConfiguration implements WebMvcConfigurer {
     Jackson2ObjectMapperBuilder omBuilder = objectMapperBuilder.getIfAvailable();
     Assert.notNull(mapper, "Api exception resolver must be present.");
     Assert.notNull(omBuilder, "Object mapper builder must be present.");
-    this.apiExceptionResolver = new ApiExceptionResolver(mapper, omBuilder);
+    this.properties = properties;
+    this.apiExceptionResolver = new ApiExceptionResolver(
+        properties.getApiPaths(),
+        mapper,
+        omBuilder);
     this.apiExceptionResolver.setRestApiExceptionIdProvider(restApiIdProvider.getIfAvailable());
   }
 
@@ -84,8 +97,11 @@ public class ApiExceptionResolverAutoConfiguration implements WebMvcConfigurer {
     log.info("\n"
             + "*********************************************************************************\n"
             + "* {}\n"
+            + "*********************************************************************************\n"
+            + "* apiPaths = {}\n"
             + "*********************************************************************************",
-        ClassUtils.getUserClass(getClass()).getSimpleName());
+        ClassUtils.getUserClass(getClass()).getSimpleName(),
+        properties.getApiPaths());
   }
 
   @Override

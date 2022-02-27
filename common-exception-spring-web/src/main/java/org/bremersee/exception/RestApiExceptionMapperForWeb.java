@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -67,11 +66,6 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       String applicationName) {
     this.properties = properties;
     this.applicationName = applicationName;
-  }
-
-  @Override
-  public List<String> getApiPaths() {
-    return properties.getApiPaths();
   }
 
   @Override

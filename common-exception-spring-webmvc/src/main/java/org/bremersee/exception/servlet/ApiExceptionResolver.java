@@ -16,9 +16,9 @@
 
 package org.bremersee.exception.servlet;
 
-import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNullElse;
-import static org.springframework.util.StringUtils.hasText;
+import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -37,7 +37,6 @@ import org.bremersee.exception.RestApiExceptionConstants;
 import org.bremersee.exception.RestApiExceptionMapper;
 import org.bremersee.exception.RestApiResponseType;
 import org.bremersee.exception.model.RestApiException;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -137,7 +136,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
     }
 
     RestApiException payload = exceptionMapper.build(ex, request.getRequestURI(), handler);
-    if (nonNull(restApiExceptionIdProvider)) {
+    if (!isEmpty(restApiExceptionIdProvider)) {
       payload.setId(restApiExceptionIdProvider.apply(request));
     }
 
@@ -188,18 +187,18 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
       HttpServletRequest request,
       Object handler) {
 
-    if (!exceptionMapper.getApiPaths().isEmpty()) {
+    if (!isEmpty(exceptionMapper.getApiPaths())) {
       return exceptionMapper.getApiPaths().stream().anyMatch(
           s -> pathMatcher.match(s, request.getServletPath()));
     }
 
-    if (handler == null) {
+    if (isEmpty(handler)) {
       return false;
     }
     Class<?> cls = handler instanceof HandlerMethod
         ? ((HandlerMethod) handler).getBean().getClass()
         : handler.getClass();
-    boolean result = AnnotationUtils.findAnnotation(cls, RestController.class) != null;
+    boolean result = !isEmpty(findAnnotation(cls, RestController.class));
     if (log.isDebugEnabled()) {
       log.debug("Is handler [" + handler + "] a rest controller? " + result);
     }
@@ -254,14 +253,14 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
         @NonNull HttpServletRequest httpServletRequest,
         HttpServletResponse httpServletResponse) {
 
-      if (hasText(restApiException.getId())) {
+      if (!isEmpty(restApiException.getId())) {
         httpServletResponse.addHeader(
             RestApiExceptionConstants.ID_HEADER_NAME,
             restApiException.getId());
       }
 
       String timestamp;
-      if (nonNull(restApiException.getTimestamp())) {
+      if (!isEmpty(restApiException.getTimestamp())) {
         timestamp = restApiException.getTimestamp()
             .format(RestApiExceptionConstants.TIMESTAMP_FORMATTER);
       } else {
@@ -270,7 +269,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
       }
       httpServletResponse.addHeader(RestApiExceptionConstants.TIMESTAMP_HEADER_NAME, timestamp);
 
-      if (hasText(restApiException.getErrorCode())) {
+      if (!isEmpty(restApiException.getErrorCode())) {
         httpServletResponse.addHeader(
             RestApiExceptionConstants.CODE_HEADER_NAME,
             restApiException.getErrorCode());
@@ -279,25 +278,25 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
             String.valueOf(restApiException.getErrorCodeInherited()));
       }
 
-      if (hasText(restApiException.getMessage())) {
+      if (!isEmpty(restApiException.getMessage())) {
         httpServletResponse.addHeader(
             RestApiExceptionConstants.MESSAGE_HEADER_NAME,
             restApiException.getMessage());
       }
 
-      if (hasText(restApiException.getException())) {
+      if (!isEmpty(restApiException.getException())) {
         httpServletResponse.addHeader(
             RestApiExceptionConstants.EXCEPTION_HEADER_NAME,
             restApiException.getException());
       }
 
-      if (hasText(restApiException.getApplication())) {
+      if (!isEmpty(restApiException.getApplication())) {
         httpServletResponse.addHeader(
             RestApiExceptionConstants.APPLICATION_HEADER_NAME,
             restApiException.getApplication());
       }
 
-      if (hasText(restApiException.getPath())) {
+      if (!isEmpty(restApiException.getPath())) {
         httpServletResponse.addHeader(
             RestApiExceptionConstants.PATH_HEADER_NAME,
             restApiException.getPath());

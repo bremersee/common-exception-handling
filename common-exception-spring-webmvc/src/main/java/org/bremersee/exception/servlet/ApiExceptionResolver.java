@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.function.Function;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -61,7 +59,6 @@ import org.springframework.web.util.WebUtils;
  *
  * @author Christian Bremer
  */
-@Valid
 @Slf4j
 public class ApiExceptionResolver implements HandlerExceptionResolver {
 
@@ -94,9 +91,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
    */
   public ApiExceptionResolver(
       RestApiExceptionMapper exceptionMapper) {
-    this.exceptionMapper = exceptionMapper;
-    this.objectMapper = Jackson2ObjectMapperBuilder.json().build();
-    this.xmlMapper = Jackson2ObjectMapperBuilder.xml().createXmlMapper(true).build();
+    this(exceptionMapper, new Jackson2ObjectMapperBuilder());
   }
 
   /**
@@ -108,9 +103,10 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
   public ApiExceptionResolver(
       RestApiExceptionMapper exceptionMapper,
       Jackson2ObjectMapperBuilder objectMapperBuilder) {
-    this.exceptionMapper = exceptionMapper;
-    this.objectMapper = objectMapperBuilder.build();
-    this.xmlMapper = objectMapperBuilder.createXmlMapper(true).build();
+    this(
+        exceptionMapper,
+        objectMapperBuilder.build(),
+        objectMapperBuilder.createXmlMapper(true).build());
   }
 
   /**
@@ -234,7 +230,6 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
   /**
    * The empty view.
    */
-  @Valid
   static class EmptyView extends AbstractView {
 
     /**
@@ -248,7 +243,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
      * @param payload the payload
      * @param contentType the content type
      */
-    EmptyView(@NotNull RestApiException payload, String contentType) {
+    EmptyView(RestApiException payload, String contentType) {
       this.restApiException = payload;
       setContentType(contentType);
     }

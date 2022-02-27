@@ -229,12 +229,12 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
   /**
    * The empty view.
    */
-  static class EmptyView extends AbstractView {
+  protected static class EmptyView extends AbstractView {
 
     /**
      * The rest api exception.
      */
-    final RestApiException restApiException;
+    protected final RestApiException restApiException;
 
     /**
      * Instantiates a new empty view.
@@ -242,7 +242,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
      * @param payload the payload
      * @param contentType the content type
      */
-    EmptyView(RestApiException payload, String contentType) {
+    protected EmptyView(RestApiException payload, String contentType) {
       this.restApiException = payload;
       setContentType(contentType);
     }

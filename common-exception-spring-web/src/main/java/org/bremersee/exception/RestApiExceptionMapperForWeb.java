@@ -26,7 +26,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -111,9 +110,6 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
     HttpStatus httpStatus = detectHttpStatus(exception, handler);
 
     RestApiException restApiException = new RestApiException();
-    if (httpStatus.is5xxServerError()) {
-      restApiException.setId(UUID.randomUUID().toString());
-    }
 
     restApiException.setTimestamp(OffsetDateTime.now(ZoneOffset.UTC));
 

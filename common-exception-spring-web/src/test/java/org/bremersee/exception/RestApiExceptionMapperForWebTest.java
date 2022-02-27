@@ -16,29 +16,26 @@
 
 package org.bremersee.exception;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static java.util.Objects.requireNonNull;
+import static org.springframework.util.ReflectionUtils.findMethod;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
-import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMapping;
 import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMappingConfig;
+import org.bremersee.exception.model.Handler;
 import org.bremersee.exception.model.RestApiException;
-import org.junit.jupiter.api.BeforeAll;
+import org.bremersee.exception.model.StackTraceItem;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.web.method.HandlerMethod;
 
 /**
- * The rest api exception mapper impl test.
+ * The rest api exception mapper for spring web test.
  *
  * @author Christian Bremer
  */
@@ -47,211 +44,235 @@ class RestApiExceptionMapperForWebTest {
 
   private static final String APPLICATION_NAME = "test";
 
-  private static RestApiExceptionMapper mapper;
+  private RestApiExceptionMapperForWeb targetWithIncludeAll;
 
-  /**
-   * Setup test.
-   */
-  @BeforeAll
-  static void setup() {
-    RestApiExceptionMapperProperties properties = RestApiExceptionMapperProperties.builder()
-        .build();
-    mapper = new RestApiExceptionMapperForWeb(properties, "test");
-  }
+  private RestApiExceptionMapperForWeb targetWithIncludeNothing;
 
-  private RestApiExceptionMapperForWeb newInstance(RestApiExceptionMapperProperties properties) {
-    return new RestApiExceptionMapperForWeb(properties, APPLICATION_NAME);
-  }
+  private RestApiExceptionMapperForWeb targetWithIncludeNothingBesidesCause;
 
-  /**
-   * Test build 409.
-   */
-  @Test
-  void testBuild409() {
-    HttpStatus httpStatus = HttpStatus.CONFLICT;
-    String errorCode = "TEST:4711";
-    String message = "Either a or b";
-    String path = "/api/something";
-
-    ServiceException exception = new ServiceException(httpStatus.value(), errorCode, message);
-
-    RestApiExceptionMapperProperties properties = RestApiExceptionMapperProperties.builder()
-        .build();
-    RestApiExceptionMapperForWeb target = newInstance(properties);
-
-    RestApiException actual = target.build(exception, path, null);
-
-    RestApiException expected = RestApiException.builder()
-        .status(httpStatus.value())
-        .error(httpStatus.getReasonPhrase())
-        .errorCode(errorCode)
-        .errorCodeInherited(false)
-        .message(message)
-        .exception(ServiceException.class.getName())
-        .application(APPLICATION_NAME)
-        .path(path)
-        .build();
-
-    assertThat(actual)
-        .usingRecursiveComparison()
-        .ignoringFieldsOfTypes(OffsetDateTime.class)
-        .isEqualTo(expected);
-  }
-
-  /**
-   * Test build 500.
-   */
-  @Test
-  void testBuild500() {
-    ServiceException exception = new ServiceException(500, "Something failed.", "TEST:4711");
-    RestApiException model = mapper.build(exception, "/api/something", null);
-    assertNotNull(model);
-    assertEquals(exception.getErrorCode(), model.getErrorCode());
-    assertFalse(model.getErrorCodeInherited());
-    assertEquals(exception.getMessage(), model.getMessage());
-    assertEquals("/api/something", model.getPath());
-    assertNotNull(model.getId());
-  }
-
-  /**
-   * Test build with default exception mapping.
-   */
-  @Test
-  void testBuildWithDefaultExceptionMapping() {
-    RuntimeException exception = new RuntimeException("Something went wrong");
-    RestApiException model = mapper.build(
-        exception, "/api/something", null);
-    assertNotNull(model);
-    assertNull(model.getErrorCode());
-    assertFalse(model.getErrorCodeInherited());
-    assertEquals(exception.getMessage(), model.getMessage());
-    assertEquals("/api/something", model.getPath());
-    assertNotNull(model.getId());
-  }
-
-  /**
-   * Test build with default exception mapping and illegal argument exception.
-   */
-  @Test
-  void testBuildWithDefaultExceptionMappingAndIllegalArgumentException() {
-    IllegalArgumentException exception = new IllegalArgumentException();
-    RestApiException model = mapper.build(exception, "/api/illegal", null);
-    assertNotNull(model);
-    assertNull(model.getErrorCode());
-    assertFalse(model.getErrorCodeInherited());
-    assertEquals(HttpStatus.BAD_REQUEST.getReasonPhrase(), model.getMessage());
-    assertEquals("/api/illegal", model.getPath());
-    assertNull(model.getId());
-    assertEquals(IllegalArgumentException.class.getName(), model.getException());
-  }
-
-  /**
-   * Test build with configured exception mapping.
-   */
-  @Test
-  void testBuildWithConfiguredExceptionMapping() {
-    RestApiExceptionMapperProperties properties = RestApiExceptionMapperProperties.builder()
-        .addExceptionMappings(ExceptionMapping.builder()
-            .exceptionClassName(NullPointerException.class.getName())
-            .status(503)
-            .message("A variable is null.")
-            .code("NULLPOINTER")
-            .build())
-        .addExceptionMappingConfigs(ExceptionMappingConfig.builder()
-            .exceptionClassName(NullPointerException.class.getName())
-            .isIncludeException(false)
+  @BeforeEach
+  void init() {
+    var includeAllProperties = RestApiExceptionMapperProperties
+        .builder()
+        .defaultExceptionMappingConfig(ExceptionMappingConfig.builder()
+            .isIncludeException(true)
+            .isIncludeMessage(true)
             .isIncludeApplicationName(true)
             .isIncludePath(true)
             .isIncludeHandler(true)
             .isIncludeStackTrace(true)
             .isIncludeCause(true)
-            .isEvaluateAnnotationFirst(true)
+            .isEvaluateAnnotationFirst(false)
             .build())
         .build();
-    RestApiExceptionMapper configuredMapper = new RestApiExceptionMapperForWeb(
-        properties, "configured");
+    targetWithIncludeAll = new RestApiExceptionMapperForWeb(
+        includeAllProperties, APPLICATION_NAME);
 
-    NullPointerException exception = new NullPointerException();
-    RestApiException model = configuredMapper.build(
-        exception, "/null-api/something", null);
-    assertNotNull(model);
-    assertEquals("NULLPOINTER", model.getErrorCode());
-    assertFalse(model.getErrorCodeInherited());
-    assertEquals("A variable is null.", model.getMessage());
-    assertEquals("/null-api/something", model.getPath());
-    assertNotNull(model.getId());
-    assertNull(model.getException());
+    var includeNothingProperties = RestApiExceptionMapperProperties
+        .builder()
+        .defaultExceptionMappingConfig(ExceptionMappingConfig.builder()
+            .isIncludeException(false)
+            .isIncludeMessage(false)
+            .isIncludeApplicationName(false)
+            .isIncludePath(false)
+            .isIncludeHandler(false)
+            .isIncludeStackTrace(false)
+            .isIncludeCause(false)
+            .isEvaluateAnnotationFirst(false)
+            .build())
+        .build();
+    targetWithIncludeNothing = new RestApiExceptionMapperForWeb(
+        includeNothingProperties, APPLICATION_NAME);
+
+    var includeNothingBesidesCauseProperties = RestApiExceptionMapperProperties
+        .builder()
+        .defaultExceptionMappingConfig(ExceptionMappingConfig.builder()
+            .isIncludeException(false)
+            .isIncludeMessage(false)
+            .isIncludeApplicationName(false)
+            .isIncludePath(false)
+            .isIncludeHandler(false)
+            .isIncludeStackTrace(false)
+            .isIncludeCause(true)
+            .isEvaluateAnnotationFirst(false)
+            .build())
+        .build();
+    targetWithIncludeNothingBesidesCause = new RestApiExceptionMapperForWeb(
+        includeNothingBesidesCauseProperties, APPLICATION_NAME);
   }
 
-  /**
-   * Test build with cause.
-   */
   @Test
-  void testBuildWithCause() {
-    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-    headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+  void buildWithServiceExceptionAndCause(SoftAssertions softly) {
+    try {
+      new TestHandler().throwServiceExceptionWithCause();
 
-    RestApiException cause = new RestApiException();
-    cause.setApplication("cause");
-    cause.setException(ServiceException.class.getName());
-    cause.setError("Something");
-    cause.setErrorCode("CBR:0123");
-    cause.setErrorCodeInherited(false);
-    cause.setId("1");
-    cause.setMessage("Something failed in service 'cause'");
-    cause.setPath("/api/cause");
-    cause.setTimestamp(OffsetDateTime.now(ZoneId.of("UTC")));
+    } catch (ServiceException serviceException) {
 
-    RestApiResponseException exception = new RestApiResponseException(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        cause);
+      RestApiException actual = targetWithIncludeAll.build(
+          serviceException,
+          "/api/something",
+          handlerMethodOfServiceExceptionWithCause());
 
-    /*
-    RestApiException model = mapper.build(exception, "/api/this", null);
-    assertNotNull(model);
-    assertEquals(cause.getErrorCode(), model.getErrorCode());
-    assertTrue(model.getErrorCodeInherited());
-    assertEquals(exception.getMessage(), model.getMessage());
-    assertEquals("/api/this", model.getPath());
-    assertNotNull(model.getId());
-    assertEquals(cause, model.getCause());
-    */
+      RestApiException expected = getRestApiExceptionOfServiceExceptionWithCause();
+
+      softly.assertThat(actual)
+          .usingRecursiveComparison()
+          .ignoringFields("timestamp", "stackTrace", "cause.stackTrace")
+          .isEqualTo(expected);
+      softly.assertThat(actual.getTimestamp())
+          .isNotNull();
+      softly.assertThat(actual.getStackTrace())
+          .isNotEmpty();
+      softly.assertThat(actual.getCause().getStackTrace())
+          .isNotEmpty();
+
+      actual = targetWithIncludeNothing.build(
+          serviceException,
+          "/api/something",
+          handlerMethodOfServiceExceptionWithCause());
+
+      expected = RestApiException.builder()
+          .timestamp(OffsetDateTime.now())
+          .status(400)
+          .error("Bad Request")
+          .errorCode("4711")
+          .errorCodeInherited(false)
+          .build();
+
+      softly.assertThat(actual)
+          .usingRecursiveComparison()
+          .ignoringFieldsOfTypes(OffsetDateTime.class)
+          .isEqualTo(expected);
+    }
   }
 
-  /*
-  private static class ExampleException extends ResponseStatusException
-      implements RestApiExceptionAware {
+  @Test
+  void buildWithRestApiResponseException(SoftAssertions softly) {
+    try {
+      new TestHandler().throwRestApiResponseException();
 
-    private final Map<String, ? extends Collection<String>> headers;
+    } catch (RestApiResponseException restApiResponseException) {
 
-    private final RestApiException restApiException;
+      RestApiException actual = targetWithIncludeAll.build(
+          restApiResponseException,
+          "/api/something",
+          null);
 
-    private ExampleException(
-        HttpStatus status,
-        Map<String, ? extends Collection<String>> headers,
-        RestApiException restApiException) {
+      System.out.println(actual);
 
-      super(status);
-      this.headers = headers != null ? headers : Collections.emptyMap();
-      this.restApiException = restApiException;
+      RestApiException expected = RestApiException.builder()
+          .timestamp(OffsetDateTime.now())
+          .status(400)
+          .error("Bad Request")
+          .errorCode("4711")
+          .errorCodeInherited(true)
+          .message("400 BAD_REQUEST")
+          .exception("org.bremersee.exception.RestApiResponseException")
+          .application("test")
+          .path("/api/something")
+          .cause(getRestApiExceptionOfServiceExceptionWithCause())
+          .build();
+
+      softly.assertThat(actual)
+          .usingRecursiveComparison()
+          .ignoringFields("timestamp", "stackTrace")
+          .isEqualTo(expected);
+      softly.assertThat(actual.getTimestamp())
+          .isNotNull();
+      softly.assertThat(actual.getStackTrace())
+          .isNotEmpty();
+
+      actual = targetWithIncludeNothingBesidesCause.build(
+          restApiResponseException,
+          "/api/something",
+          handlerMethodOfServiceExceptionWithCause());
+
+      expected = RestApiException.builder()
+          .timestamp(OffsetDateTime.now())
+          .status(400)
+          .error("Bad Request")
+          .errorCode("4711")
+          .errorCodeInherited(true)
+          .cause(RestApiException.builder()
+              .timestamp(OffsetDateTime.parse("2021-12-24T18:21Z"))
+              .status(400)
+              .error("Bad Request")
+              .errorCode("4711")
+              .errorCodeInherited(false)
+              .cause(RestApiException.builder()
+                  .build())
+              .build())
+          .build();
+
+      softly.assertThat(actual)
+          .usingRecursiveComparison()
+          .ignoringFieldsOfTypes(OffsetDateTime.class)
+          .isEqualTo(expected);
+    }
+  }
+
+  private static RestApiException getRestApiExceptionOfServiceExceptionWithCause() {
+    return RestApiException.builder()
+        .timestamp(OffsetDateTime.parse("2021-12-24T18:21Z"))
+        .status(400)
+        .error("Bad Request")
+        .errorCode("4711")
+        .errorCodeInherited(false)
+        .message("Bad bad request")
+        .exception("org.bremersee.exception.ServiceException")
+        .application("test")
+        .path("/api/something")
+        .handler(Handler.builder()
+            .className("org.bremersee.exception.RestApiExceptionMapperForWebTest$TestHandler")
+            .methodName("throwServiceExceptionWithCause")
+            .methodParameterTypes(List.of())
+            .build())
+        .stackTrace(List.of(
+                StackTraceItem.builder()
+                    .declaringClass("org.bremersee.exception.ServiceException$1")
+                    .methodName("buildWith")
+                    .fileName("ServiceException.java")
+                    .lineNumber(465)
+                    .build()
+                // And so on
+            )
+        )
+        .cause(RestApiException.builder()
+            .message("Something illegal")
+            .exception("java.lang.IllegalArgumentException")
+            .stackTrace(List.of(
+                    StackTraceItem.builder()
+                        .declaringClass(
+                            "org.bremersee.exception.RestApiExceptionMapperForWebTest$TestHandler")
+                        .methodName("throwServiceExceptionWithCause")
+                        .fileName("RestApiExceptionMapperForWebTest.java")
+                        .lineNumber(308)
+                        .build()
+                    // And so on
+                )
+            )
+            .build())
+        .build();
+  }
+
+  private HandlerMethod handlerMethodOfServiceExceptionWithCause() {
+    return new HandlerMethod(
+        new TestHandler(),
+        requireNonNull(findMethod(TestHandler.class, "throwServiceExceptionWithCause")));
+  }
+
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  protected static class TestHandler {
+
+    protected void throwServiceExceptionWithCause() {
+      IllegalArgumentException cause = new IllegalArgumentException("Something illegal");
+      throw ServiceException.badRequest("Bad bad request", "4711", cause);
     }
 
-    @Override
-    public RestApiException getRestApiException() {
-      return restApiException;
-    }
-
-    @NonNull
-    @Override
-    public HttpHeaders getResponseHeaders() {
-      HttpHeaders httpHeaders = new HttpHeaders();
-      for (Map.Entry<String, ? extends Collection<String>> entry : headers.entrySet()) {
-        httpHeaders.put(entry.getKey(), List.copyOf(entry.getValue()));
-      }
-      return httpHeaders;
+    protected void throwRestApiResponseException() {
+      throw new RestApiResponseException(getRestApiExceptionOfServiceExceptionWithCause());
     }
 
   }
-  */
 
 }

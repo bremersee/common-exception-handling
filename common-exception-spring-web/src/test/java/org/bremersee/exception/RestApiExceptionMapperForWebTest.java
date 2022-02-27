@@ -208,6 +208,24 @@ class RestApiExceptionMapperForWebTest {
           .usingRecursiveComparison()
           .ignoringFieldsOfTypes(OffsetDateTime.class)
           .isEqualTo(expected);
+
+      actual = targetWithIncludeNothing.build(
+          restApiResponseException,
+          "/api/something",
+          handlerMethodOfServiceExceptionWithCause());
+
+      expected = RestApiException.builder()
+          .timestamp(OffsetDateTime.now())
+          .status(400)
+          .error("Bad Request")
+          .errorCode("4711")
+          .errorCodeInherited(true)
+          .build();
+
+      softly.assertThat(actual)
+          .usingRecursiveComparison()
+          .ignoringFieldsOfTypes(OffsetDateTime.class)
+          .isEqualTo(expected);
     }
   }
 

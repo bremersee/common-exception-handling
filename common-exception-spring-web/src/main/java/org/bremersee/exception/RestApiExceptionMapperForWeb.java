@@ -354,7 +354,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       Throwable exception,
       ExceptionMappingConfig config) {
 
-    if (!config.isIncludeCause() || isNull(exception)) {
+    if (isNull(exception)) {
       return restApiException;
     }
 
@@ -373,15 +373,17 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
               return rae;
             }))
         .map(cause -> {
+          RestApiException.RestApiExceptionBuilder builder = restApiException.toBuilder();
           String causeErrorCode = cause.getErrorCode();
           if (nonNull(causeErrorCode) && !causeErrorCode.isBlank()) {
-            return restApiException.toBuilder()
+            builder = builder
                 .errorCode(causeErrorCode)
-                .errorCodeInherited(true)
-                .cause(cause)
-                .build();
+                .errorCodeInherited(true);
           }
-          return restApiException.toBuilder().cause(cause).build();
+          if (config.isIncludeCause()) {
+            builder = builder.cause(cause);
+          }
+          return builder.build();
         })
         .orElse(restApiException);
   }

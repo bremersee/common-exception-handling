@@ -79,11 +79,11 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
           }
           return Optional.empty();
         })
-        .or(() -> Optional
-            .ofNullable(findMergedAnnotation(exception.getClass(), ResponseStatus.class))
-            .map(ResponseStatus::code))
         .or(() -> findHandlerMethod(handler)
             .map(method -> findMergedAnnotation(method, ResponseStatus.class))
+            .map(ResponseStatus::code))
+        .or(() -> Optional
+            .ofNullable(findMergedAnnotation(exception.getClass(), ResponseStatus.class))
             .map(ResponseStatus::code))
         .or(() -> fromStatus(properties.findExceptionMapping(exception).getStatus()))
         .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -180,11 +180,11 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
     return Optional.of(exception)
         .filter(exc -> (exc instanceof ErrorCodeAware) && !config.isEvaluateAnnotationFirst())
         .map(exc -> ((ErrorCodeAware) exc).getErrorCode())
-        .or(() -> Optional
-            .ofNullable(findMergedAnnotation(getUserClass(exception), ErrorCode.class))
-            .map(ErrorCode::value))
         .or(() -> findHandlerMethod(handler)
             .map(method -> findMergedAnnotation(method, ErrorCode.class))
+            .map(ErrorCode::value))
+        .or(() -> Optional
+            .ofNullable(findMergedAnnotation(getUserClass(exception), ErrorCode.class))
             .map(ErrorCode::value))
         .or(() -> Optional.ofNullable(getProperties().findExceptionMapping(exception).getCode()))
         .filter(errorCode -> !errorCode.isBlank())

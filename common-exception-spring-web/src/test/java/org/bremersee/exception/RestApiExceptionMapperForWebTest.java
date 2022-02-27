@@ -225,9 +225,8 @@ class RestApiExceptionMapperForWebTest {
     cause.setPath("/api/cause");
     cause.setTimestamp(OffsetDateTime.now(ZoneId.of("UTC")));
 
-    ExampleException exception = new ExampleException(
+    RestApiResponseException exception = new RestApiResponseException(
         HttpStatus.INTERNAL_SERVER_ERROR,
-        Collections.unmodifiableMap(headers),
         cause);
 
     /*
@@ -242,6 +241,7 @@ class RestApiExceptionMapperForWebTest {
     */
   }
 
+  /*
   private static class ExampleException extends ResponseStatusException
       implements RestApiExceptionAware {
 
@@ -275,5 +275,6 @@ class RestApiExceptionMapperForWebTest {
     }
 
   }
+  */
 
 }

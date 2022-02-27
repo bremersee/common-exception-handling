@@ -18,6 +18,7 @@ package org.bremersee.exception;
 
 import java.io.IOException;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.lang.NonNull;
@@ -28,6 +29,7 @@ import org.springframework.web.client.ResponseErrorHandler;
  *
  * @author Christian Bremer
  */
+@Slf4j
 public class RestApiResponseErrorHandler implements ResponseErrorHandler {
 
   private final RestApiExceptionParser restApiExceptionParser;
@@ -62,7 +64,10 @@ public class RestApiResponseErrorHandler implements ResponseErrorHandler {
         response.getBody(),
         response.getStatusCode(),
         response.getHeaders());
-    throw new RestApiResponseException(response.getStatusCode(), restApiException);
+    RestApiResponseException exception = new RestApiResponseException(
+        response.getStatusCode(), restApiException);
+    log.error("A rest api exception occurred: {}", restApiException, exception);
+    throw exception;
   }
 
 }

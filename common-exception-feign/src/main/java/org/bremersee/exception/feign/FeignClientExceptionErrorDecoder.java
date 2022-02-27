@@ -47,7 +47,7 @@ import org.springframework.util.FileCopyUtils;
 
 /**
  * This error decoder produces either a {@link FeignClientException} or a {@link
- * feign.RetryableException}**.
+ * feign.RetryableException}.
  *
  * @author Christian Bremer
  */

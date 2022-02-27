@@ -103,11 +103,13 @@ class HandlerTest {
     String className = "org.bremersee.Example";
     String methodName = "doSomething";
     List<String> methodParameterNames = List.of("a", "b", "c");
-    assertThat(Handler.builder()
+    Handler actual = Handler.builder()
         .className(className)
         .methodName(methodName)
         .methodParameterTypes(methodParameterNames)
-        .build())
-        .isEqualTo(new Handler(className, methodName, methodParameterNames));
+        .build();
+    Handler expected = new Handler(className, methodName, methodParameterNames);
+    assertThat(actual)
+        .isEqualTo(expected);
   }
 }

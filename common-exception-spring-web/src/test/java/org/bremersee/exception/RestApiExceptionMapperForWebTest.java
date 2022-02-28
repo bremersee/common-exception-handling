@@ -53,6 +53,9 @@ class RestApiExceptionMapperForWebTest {
 
   private RestApiExceptionMapperForWeb targetWithIncludeNothingBesidesCause;
 
+  /**
+   * Init.
+   */
   @BeforeEach
   void init() {
     var includeAllProperties = RestApiExceptionMapperProperties
@@ -104,6 +107,11 @@ class RestApiExceptionMapperForWebTest {
         includeNothingBesidesCauseProperties, APPLICATION_NAME);
   }
 
+  /**
+   * Build with service exception and cause.
+   *
+   * @param softly the softly
+   */
   @Test
   void buildWithServiceExceptionAndCause(SoftAssertions softly) {
     try {
@@ -149,6 +157,11 @@ class RestApiExceptionMapperForWebTest {
     }
   }
 
+  /**
+   * Build with rest api response exception.
+   *
+   * @param softly the softly
+   */
   @Test
   void buildWithRestApiResponseException(SoftAssertions softly) {
     try {
@@ -232,6 +245,11 @@ class RestApiExceptionMapperForWebTest {
     }
   }
 
+  /**
+   * Build with runtime exception and method annotation.
+   *
+   * @param softly the softly
+   */
   @Test
   void buildWithRuntimeExceptionAndMethodAnnotation(SoftAssertions softly) {
     try {
@@ -272,6 +290,11 @@ class RestApiExceptionMapperForWebTest {
     }
   }
 
+  /**
+   * Build with runtime exception and class annotation.
+   *
+   * @param softly the softly
+   */
   @Test
   void buildWithRuntimeExceptionAndClassAnnotation(SoftAssertions softly) {
     try {
@@ -282,7 +305,7 @@ class RestApiExceptionMapperForWebTest {
       RestApiException actual = targetWithIncludeAll.build(
           runtimeException,
           "/api/something",
-          handlerMethodOfRuntimeExceptionWithClassAnnotation());
+          new TestHandler());
 
       RestApiException expected = RestApiException.builder()
           .timestamp(OffsetDateTime.now())
@@ -294,11 +317,46 @@ class RestApiExceptionMapperForWebTest {
           .exception(RuntimeException.class.getName())
           .application("test")
           .path("/api/something")
-          .handler(Handler.builder()
-              .className("org.bremersee.exception.RestApiExceptionMapperForWebTest$TestHandler")
-              .methodName("throwRuntimeExceptionWithClassAnnotation")
-              .methodParameterTypes(List.of())
-              .build())
+          .build();
+
+      softly.assertThat(actual)
+          .usingRecursiveComparison()
+          .ignoringFields("timestamp", "stackTrace")
+          .isEqualTo(expected);
+      softly.assertThat(actual.getTimestamp())
+          .isNotNull();
+      softly.assertThat(actual.getStackTrace())
+          .isNotEmpty();
+    }
+  }
+
+  /**
+   * Build with annotated runtime exception.
+   *
+   * @param softly the softly
+   */
+  @Test
+  void buildWithAnnotatedRuntimeException(SoftAssertions softly) {
+    try {
+      new TestHandler().throwAnnotatedRuntimeException();
+
+    } catch (RuntimeException runtimeException) {
+
+      RestApiException actual = targetWithIncludeAll.build(
+          runtimeException,
+          "/api/something",
+          null);
+
+      RestApiException expected = RestApiException.builder()
+          .timestamp(OffsetDateTime.now())
+          .status(HttpStatus.LOCKED.value())
+          .error(HttpStatus.LOCKED.getReasonPhrase())
+          .errorCode("3003")
+          .errorCodeInherited(false)
+          .message("Entity is locked")
+          .exception(AnnotatedRuntimeException.class.getName())
+          .application("test")
+          .path("/api/something")
           .build();
 
       softly.assertThat(actual)
@@ -374,29 +432,59 @@ class RestApiExceptionMapperForWebTest {
         requireNonNull(findMethod(TestHandler.class, "throwRuntimeExceptionWithClassAnnotation")));
   }
 
+  /**
+   * The test handler.
+   */
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   @ErrorCode("2002")
   @ResponseStatus(code = HttpStatus.CONFLICT, reason = "Merge problem")
   protected static class TestHandler {
 
+    /**
+     * Throw service exception with cause.
+     */
     protected void throwServiceExceptionWithCause() {
       IllegalArgumentException cause = new IllegalArgumentException("Something illegal");
       throw ServiceException.badRequest("Bad bad request", "4711", cause);
     }
 
+    /**
+     * Throw rest api response exception.
+     */
     protected void throwRestApiResponseException() {
       throw new RestApiResponseException(getRestApiExceptionOfServiceExceptionWithCause());
     }
 
+    /**
+     * Throw runtime exception with method annotation.
+     */
     @ErrorCode("1001")
     @ResponseStatus(code = HttpStatus.FORBIDDEN, reason = "No access")
     protected void throwRuntimeExceptionWithMethodAnnotation() {
       throw new RuntimeException();
     }
 
+    /**
+     * Throw runtime exception with class annotation.
+     */
     protected void throwRuntimeExceptionWithClassAnnotation() {
       throw new RuntimeException();
     }
+
+    /**
+     * Throw annotated runtime exception.
+     */
+    protected void throwAnnotatedRuntimeException() {
+      throw new AnnotatedRuntimeException();
+    }
+  }
+
+  /**
+   * The annotated runtime exception.
+   */
+  @ErrorCode("3003")
+  @ResponseStatus(code = HttpStatus.LOCKED, reason = "Entity is locked")
+  protected static class AnnotatedRuntimeException extends RuntimeException {
 
   }
 

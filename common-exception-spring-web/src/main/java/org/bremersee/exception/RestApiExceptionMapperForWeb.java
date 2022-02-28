@@ -67,6 +67,13 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
     this.applicationName = applicationName;
   }
 
+  /**
+   * Detect http status http status.
+   *
+   * @param exception the exception
+   * @param handler the handler
+   * @return the http status
+   */
   protected HttpStatus detectHttpStatus(Throwable exception, Object handler) {
 
     return Optional.of(exception)
@@ -149,7 +156,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
           if (h instanceof HandlerMethod) {
             return ((HandlerMethod) h).getBean().getClass();
           }
-          return h.getClass();
+          return (h instanceof Class) ? (Class<?>) h : h.getClass();
         });
   }
 

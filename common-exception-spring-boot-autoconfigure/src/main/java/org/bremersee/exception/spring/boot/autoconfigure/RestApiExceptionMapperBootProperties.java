@@ -18,6 +18,7 @@ package org.bremersee.exception.spring.boot.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -173,11 +174,12 @@ public class RestApiExceptionMapperBootProperties {
   public RestApiExceptionMapperBootProperties() {
 
     defaultExceptionMapping = new ExceptionMappingImpl();
+    defaultExceptionMapping.setExceptionClassName("*");
     defaultExceptionMapping.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
     defaultExceptionMapping.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    defaultExceptionMapping.setExceptionClassName("*");
 
     defaultExceptionMappingConfig = new ExceptionMappingConfigImpl();
+    defaultExceptionMappingConfig.setExceptionClassName("*");
 
     exceptionMappings.add(new ExceptionMappingImpl(
         IllegalArgumentException.class.getName(),
@@ -276,6 +278,7 @@ public class RestApiExceptionMapperBootProperties {
 
     @Getter
     @Setter
+    @NotNull
     private String exceptionClassName;
 
     @Getter

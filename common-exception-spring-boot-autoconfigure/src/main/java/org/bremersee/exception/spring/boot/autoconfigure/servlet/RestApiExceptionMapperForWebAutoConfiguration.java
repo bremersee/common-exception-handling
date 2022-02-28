@@ -16,6 +16,7 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.servlet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
 import org.bremersee.exception.RestApiExceptionMapperForWeb;
@@ -39,7 +40,10 @@ import org.springframework.util.ClassUtils;
  * @author Christian Bremer
  */
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass(RestApiExceptionMapperProperties.class)
+@ConditionalOnClass({
+    ObjectMapper.class,
+    RestApiExceptionMapperProperties.class
+})
 @Configuration
 @EnableConfigurationProperties({RestApiExceptionMapperBootProperties.class})
 @Slf4j

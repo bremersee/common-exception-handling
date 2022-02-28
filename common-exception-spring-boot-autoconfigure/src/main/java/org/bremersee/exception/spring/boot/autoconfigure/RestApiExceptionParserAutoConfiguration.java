@@ -16,6 +16,7 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.Charset;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,7 @@ import org.springframework.util.ClassUtils;
  * @author Christian Bremer
  */
 @ConditionalOnClass({
+    ObjectMapper.class,
     Jackson2ObjectMapperBuilder.class,
     RestApiExceptionParserImpl.class
 })

@@ -25,6 +25,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMapping;
 import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMappingConfig;
 import org.bremersee.exception.annotation.ErrorCode;
 import org.bremersee.exception.model.Handler;
@@ -70,6 +71,14 @@ class RestApiExceptionMapperForWebTest {
             .isIncludeCause(true)
             .isEvaluateAnnotationFirst(false)
             .build())
+        .exceptionMappings(List.of(
+            ExceptionMapping.builder()
+                .exceptionClassName("org.bremersee.exception.*")
+                .status(HttpStatus.I_AM_A_TEAPOT.value())
+                .code("4004")
+                .message("Wait five minutes")
+                .build()
+        ))
         .build();
     targetWithIncludeAll = new RestApiExceptionMapperForWeb(
         includeAllProperties, APPLICATION_NAME);
@@ -370,6 +379,46 @@ class RestApiExceptionMapperForWebTest {
     }
   }
 
+  /**
+   * Build with configured runtime exception.
+   *
+   * @param softly the softly
+   */
+  @Test
+  void buildWithConfiguredRuntimeException(SoftAssertions softly) {
+    try {
+      new TestHandler().throwConfiguredRuntimeException();
+
+    } catch (RuntimeException runtimeException) {
+
+      RestApiException actual = targetWithIncludeAll.build(
+          runtimeException,
+          "/api/something",
+          null);
+
+      RestApiException expected = RestApiException.builder()
+          .timestamp(OffsetDateTime.now())
+          .status(HttpStatus.I_AM_A_TEAPOT.value())
+          .error(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase())
+          .errorCode("4004")
+          .errorCodeInherited(false)
+          .message("Wait five minutes")
+          .exception(ConfiguredRuntimeException.class.getName())
+          .application("test")
+          .path("/api/something")
+          .build();
+
+      softly.assertThat(actual)
+          .usingRecursiveComparison()
+          .ignoringFields("timestamp", "stackTrace")
+          .isEqualTo(expected);
+      softly.assertThat(actual.getTimestamp())
+          .isNotNull();
+      softly.assertThat(actual.getStackTrace())
+          .isNotEmpty();
+    }
+  }
+
   private static RestApiException getRestApiExceptionOfServiceExceptionWithCause() {
     return RestApiException.builder()
         .timestamp(OffsetDateTime.parse("2021-12-24T18:21Z"))
@@ -471,6 +520,13 @@ class RestApiExceptionMapperForWebTest {
     protected void throwAnnotatedRuntimeException() {
       throw new AnnotatedRuntimeException();
     }
+
+    /**
+     * Throw configured runtime exception.
+     */
+    protected void throwConfiguredRuntimeException() {
+      throw new ConfiguredRuntimeException();
+    }
   }
 
   /**
@@ -479,6 +535,13 @@ class RestApiExceptionMapperForWebTest {
   @ErrorCode("3003")
   @ResponseStatus(code = HttpStatus.LOCKED, reason = "Entity is locked")
   protected static class AnnotatedRuntimeException extends RuntimeException {
+
+  }
+
+  /**
+   * The configured runtime exception.
+   */
+  protected static class ConfiguredRuntimeException extends RuntimeException {
 
   }
 

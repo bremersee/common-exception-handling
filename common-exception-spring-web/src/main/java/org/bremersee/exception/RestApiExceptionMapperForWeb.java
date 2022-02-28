@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMappingConfig;
 import org.bremersee.exception.annotation.ErrorCode;
 import org.bremersee.exception.model.Handler;
@@ -45,7 +44,6 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * @author Christian Bremer
  */
-@Slf4j
 public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
 
   @Getter(AccessLevel.PROTECTED)

@@ -439,29 +439,23 @@ class RestApiExceptionMapperForWebTest {
             .methodParameterTypes(List.of())
             .build())
         .stackTrace(List.of(
-                StackTraceItem.builder()
-                    .declaringClass("org.bremersee.exception.ServiceException$1")
-                    .methodName("buildWith")
-                    .fileName("ServiceException.java")
-                    .lineNumber(465)
-                    .build()
-                // And so on
-            )
-        )
+            StackTraceItem.builder()
+                .declaringClass("org.bremersee.exception.ServiceException$1")
+                .methodName("buildWith")
+                .fileName("ServiceException.java")
+                .lineNumber(465)
+                .build()))
         .cause(RestApiException.builder()
             .message("Something illegal")
             .exception("java.lang.IllegalArgumentException")
             .stackTrace(List.of(
-                    StackTraceItem.builder()
-                        .declaringClass(
-                            "org.bremersee.exception.RestApiExceptionMapperForWebTest$TestHandler")
-                        .methodName("throwServiceExceptionWithCause")
-                        .fileName("RestApiExceptionMapperForWebTest.java")
-                        .lineNumber(308)
-                        .build()
-                    // And so on
-                )
-            )
+                StackTraceItem.builder()
+                    .declaringClass(
+                        "org.bremersee.exception.RestApiExceptionMapperForWebTest$TestHandler")
+                    .methodName("throwServiceExceptionWithCause")
+                    .fileName("RestApiExceptionMapperForWebTest.java")
+                    .lineNumber(308)
+                    .build()))
             .build())
         .build();
   }

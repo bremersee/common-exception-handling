@@ -37,17 +37,17 @@ public enum RestApiResponseType {
   /**
    * Json rest api response type.
    */
-  JSON(MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON_VALUE),
+  JSON(APPLICATION_JSON, MediaType.APPLICATION_JSON_VALUE),
 
   /**
    * Xml rest api response type.
    */
-  XML(MediaType.APPLICATION_XML, MediaType.APPLICATION_XML_VALUE),
+  XML(APPLICATION_XML, MediaType.APPLICATION_XML_VALUE),
 
   /**
    * Header rest api response type.
    */
-  HEADER(MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN_VALUE);
+  HEADER(TEXT_PLAIN, MediaType.TEXT_PLAIN_VALUE);
 
   private static final MediaType APPLICATION_PLUS_JSON = new MediaType("application", "*+json");
 
@@ -116,7 +116,7 @@ public enum RestApiResponseType {
 
   private static boolean isJson(MediaType contentType) {
     return nonNull(contentType)
-        && (contentType.isCompatibleWith(MediaType.APPLICATION_JSON)
+        && (contentType.isCompatibleWith(APPLICATION_JSON)
         || contentType.isCompatibleWith(APPLICATION_PLUS_JSON));
   }
 

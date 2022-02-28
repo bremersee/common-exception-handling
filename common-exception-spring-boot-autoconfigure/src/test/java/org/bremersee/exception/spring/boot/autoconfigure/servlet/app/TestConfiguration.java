@@ -34,6 +34,9 @@ import org.springframework.web.bind.annotation.RestController;
 @ComponentScan(basePackageClasses = {TestConfiguration.class})
 public class TestConfiguration {
 
+  /**
+   * The test rest controller interface.
+   */
   public interface TestRestController {
 
     /**

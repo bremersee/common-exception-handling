@@ -58,14 +58,6 @@ class ApiExceptionHandlerTest {
    */
   @BeforeAll
   static void setup() {
-    RestApiExceptionMapperBootProperties properties = new RestApiExceptionMapperBootProperties();
-    properties.setApiPaths(Collections.singletonList("/api/**"));
-    properties.getDefaultExceptionMappingConfig().setIncludeHandler(true);
-    properties.getDefaultExceptionMappingConfig().setIncludeStackTrace(false);
-
-    RestApiExceptionMapper mapper = new RestApiExceptionMapperForWebFlux(
-        properties.toRestApiExceptionMapperProperties(), "testapp");
-
     exception = ServiceException.builder()
         .httpStatus(500)
         .reason("Oops, a conflict")
@@ -74,13 +66,21 @@ class ApiExceptionHandlerTest {
     ErrorAttributes errorAttributes = mock(ErrorAttributes.class);
     when(errorAttributes.getError(any(ServerRequest.class))).thenReturn(exception);
 
-    final Resources resources = new Resources();
+    RestApiExceptionMapperBootProperties properties = new RestApiExceptionMapperBootProperties();
+    properties.setApiPaths(Collections.singletonList("/api/**"));
+    properties.getDefaultExceptionMappingConfig().setIncludeHandler(true);
+    properties.getDefaultExceptionMappingConfig().setIncludeStackTrace(false);
+
+    Resources resources = new Resources();
 
     ApplicationContext applicationContext = mock(ApplicationContext.class);
     when(applicationContext.getClassLoader())
         .thenReturn(ApplicationContext.class.getClassLoader());
 
-    final DefaultServerCodecConfigurer codecConfigurer = new DefaultServerCodecConfigurer();
+    DefaultServerCodecConfigurer codecConfigurer = new DefaultServerCodecConfigurer();
+
+    RestApiExceptionMapper mapper = new RestApiExceptionMapperForWebFlux(
+        properties.toRestApiExceptionMapperProperties(), "testapp");
 
     exceptionHandler = new ApiExceptionHandler(
         properties.getApiPaths(),

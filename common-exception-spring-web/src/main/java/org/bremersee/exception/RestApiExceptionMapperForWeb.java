@@ -114,7 +114,6 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       String requestPath,
       Object handler) {
 
-    ExceptionMappingConfig config = getProperties().findExceptionMappingConfig(exception);
     HttpStatus httpStatus = detectHttpStatus(exception, handler);
 
     RestApiException restApiException = new RestApiException();
@@ -124,6 +123,8 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
     restApiException.setStatus(httpStatus.value());
 
     restApiException.setError(httpStatus.getReasonPhrase());
+
+    ExceptionMappingConfig config = getProperties().findExceptionMappingConfig(exception);
 
     restApiException = setErrorCode(restApiException, exception, handler, config);
 

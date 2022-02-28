@@ -1,0 +1,5 @@
+org.bremersee.exception.spring.boot.autoconfigure
+org.bremersee.exception.spring.boot.autoconfigure.reactive
+org.bremersee.exception.spring.boot.autoconfigure.reactive.app
+org.bremersee.exception.spring.boot.autoconfigure.servlet
+org.bremersee.exception.spring.boot.autoconfigure.servlet.app

@@ -1,0 +1,29 @@
+--class-path
+'/Users/cbr/src/bremersee/common-exception-handling/common-exception/target/classes:/Users/cbr/src/bremersee/common-exception-handling/common-exception/target/test-classes:/Users/cbr/.m2/repository/org/junit/jupiter/junit-jupiter/5.8.2/junit-jupiter-5.8.2.jar:/Users/cbr/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.8.2/junit-jupiter-api-5.8.2.jar:/Users/cbr/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/cbr/.m2/repository/org/junit/platform/junit-platform-commons/1.8.2/junit-platform-commons-1.8.2.jar:/Users/cbr/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/cbr/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.8.2/junit-jupiter-params-5.8.2.jar:/Users/cbr/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.8.2/junit-jupiter-engine-5.8.2.jar:/Users/cbr/.m2/repository/org/junit/platform/junit-platform-engine/1.8.2/junit-platform-engine-1.8.2.jar:/Users/cbr/.m2/repository/org/assertj/assertj-core/3.21.0/assertj-core-3.21.0.jar:/Users/cbr/.m2/repository/org/projectlombok/lombok/1.18.22/lombok-1.18.22.jar'
+-encoding
+'UTF-8'
+-protected
+-quiet
+-source
+'11'
+-sourcepath
+'/Users/cbr/src/bremersee/common-exception-handling/common-exception/src/test/java'
+-author
+-bottom
+'Copyright &#169; 2022 <a href="https://bremersee.org">bremersee.org</a>. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/cbr/src/bremersee/common-exception-handling/common-exception/target/site/testapidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'Common Exception 0.0.1 Test API'
+-link
+'../apidocs'
+-linkoffline
+'https://docs.oracle.com/en/java/javase/11/docs/api' '/Users/cbr/src/bremersee/common-exception-handling/common-exception/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'Common Exception 0.0.1 Test API'

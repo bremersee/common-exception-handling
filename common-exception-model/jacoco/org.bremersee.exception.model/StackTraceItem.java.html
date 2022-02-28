@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StackTraceItem.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Common Exception Model</a> &gt; <a href="index.source.html" class="el_package">org.bremersee.exception.model</a> &gt; <span class="el_source">StackTraceItem.java</span></div><h1>StackTraceItem.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2018-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.bremersee.exception.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serializable;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * A stack trace element of an exception.
+ *
+ * @author Christian Bremer
+ */
+@SuppressWarnings(&quot;SameNameButDifferent&quot;)
+@Schema(description = &quot;A stack trace element of an exception.&quot;)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_EMPTY)
+@EqualsAndHashCode
+@ToString
+@Getter
+@Setter
+@NoArgsConstructor
+public class StackTraceItem implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
+  @Schema(description = &quot;The declaring class.&quot;)
+  private String declaringClass;
+
+  @Schema(description = &quot;The method name.&quot;)
+  private String methodName;
+
+  @Schema(description = &quot;The file name.&quot;)
+  private String fileName;
+
+  @Schema(description = &quot;The line number.&quot;)
+  private Integer lineNumber;
+
+  /**
+   * Instantiates a new stack trace item.
+   *
+   * @param declaringClass the declaring class
+   * @param methodName the method name
+   * @param fileName the file name
+   * @param lineNumber the line number
+   */
+  @Builder(toBuilder = true)
+  protected StackTraceItem(
+      String declaringClass,
+      String methodName,
+      String fileName,
+<span class="fc" id="L74">      Integer lineNumber) {</span>
+<span class="fc" id="L75">    this.declaringClass = declaringClass;</span>
+<span class="fc" id="L76">    this.methodName = methodName;</span>
+<span class="fc" id="L77">    this.fileName = fileName;</span>
+<span class="fc" id="L78">    this.lineNumber = lineNumber;</span>
+<span class="fc" id="L79">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestApiException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Common Exception Model</a> &gt; <a href="index.source.html" class="el_package">org.bremersee.exception.model</a> &gt; <span class="el_source">RestApiException.java</span></div><h1>RestApiException.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2018-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.bremersee.exception.model;
+
+import static java.util.Objects.nonNull;
+
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serializable;
+import java.time.OffsetDateTime;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * The serialized exception.
+ *
+ * @author Christian Bremer
+ */
+@SuppressWarnings(&quot;SameNameButDifferent&quot;)
+@Schema(description = &quot;The serialized exception.&quot;)
+@JsonInclude(Include.NON_EMPTY)
+@EqualsAndHashCode(exclude = {&quot;furtherDetails&quot;})
+@ToString
+@NoArgsConstructor
+public class RestApiException implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
+  @Schema(description = &quot;The id of the exception.&quot;)
+  @Getter
+  @Setter
+  private String id;
+
+  @Schema(description = &quot;The timestamp.&quot;)
+  @Getter
+  @Setter
+  private OffsetDateTime timestamp;
+
+  @Schema(description = &quot;The http status code.&quot;)
+  @Getter
+  @Setter
+  private Integer status;
+
+  @Schema(description = &quot;The http error message.&quot;)
+  @Getter
+  @Setter
+  private String error;
+
+  @Schema(description = &quot;A service specific error code.&quot;)
+  @Getter
+  @Setter
+  private String errorCode;
+
+  @Schema(description = &quot;Determines whether the error code is inherited from the cause or not.&quot;)
+  @Setter
+  private Boolean errorCodeInherited;
+
+  @Schema(description = &quot;A human readable exception message.&quot;)
+  @Getter
+  @Setter
+  private String message;
+
+  @Schema(description = &quot;The class name of the exception.&quot;)
+  @Getter
+  @Setter
+  private String exception;
+
+  @Schema(description = &quot;The name of the application.&quot;)
+  @Getter
+  @Setter
+  private String application;
+
+  @Schema(description = &quot;The request path.&quot;)
+  @Getter
+  @Setter
+  private String path;
+
+  @Schema(description = &quot;The handler.&quot;)
+  @Getter
+  @Setter
+  private Handler handler;
+
+  @Schema(description = &quot;The stack trace.&quot;)
+  @Getter
+  @Setter
+  private List&lt;StackTraceItem&gt; stackTrace;
+
+  @Schema(description = &quot;The cause.&quot;)
+  @Getter
+  @Setter
+  private RestApiException cause;
+
+<span class="fc" id="L117">  @Schema(hidden = true)</span>
+  @JsonIgnore
+  private final Map&lt;String, Object&gt; furtherDetails = new LinkedHashMap&lt;&gt;();
+
+  /**
+   * Instantiates a new rest api exception.
+   *
+   * @param id the id
+   * @param timestamp the timestamp
+   * @param status the status
+   * @param error the error
+   * @param errorCode the error code
+   * @param errorCodeInherited the error code inherited
+   * @param message the message
+   * @param exception the class name
+   * @param application the application
+   * @param path the path
+   * @param handler the handler
+   * @param stackTrace the stack trace
+   * @param cause the cause
+   */
+  @Builder(toBuilder = true)
+  protected RestApiException(
+      String id,
+      OffsetDateTime timestamp,
+      Integer status,
+      String error,
+      String errorCode,
+      Boolean errorCodeInherited,
+      String message,
+      String exception,
+      String application,
+      String path,
+      Handler handler,
+      List&lt;StackTraceItem&gt; stackTrace,
+      RestApiException cause,
+<span class="fc" id="L153">      Map&lt;String, Object&gt; furtherDetails) {</span>
+<span class="fc" id="L154">    this.id = id;</span>
+<span class="fc" id="L155">    this.timestamp = timestamp;</span>
+<span class="fc" id="L156">    this.status = status;</span>
+<span class="fc" id="L157">    this.error = error;</span>
+<span class="fc" id="L158">    this.errorCode = errorCode;</span>
+<span class="fc" id="L159">    this.errorCodeInherited = errorCodeInherited;</span>
+<span class="fc" id="L160">    this.message = message;</span>
+<span class="fc" id="L161">    this.exception = exception;</span>
+<span class="fc" id="L162">    this.application = application;</span>
+<span class="fc" id="L163">    this.path = path;</span>
+<span class="fc" id="L164">    this.handler = handler;</span>
+<span class="fc" id="L165">    this.stackTrace = stackTrace;</span>
+<span class="fc" id="L166">    this.cause = cause;</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">    if (nonNull(furtherDetails)) {</span>
+<span class="fc" id="L168">      this.furtherDetails.putAll(furtherDetails);</span>
+    }
+<span class="fc" id="L170">  }</span>
+
+  /**
+   * Is the error code inherited from the cause.
+   *
+   * @return errorCodeInherited error code inherited
+   */
+  public Boolean getErrorCodeInherited() {
+<span class="fc" id="L178">    return Boolean.TRUE.equals(errorCodeInherited);</span>
+  }
+
+  /**
+   * Any json setter.
+   *
+   * @param name the name
+   * @param value the value
+   */
+  @JsonAnySetter
+  public void furtherDetails(String name, Object value) {
+<span class="pc bpc" id="L189" title="2 of 4 branches missed.">    if (nonNull(name) &amp;&amp; !name.isBlank()) {</span>
+<span class="fc" id="L190">      furtherDetails.put(name, value);</span>
+    }
+<span class="fc" id="L192">  }</span>
+
+  /**
+   * Further details map.
+   *
+   * @return the map
+   */
+  @JsonAnySetter
+  public Map&lt;String, Object&gt; furtherDetails() {
+<span class="fc" id="L201">    return furtherDetails;</span>
+  }
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApiExceptionResolverAutoConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Common Exception Spring Boot Autoconfiguration</a> &gt; <a href="index.source.html" class="el_package">org.bremersee.exception.spring.boot.autoconfigure.servlet</a> &gt; <span class="el_source">ApiExceptionResolverAutoConfiguration.java</span></div><h1>ApiExceptionResolverAutoConfiguration.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2019-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.bremersee.exception.spring.boot.autoconfigure.servlet;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.bremersee.exception.RestApiExceptionMapper;
+import org.bremersee.exception.RestApiExceptionMapperProperties;
+import org.bremersee.exception.servlet.ApiExceptionResolver;
+import org.bremersee.exception.servlet.HttpServletRequestIdProvider;
+import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperBootProperties;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+/**
+ * The api exception resolver autoconfiguration.
+ */
+@ConditionalOnWebApplication(type = Type.SERVLET)
+@ConditionalOnClass({
+    ObjectMapper.class,
+    RestApiExceptionMapperProperties.class,
+    ApiExceptionResolver.class
+})
+@ConditionalOnBean({
+    Jackson2ObjectMapperBuilder.class
+})
+@AutoConfigureAfter({
+    RestApiExceptionMapperForWebAutoConfiguration.class
+})
+@Configuration
+@EnableConfigurationProperties({RestApiExceptionMapperBootProperties.class})
+<span class="fc" id="L60">@Slf4j</span>
+public class ApiExceptionResolverAutoConfiguration implements WebMvcConfigurer {
+
+  private final RestApiExceptionMapperBootProperties properties;
+
+  private final ApiExceptionResolver apiExceptionResolver;
+
+  /**
+   * Instantiates a new api exception resolver autoconfiguration.
+   *
+   * @param properties the properties
+   * @param apiExceptionMapper the api exception mapper
+   * @param objectMapperBuilder the object mapper builder
+   * @param restApiIdProvider the rest api id provider
+   */
+  public ApiExceptionResolverAutoConfiguration(
+      RestApiExceptionMapperBootProperties properties,
+      ObjectProvider&lt;RestApiExceptionMapper&gt; apiExceptionMapper,
+      ObjectProvider&lt;Jackson2ObjectMapperBuilder&gt; objectMapperBuilder,
+<span class="fc" id="L79">      ObjectProvider&lt;HttpServletRequestIdProvider&gt; restApiIdProvider) {</span>
+
+<span class="fc" id="L81">    RestApiExceptionMapper mapper = apiExceptionMapper.getIfAvailable();</span>
+<span class="fc" id="L82">    Jackson2ObjectMapperBuilder omBuilder = objectMapperBuilder.getIfAvailable();</span>
+<span class="fc" id="L83">    Assert.notNull(mapper, &quot;Api exception resolver must be present.&quot;);</span>
+<span class="fc" id="L84">    Assert.notNull(omBuilder, &quot;Object mapper builder must be present.&quot;);</span>
+<span class="fc" id="L85">    this.properties = properties;</span>
+<span class="fc" id="L86">    this.apiExceptionResolver = new ApiExceptionResolver(</span>
+<span class="fc" id="L87">        properties.getApiPaths(),</span>
+        mapper,
+        omBuilder);
+<span class="fc" id="L90">    this.apiExceptionResolver.setRestApiExceptionIdProvider(restApiIdProvider.getIfAvailable());</span>
+<span class="fc" id="L91">  }</span>
+
+  /**
+   * Init.
+   */
+  @EventListener(ApplicationReadyEvent.class)
+  public void init() {
+<span class="fc" id="L98">    log.info(&quot;\n&quot;</span>
+            + &quot;*********************************************************************************\n&quot;
+            + &quot;* {}\n&quot;
+            + &quot;*********************************************************************************\n&quot;
+            + &quot;* apiPaths = {}\n&quot;
+            + &quot;*********************************************************************************&quot;,
+<span class="fc" id="L104">        ClassUtils.getUserClass(getClass()).getSimpleName(),</span>
+<span class="fc" id="L105">        properties.getApiPaths());</span>
+<span class="fc" id="L106">  }</span>
+
+  @Override
+  public void extendHandlerExceptionResolvers(List&lt;HandlerExceptionResolver&gt; exceptionResolvers) {
+<span class="fc" id="L110">    log.info(&quot;Adding exception resolver [{}] to registry.&quot;,</span>
+<span class="fc" id="L111">        ClassUtils.getUserClass(apiExceptionResolver).getSimpleName());</span>
+<span class="fc" id="L112">    exceptionResolvers.add(0, apiExceptionResolver);</span>
+<span class="fc" id="L113">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

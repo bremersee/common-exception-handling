@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestApiExceptionConstants.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Common Exception Model</a> &gt; <a href="index.source.html" class="el_package">org.bremersee.exception</a> &gt; <span class="el_source">RestApiExceptionConstants.java</span></div><h1>RestApiExceptionConstants.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2019-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.bremersee.exception;
+
+import java.time.format.DateTimeFormatter;
+
+/**
+ * The rest api exception constants.
+ *
+ * @author Christian Bremer
+ */
+public abstract class RestApiExceptionConstants {
+
+  /**
+   * The header name for the 'id' attribute.
+   */
+  public static final String ID_HEADER_NAME = &quot;X-ERROR-ID&quot;;
+
+  /**
+   * The header name for the 'timestamp' attribute.
+   */
+  public static final String TIMESTAMP_HEADER_NAME = &quot;X-ERROR-TIMESTAMP&quot;;
+
+  /**
+   * The formatter of the timestamp value.
+   */
+<span class="nc" id="L41">  public static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.RFC_1123_DATE_TIME;</span>
+
+  /**
+   * The header name for the 'errorCode' attribute.
+   */
+  public static final String CODE_HEADER_NAME = &quot;X-ERROR-CODE&quot;;
+
+  /**
+   * The header name for the 'errorCodeInherited' attribute.
+   */
+  public static final String CODE_INHERITED_HEADER_NAME = &quot;X-ERROR-CODE-INHERITED&quot;;
+
+  /**
+   * The header name for the 'message' attribute.
+   */
+  public static final String MESSAGE_HEADER_NAME = &quot;X-ERROR-MESSAGE&quot;;
+
+  /**
+   * The header name for the 'class name' attribute.
+   */
+  public static final String EXCEPTION_HEADER_NAME = &quot;X-ERROR-EXCEPTION&quot;;
+
+  /**
+   * The header name for the 'application' attribute.
+   */
+  public static final String APPLICATION_HEADER_NAME = &quot;X-ERROR-APPLICATION&quot;;
+
+  /**
+   * The header name for the 'path' attribute.
+   */
+  public static final String PATH_HEADER_NAME = &quot;X-ERROR-PATH&quot;;
+
+  private RestApiExceptionConstants() {
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

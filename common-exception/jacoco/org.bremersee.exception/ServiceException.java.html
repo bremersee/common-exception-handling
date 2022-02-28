@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServiceException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Common Exception</a> &gt; <a href="index.source.html" class="el_package">org.bremersee.exception</a> &gt; <span class="el_source">ServiceException.java</span></div><h1>ServiceException.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2019-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.bremersee.exception;
+
+import static java.util.Objects.isNull;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+/**
+ * General service exception with http status code and error code.
+ *
+ * @author Christian Bremer
+ */
+@SuppressWarnings(&quot;SameNameButDifferent&quot;)
+@EqualsAndHashCode(callSuper = true)
+public class ServiceException extends RuntimeException
+    implements ErrorCodeAware, HttpStatusAware {
+
+  private static final long serialVersionUID = 2L;
+
+  /**
+   * Default error code for an 'already exists exception'.
+   */
+  public static final String ERROR_CODE_ALREADY_EXISTS = &quot;COMMON:ALREADY_EXISTS&quot;;
+
+  private final int httpStatus;
+
+  @Getter
+  private final String errorCode;
+
+  /**
+   * Instantiates a new service exception.
+   */
+  protected ServiceException() {
+<span class="fc" id="L50">    super();</span>
+<span class="fc" id="L51">    this.httpStatus = 0;</span>
+<span class="fc" id="L52">    this.errorCode = null;</span>
+<span class="fc" id="L53">  }</span>
+
+  /**
+   * Instantiates a new service exception.
+   *
+   * @param httpStatus the http status
+   * @param errorCode the error code
+   */
+  protected ServiceException(int httpStatus, String errorCode) {
+<span class="fc" id="L62">    super();</span>
+<span class="fc" id="L63">    this.httpStatus = httpStatus;</span>
+<span class="fc" id="L64">    this.errorCode = errorCode;</span>
+<span class="fc" id="L65">  }</span>
+
+  /**
+   * Instantiates a new service exception.
+   *
+   * @param httpStatus the http status
+   * @param errorCode the error code
+   * @param reason the reason
+   */
+  protected ServiceException(int httpStatus, String errorCode, String reason) {
+<span class="fc" id="L75">    super(reason);</span>
+<span class="fc" id="L76">    this.httpStatus = httpStatus;</span>
+<span class="fc" id="L77">    this.errorCode = errorCode;</span>
+<span class="fc" id="L78">  }</span>
+
+  /**
+   * Instantiates a new service exception.
+   *
+   * @param httpStatus the http status
+   * @param errorCode the error code
+   * @param cause the cause
+   */
+  protected ServiceException(int httpStatus, String errorCode, Throwable cause) {
+<span class="fc" id="L88">    super(cause);</span>
+<span class="fc" id="L89">    this.httpStatus = httpStatus;</span>
+<span class="fc" id="L90">    this.errorCode = errorCode;</span>
+<span class="fc" id="L91">  }</span>
+
+  /**
+   * Instantiates a new service exception.
+   *
+   * @param httpStatus the http status
+   * @param errorCode the error code
+   * @param reason the reason
+   * @param cause the cause
+   */
+  protected ServiceException(
+      int httpStatus,
+      String errorCode,
+      String reason,
+      Throwable cause) {
+<span class="fc" id="L106">    super(reason, cause);</span>
+<span class="fc" id="L107">    this.httpStatus = httpStatus;</span>
+<span class="fc" id="L108">    this.errorCode = errorCode;</span>
+<span class="fc" id="L109">  }</span>
+
+  /**
+   * Get the http status.
+   *
+   * @return the http status
+   */
+  @Override
+  public int status() {
+<span class="fc" id="L118">    return httpStatus;</span>
+  }
+
+  /**
+   * Internal server error service exception.
+   *
+   * @return the service exception
+   */
+  public static ServiceException internalServerError() {
+<span class="fc" id="L127">    return internalServerError(null);</span>
+  }
+
+  /**
+   * Internal server error service exception.
+   *
+   * @param reason the reason
+   * @return the service exception
+   */
+  public static ServiceException internalServerError(String reason) {
+<span class="fc" id="L137">    return internalServerError(reason, (String) null);</span>
+  }
+
+  /**
+   * Internal server error service exception.
+   *
+   * @param reason the reason
+   * @param cause the cause
+   * @return the service exception
+   */
+  public static ServiceException internalServerError(String reason, Throwable cause) {
+<span class="fc" id="L148">    return internalServerError(reason, null, cause);</span>
+  }
+
+  /**
+   * Internal server error service exception.
+   *
+   * @param reason the reason
+   * @param errorCode the error code
+   * @return the service exception
+   */
+  public static ServiceException internalServerError(String reason, String errorCode) {
+<span class="fc" id="L159">    return internalServerError(reason, errorCode, null);</span>
+  }
+
+  /**
+   * Internal server error service exception.
+   *
+   * @param reason the reason
+   * @param errorCode the error code
+   * @param cause the cause
+   * @return the service exception
+   */
+  public static ServiceException internalServerError(
+      String reason,
+      String errorCode,
+      Throwable cause) {
+<span class="fc" id="L174">    return ServiceException.builder()</span>
+<span class="fc" id="L175">        .httpStatus(500)</span>
+<span class="fc" id="L176">        .reason(reason)</span>
+<span class="fc" id="L177">        .errorCode(errorCode)</span>
+<span class="fc" id="L178">        .cause(cause)</span>
+<span class="fc" id="L179">        .build();</span>
+  }
+
+
+  /**
+   * Bad request service exception.
+   *
+   * @return the service exception
+   */
+  public static ServiceException badRequest() {
+<span class="fc" id="L189">    return badRequest(null);</span>
+  }
+
+  /**
+   * Bad request service exception.
+   *
+   * @param reason the reason
+   * @return the service exception
+   */
+  public static ServiceException badRequest(String reason) {
+<span class="fc" id="L199">    return badRequest(reason, (String) null);</span>
+  }
+
+  /**
+   * Bad request service exception.
+   *
+   * @param reason the reason
+   * @param cause the cause
+   * @return the service exception
+   */
+  public static ServiceException badRequest(String reason, Throwable cause) {
+<span class="fc" id="L210">    return badRequest(reason, null, cause);</span>
+  }
+
+  /**
+   * Bad request service exception.
+   *
+   * @param reason the reason
+   * @param errorCode the error code
+   * @return the service exception
+   */
+  public static ServiceException badRequest(String reason, String errorCode) {
+<span class="fc" id="L221">    return badRequest(reason, errorCode, null);</span>
+  }
+
+  /**
+   * Bad request service exception.
+   *
+   * @param reason the reason
+   * @param errorCode the error code
+   * @param cause the cause
+   * @return the service exception
+   */
+  public static ServiceException badRequest(
+      String reason,
+      String errorCode,
+      Throwable cause) {
+<span class="fc" id="L236">    return ServiceException.builder()</span>
+<span class="fc" id="L237">        .httpStatus(400)</span>
+<span class="fc" id="L238">        .reason(reason)</span>
+<span class="fc" id="L239">        .errorCode(errorCode)</span>
+<span class="fc" id="L240">        .cause(cause)</span>
+<span class="fc" id="L241">        .build();</span>
+  }
+
+  /**
+   * Not found service exception.
+   *
+   * @return the service exception
+   */
+  public static ServiceException notFound() {
+<span class="fc" id="L250">    return new ServiceException(404, null);</span>
+  }
+
+  /**
+   * Not found service exception.
+   *
+   * @param entityName the entity name
+   * @return the service exception
+   */
+  public static ServiceException notFound(Object entityName) {
+<span class="fc" id="L260">    return notFound(&quot;Entity&quot;, entityName);</span>
+  }
+
+  /**
+   * Not found service exception.
+   *
+   * @param entityType the entity type
+   * @param entityName the entity name
+   * @return the service exception
+   */
+  public static ServiceException notFound(String entityType, Object entityName) {
+<span class="fc" id="L271">    return notFoundWithErrorCode(entityType, entityName, null);</span>
+  }
+
+  /**
+   * Not found with error code service exception.
+   *
+   * @param entityName the entity name
+   * @param errorCode the error code
+   * @return the service exception
+   */
+  public static ServiceException notFoundWithErrorCode(
+      Object entityName,
+      String errorCode) {
+<span class="fc" id="L284">    return notFoundWithErrorCode(&quot;Entity&quot;, entityName, errorCode);</span>
+  }
+
+  /**
+   * Not found with error code service exception.
+   *
+   * @param entityType the entity type
+   * @param entityName the entity name
+   * @param errorCode the error code
+   * @return the service exception
+   */
+  public static ServiceException notFoundWithErrorCode(
+      String entityType,
+      Object entityName,
+      String errorCode) {
+<span class="fc" id="L299">    return new ServiceException(404, errorCode,</span>
+        entityType + &quot; with identifier [&quot; + entityName + &quot;] was not found.&quot;);
+  }
+
+  /**
+   * Already exists service exception.
+   *
+   * @return the service exception
+   */
+  public static ServiceException alreadyExists() {
+<span class="fc" id="L309">    return new ServiceException(409, null);</span>
+  }
+
+  /**
+   * Already exists service exception.
+   *
+   * @param entityName the entity name
+   * @return the service exception
+   */
+  public static ServiceException alreadyExists(
+      Object entityName) {
+<span class="fc" id="L320">    return alreadyExistsWithErrorCode(&quot;Entity&quot;, entityName, null);</span>
+  }
+
+  /**
+   * Already exists service exception.
+   *
+   * @param entityType the entity type
+   * @param entityName the entity name
+   * @return the service exception
+   */
+  public static ServiceException alreadyExists(
+      String entityType,
+      Object entityName) {
+<span class="fc" id="L333">    return alreadyExistsWithErrorCode(entityType, entityName, null);</span>
+  }
+
+  /**
+   * Already exists with error code service exception.
+   *
+   * @param entityName the entity name
+   * @param errorCode the error code
+   * @return the service exception
+   */
+  public static ServiceException alreadyExistsWithErrorCode(
+      Object entityName,
+      String errorCode) {
+<span class="fc" id="L346">    return alreadyExistsWithErrorCode(&quot;Entity&quot;, entityName, errorCode);</span>
+  }
+
+  /**
+   * Already exists with error code service exception.
+   *
+   * @param entityType the entity type
+   * @param entityName the entity name
+   * @param errorCode the error code
+   * @return the service exception
+   */
+  public static ServiceException alreadyExistsWithErrorCode(
+      String entityType,
+      Object entityName,
+      String errorCode) {
+<span class="fc" id="L361">    return new ServiceException(</span>
+        409,
+<span class="pc bpc" id="L363" title="1 of 4 branches missed.">        isNull(errorCode) || errorCode.isBlank() ? ERROR_CODE_ALREADY_EXISTS : errorCode,</span>
+        entityType + &quot; with identifier [&quot; + entityName + &quot;] already exists.&quot;);
+  }
+
+  /**
+   * Forbidden service exception.
+   *
+   * @return the service exception
+   */
+  public static ServiceException forbidden() {
+<span class="fc" id="L373">    return new ServiceException(403, null);</span>
+  }
+
+  /**
+   * Forbidden service exception.
+   *
+   * @param entityName the entity name
+   * @return the service exception
+   */
+  public static ServiceException forbidden(Object entityName) {
+<span class="fc" id="L383">    return forbiddenWithErrorCode(entityName, null);</span>
+  }
+
+  /**
+   * Forbidden service exception.
+   *
+   * @param entityType the entity type
+   * @param entityName the entity name
+   * @return the service exception
+   */
+  public static ServiceException forbidden(String entityType, Object entityName) {
+<span class="fc" id="L394">    return forbiddenWithErrorCode(entityType, entityName, null);</span>
+  }
+
+  /**
+   * Forbidden with error code service exception.
+   *
+   * @param errorCode the error code
+   * @return the service exception
+   */
+  public static ServiceException forbiddenWithErrorCode(String errorCode) {
+<span class="fc" id="L404">    return new ServiceException(403, errorCode);</span>
+  }
+
+  /**
+   * Forbidden with error code service exception.
+   *
+   * @param entityName the entity name
+   * @param errorCode the error code
+   * @return the service exception
+   */
+  public static ServiceException forbiddenWithErrorCode(Object entityName, String errorCode) {
+<span class="fc" id="L415">    return new ServiceException(403, errorCode,</span>
+        &quot;Access to entity with identifier [&quot; + entityName + &quot;] is forbidden.&quot;);
+  }
+
+  /**
+   * Forbidden with error code service exception.
+   *
+   * @param entityType the entity type
+   * @param entityName the entity name
+   * @param errorCode the error code
+   * @return the service exception
+   */
+  public static ServiceException forbiddenWithErrorCode(
+      String entityType,
+      Object entityName,
+      String errorCode) {
+<span class="fc" id="L431">    return new ServiceException(403, errorCode,</span>
+        &quot;Access to [&quot; + entityType + &quot;] with identifier [&quot; + entityName + &quot;] is forbidden.&quot;);
+  }
+
+  /**
+   * Creates new exception builder.
+   *
+   * @return the builder
+   */
+  public static ServiceExceptionBuilder&lt;? extends ServiceException&gt; builder() {
+<span class="fc" id="L441">    return new AbstractServiceExceptionBuilder&lt;&gt;() {</span>
+
+      private static final long serialVersionUID = 2L;
+
+      @Override
+      protected ServiceException buildWith(int httpStatus, String errorCode) {
+<span class="fc" id="L447">        return new ServiceException(httpStatus, errorCode);</span>
+      }
+
+      @Override
+      protected ServiceException buildWith(int httpStatus, String errorCode, String reason) {
+<span class="fc" id="L452">        return new ServiceException(httpStatus, errorCode, reason);</span>
+      }
+
+      @Override
+      protected ServiceException buildWith(int httpStatus, String errorCode, Throwable cause) {
+<span class="fc" id="L457">        return new ServiceException(httpStatus, errorCode, cause);</span>
+      }
+
+      @Override
+      protected ServiceException buildWith(
+          int httpStatus,
+          String errorCode,
+          String reason,
+          Throwable cause) {
+<span class="fc" id="L466">        return new ServiceException(httpStatus, errorCode, reason, cause);</span>
+      }
+    };
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestApiExceptionMapperBootProperties.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Common Exception Spring Boot Autoconfiguration</a> &gt; <a href="index.source.html" class="el_package">org.bremersee.exception.spring.boot.autoconfigure</a> &gt; <span class="el_source">RestApiExceptionMapperBootProperties.java</span></div><h1>RestApiExceptionMapperBootProperties.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2020-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.bremersee.exception.spring.boot.autoconfigure;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.bremersee.exception.RestApiExceptionMapperProperties;
+import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMapping;
+import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMappingConfig;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.HttpStatus;
+
+/**
+ * Configuration properties for the rest api exception handler or resolver.
+ *
+ * @author Christian Bremer
+ */
+@SuppressWarnings(&quot;SameNameButDifferent&quot;)
+@ConditionalOnClass(RestApiExceptionMapperProperties.class)
+@ConfigurationProperties(prefix = &quot;bremersee.exception-mapping&quot;)
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+public class RestApiExceptionMapperBootProperties {
+
+  /**
+   * The request paths the handler is responsible for. Default is empty.
+   */
+<span class="fc" id="L52">  private List&lt;String&gt; apiPaths = new ArrayList&lt;&gt;();</span>
+
+  /**
+   * The default values of a rest api exception that will be set, if a value is not detected. The
+   * default values are:
+   * &lt;table style=&quot;border: 1px solid&quot;&gt;
+   * &lt;thead&gt;
+   * &lt;tr&gt;
+   * &lt;th style=&quot;border: 1px solid&quot;&gt;attribute&lt;/th&gt;
+   * &lt;th style=&quot;border: 1px solid&quot;&gt;value&lt;/th&gt;
+   * &lt;/tr&gt;
+   * &lt;/thead&gt;
+   * &lt;tbody&gt;
+   * &lt;tr&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;status&lt;/td&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;500&lt;/td&gt;
+   * &lt;/tr&gt;
+   * &lt;tr&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;message&lt;/td&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;Internal Server Error&lt;/td&gt;
+   * &lt;/tr&gt;
+   * &lt;tr&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;code&lt;/td&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;UNSPECIFIED&lt;/td&gt;
+   * &lt;/tr&gt;
+   * &lt;/tbody&gt;
+   * &lt;/table&gt;
+   */
+  private ExceptionMappingImpl defaultExceptionMapping;
+
+  /**
+   * Values ​​of errors whose values ​​can not be determined automatically. The name of the
+   * exception can be a package, too (e. g. org.bremersee.foobar.*).
+   *
+   * &lt;p&gt;Examples application.yml:
+   * &lt;pre&gt;
+   * bremersee:
+   *   exception-mapping:
+   *     exception-mappings:
+   *     - exception-class-name: org.springframework.security.access.AccessDeniedException
+   *       status: 403
+   *       message: Forbidden
+   *       code: XYZ:0815
+   *     - exception-class-name: javax.persistence.EntityNotFoundException
+   *       status: 404
+   *       message: Not Found
+   *       code: GEN:404
+   * &lt;/pre&gt;
+   */
+<span class="fc" id="L101">  private List&lt;ExceptionMappingImpl&gt; exceptionMappings = new ArrayList&lt;&gt;();</span>
+
+  /**
+   * The default configuration of the exception mapping.
+   *
+   * &lt;table style=&quot;border: 1px solid&quot;&gt;
+   * &lt;thead&gt;
+   * &lt;tr&gt;
+   * &lt;th style=&quot;border: 1px solid&quot;&gt;attribute&lt;/th&gt;
+   * &lt;th style=&quot;border: 1px solid&quot;&gt;value&lt;/th&gt;
+   * &lt;/tr&gt;
+   * &lt;/thead&gt;
+   * &lt;tbody&gt;
+   * &lt;tr&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;includeException&lt;/td&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;true&lt;/td&gt;
+   * &lt;/tr&gt;
+   * &lt;tr&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;includeApplicationName&lt;/td&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;true&lt;/td&gt;
+   * &lt;/tr&gt;
+   * &lt;tr&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;includePath&lt;/td&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;true&lt;/td&gt;
+   * &lt;/tr&gt;
+   * &lt;tr&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;includeHandler&lt;/td&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;false&lt;/td&gt;
+   * &lt;/tr&gt;
+   * &lt;tr&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;includeStackTrace&lt;/td&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;false&lt;/td&gt;
+   * &lt;/tr&gt;
+   * &lt;tr&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;includeCause&lt;/td&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;true&lt;/td&gt;
+   * &lt;/tr&gt;
+   * &lt;tr&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;evaluateAnnotationFirst&lt;/td&gt;
+   * &lt;td style=&quot;border: 1px solid&quot;&gt;false&lt;/td&gt;
+   * &lt;/tr&gt;
+   * &lt;/tbody&gt;
+   * &lt;/table&gt;
+   *
+   * &lt;p&gt;If two values of a key are available (e. g. per annotation (see {@link
+   * org.springframework.web.bind.annotation.ResponseStatus}) and member attribute) it is possible
+   * with {@code evaluateAnnotationFirst} to specify which one should be used.
+   */
+  private ExceptionMappingConfigImpl defaultExceptionMappingConfig;
+
+  /**
+   * Specifies mapping configuration per exception class.  The name of the exception can be a
+   * package, too (e. g. org.bremersee.foobar.*).
+   *
+   * &lt;p&gt;Examples application.yml:
+   * &lt;pre&gt;
+   * bremersee:
+   *   exception-mapping:
+   *     exception-mapping-configs:
+   *     - exception-class-name: org.springframework.security.access.AccessDeniedException
+   *       include-exception-class-name: false
+   *       include-handler: true
+   *       include-cause: true
+   *     - exception-class-name: org.springframework.*
+   *       include-exception-class-name: true
+   *       include-handler: true
+   *       include-cause: false
+   * &lt;/pre&gt;
+   */
+<span class="fc" id="L170">  private List&lt;ExceptionMappingConfigImpl&gt; exceptionMappingConfigs = new ArrayList&lt;&gt;();</span>
+
+  /**
+   * Instantiates rest api exception mapper properties.
+   */
+<span class="fc" id="L175">  public RestApiExceptionMapperBootProperties() {</span>
+
+<span class="fc" id="L177">    defaultExceptionMapping = new ExceptionMappingImpl();</span>
+<span class="fc" id="L178">    defaultExceptionMapping.setExceptionClassName(&quot;*&quot;);</span>
+<span class="fc" id="L179">    defaultExceptionMapping.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());</span>
+<span class="fc" id="L180">    defaultExceptionMapping.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());</span>
+
+<span class="fc" id="L182">    defaultExceptionMappingConfig = new ExceptionMappingConfigImpl();</span>
+<span class="fc" id="L183">    defaultExceptionMappingConfig.setExceptionClassName(&quot;*&quot;);</span>
+
+<span class="fc" id="L185">    exceptionMappings.add(new ExceptionMappingImpl(</span>
+<span class="fc" id="L186">        IllegalArgumentException.class.getName(),</span>
+        HttpStatus.BAD_REQUEST,
+        null));
+
+<span class="fc" id="L190">    exceptionMappings.add(new ExceptionMappingImpl(</span>
+        &quot;org.springframework.security.access.AccessDeniedException&quot;,
+        HttpStatus.FORBIDDEN,
+        null));
+
+<span class="fc" id="L195">    exceptionMappings.add(new ExceptionMappingImpl(</span>
+        &quot;javax.persistence.EntityNotFoundException&quot;,
+        HttpStatus.NOT_FOUND,
+        null));
+<span class="fc" id="L199">  }</span>
+
+  /**
+   * To rest api exception mapper properties rest api exception mapper properties.
+   *
+   * @return the rest api exception mapper properties
+   */
+  public RestApiExceptionMapperProperties toRestApiExceptionMapperProperties() {
+<span class="fc" id="L207">    return RestApiExceptionMapperProperties.builder()</span>
+<span class="fc" id="L208">        .defaultExceptionMapping(getDefaultExceptionMapping())</span>
+<span class="fc" id="L209">        .exceptionMappings(getExceptionMappings())</span>
+<span class="fc" id="L210">        .defaultExceptionMappingConfig(getDefaultExceptionMappingConfig())</span>
+<span class="fc" id="L211">        .exceptionMappingConfigs(getExceptionMappingConfigs())</span>
+<span class="fc" id="L212">        .build();</span>
+  }
+
+  /**
+   * The exception mapping.
+   */
+  @SuppressWarnings(&quot;SameNameButDifferent&quot;)
+  @ToString
+  @EqualsAndHashCode
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class ExceptionMappingImpl implements ExceptionMapping {
+
+    /**
+     * Instantiates a new exception mapping.
+     *
+     * @param exceptionClassName the exception class name
+     * @param httpStatus the http status
+     * @param code the code
+     */
+<span class="fc" id="L232">    public ExceptionMappingImpl(String exceptionClassName, HttpStatus httpStatus, String code) {</span>
+<span class="fc" id="L233">      this.exceptionClassName = exceptionClassName;</span>
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">      if (httpStatus != null) {</span>
+<span class="fc" id="L235">        this.status = httpStatus.value();</span>
+<span class="fc" id="L236">        this.message = httpStatus.getReasonPhrase();</span>
+      }
+<span class="fc" id="L238">      this.code = code;</span>
+<span class="fc" id="L239">    }</span>
+
+    @Getter
+    @Setter
+    private String exceptionClassName;
+
+    @Setter
+    private int status;
+
+    @Getter
+    @Setter
+    private String message;
+
+    @Getter
+    @Setter
+    private String code;
+
+    /**
+     * Gets status.
+     *
+     * @return the status
+     */
+    public int getStatus() {
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">      if (HttpStatus.resolve(status) == null) {</span>
+<span class="nc" id="L263">        return HttpStatus.INTERNAL_SERVER_ERROR.value();</span>
+      }
+<span class="fc" id="L265">      return status;</span>
+    }
+
+  }
+
+  /**
+   * The exception mapping config.
+   */
+  @SuppressWarnings(&quot;SameNameButDifferent&quot;)
+  @ToString
+  @EqualsAndHashCode
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class ExceptionMappingConfigImpl implements ExceptionMappingConfig {
+
+    @Getter
+    @Setter
+    @NotNull
+    private String exceptionClassName;
+
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean includeMessage = true;
+
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean includeException = true;
+
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean includeApplicationName = true;
+
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean includePath = true;
+
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean includeHandler = false;
+
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean includeStackTrace = false;
+
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean includeCause = false;
+
+    @Getter
+    @Setter
+    @NotNull
+    private Boolean evaluateAnnotationFirst = false;
+
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

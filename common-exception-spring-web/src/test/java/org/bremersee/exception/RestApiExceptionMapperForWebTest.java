@@ -26,12 +26,15 @@ import lombok.NoArgsConstructor;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.bremersee.exception.RestApiExceptionMapperProperties.ExceptionMappingConfig;
+import org.bremersee.exception.annotation.ErrorCode;
 import org.bremersee.exception.model.Handler;
 import org.bremersee.exception.model.RestApiException;
 import org.bremersee.exception.model.StackTraceItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.HandlerMethod;
 
 /**
@@ -229,6 +232,86 @@ class RestApiExceptionMapperForWebTest {
     }
   }
 
+  @Test
+  void buildWithRuntimeExceptionAndMethodAnnotation(SoftAssertions softly) {
+    try {
+      new TestHandler().throwRuntimeExceptionWithMethodAnnotation();
+
+    } catch (RuntimeException runtimeException) {
+
+      RestApiException actual = targetWithIncludeAll.build(
+          runtimeException,
+          "/api/something",
+          handlerMethodOfRuntimeExceptionWithMethodAnnotation());
+
+      RestApiException expected = RestApiException.builder()
+          .timestamp(OffsetDateTime.now())
+          .status(HttpStatus.FORBIDDEN.value())
+          .error(HttpStatus.FORBIDDEN.getReasonPhrase())
+          .errorCode("1001")
+          .errorCodeInherited(false)
+          .message("No access")
+          .exception(RuntimeException.class.getName())
+          .application("test")
+          .path("/api/something")
+          .handler(Handler.builder()
+              .className("org.bremersee.exception.RestApiExceptionMapperForWebTest$TestHandler")
+              .methodName("throwRuntimeExceptionWithMethodAnnotation")
+              .methodParameterTypes(List.of())
+              .build())
+          .build();
+
+      softly.assertThat(actual)
+          .usingRecursiveComparison()
+          .ignoringFields("timestamp", "stackTrace")
+          .isEqualTo(expected);
+      softly.assertThat(actual.getTimestamp())
+          .isNotNull();
+      softly.assertThat(actual.getStackTrace())
+          .isNotEmpty();
+    }
+  }
+
+  @Test
+  void buildWithRuntimeExceptionAndClassAnnotation(SoftAssertions softly) {
+    try {
+      new TestHandler().throwRuntimeExceptionWithClassAnnotation();
+
+    } catch (RuntimeException runtimeException) {
+
+      RestApiException actual = targetWithIncludeAll.build(
+          runtimeException,
+          "/api/something",
+          handlerMethodOfRuntimeExceptionWithClassAnnotation());
+
+      RestApiException expected = RestApiException.builder()
+          .timestamp(OffsetDateTime.now())
+          .status(HttpStatus.CONFLICT.value())
+          .error(HttpStatus.CONFLICT.getReasonPhrase())
+          .errorCode("2002")
+          .errorCodeInherited(false)
+          .message("Merge problem")
+          .exception(RuntimeException.class.getName())
+          .application("test")
+          .path("/api/something")
+          .handler(Handler.builder()
+              .className("org.bremersee.exception.RestApiExceptionMapperForWebTest$TestHandler")
+              .methodName("throwRuntimeExceptionWithClassAnnotation")
+              .methodParameterTypes(List.of())
+              .build())
+          .build();
+
+      softly.assertThat(actual)
+          .usingRecursiveComparison()
+          .ignoringFields("timestamp", "stackTrace")
+          .isEqualTo(expected);
+      softly.assertThat(actual.getTimestamp())
+          .isNotNull();
+      softly.assertThat(actual.getStackTrace())
+          .isNotEmpty();
+    }
+  }
+
   private static RestApiException getRestApiExceptionOfServiceExceptionWithCause() {
     return RestApiException.builder()
         .timestamp(OffsetDateTime.parse("2021-12-24T18:21Z"))
@@ -279,7 +362,21 @@ class RestApiExceptionMapperForWebTest {
         requireNonNull(findMethod(TestHandler.class, "throwServiceExceptionWithCause")));
   }
 
+  private HandlerMethod handlerMethodOfRuntimeExceptionWithMethodAnnotation() {
+    return new HandlerMethod(
+        new TestHandler(),
+        requireNonNull(findMethod(TestHandler.class, "throwRuntimeExceptionWithMethodAnnotation")));
+  }
+
+  private HandlerMethod handlerMethodOfRuntimeExceptionWithClassAnnotation() {
+    return new HandlerMethod(
+        new TestHandler(),
+        requireNonNull(findMethod(TestHandler.class, "throwRuntimeExceptionWithClassAnnotation")));
+  }
+
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  @ErrorCode("2002")
+  @ResponseStatus(code = HttpStatus.CONFLICT, reason = "Merge problem")
   protected static class TestHandler {
 
     protected void throwServiceExceptionWithCause() {
@@ -289,6 +386,16 @@ class RestApiExceptionMapperForWebTest {
 
     protected void throwRestApiResponseException() {
       throw new RestApiResponseException(getRestApiExceptionOfServiceExceptionWithCause());
+    }
+
+    @ErrorCode("1001")
+    @ResponseStatus(code = HttpStatus.FORBIDDEN, reason = "No access")
+    protected void throwRuntimeExceptionWithMethodAnnotation() {
+      throw new RuntimeException();
+    }
+
+    protected void throwRuntimeExceptionWithClassAnnotation() {
+      throw new RuntimeException();
     }
 
   }

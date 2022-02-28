@@ -82,6 +82,9 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .or(() -> findHandlerMethod(handler)
             .map(method -> findMergedAnnotation(method, ResponseStatus.class))
             .map(ResponseStatus::code))
+        .or(() -> findHandlerClass(handler)
+            .map(handlerClass -> findMergedAnnotation(handlerClass, ResponseStatus.class))
+            .map(ResponseStatus::code))
         .or(() -> Optional
             .ofNullable(findMergedAnnotation(exception.getClass(), ResponseStatus.class))
             .map(ResponseStatus::code))
@@ -183,6 +186,9 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .or(() -> findHandlerMethod(handler)
             .map(method -> findMergedAnnotation(method, ErrorCode.class))
             .map(ErrorCode::value))
+        .or(() -> findHandlerClass(handler)
+            .map(handlerClass -> findMergedAnnotation(handlerClass, ErrorCode.class))
+            .map(ErrorCode::value))
         .or(() -> Optional
             .ofNullable(findMergedAnnotation(getUserClass(exception), ErrorCode.class))
             .map(ErrorCode::value))
@@ -215,11 +221,14 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
     }
     return Optional.ofNullable(exception.getMessage())
         .filter(msg -> !msg.isBlank() && !config.isEvaluateAnnotationFirst())
-        .or(() -> Optional
-            .ofNullable(findMergedAnnotation(getUserClass(exception), ResponseStatus.class))
-            .map(ResponseStatus::reason))
         .or(() -> findHandlerMethod(handler)
             .map(method -> findMergedAnnotation(method, ResponseStatus.class))
+            .map(ResponseStatus::reason))
+        .or(() -> findHandlerClass(handler)
+            .map(handlerClass -> findMergedAnnotation(handlerClass, ResponseStatus.class))
+            .map(ResponseStatus::reason))
+        .or(() -> Optional
+            .ofNullable(findMergedAnnotation(getUserClass(exception), ResponseStatus.class))
             .map(ResponseStatus::reason))
         .or(() -> Optional.ofNullable(getProperties().findExceptionMapping(exception).getMessage()))
         .map(msg -> restApiException.toBuilder().message(msg).build())

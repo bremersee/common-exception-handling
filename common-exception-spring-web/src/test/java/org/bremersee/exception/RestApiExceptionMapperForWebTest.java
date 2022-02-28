@@ -426,12 +426,6 @@ class RestApiExceptionMapperForWebTest {
         requireNonNull(findMethod(TestHandler.class, "throwRuntimeExceptionWithMethodAnnotation")));
   }
 
-  private HandlerMethod handlerMethodOfRuntimeExceptionWithClassAnnotation() {
-    return new HandlerMethod(
-        new TestHandler(),
-        requireNonNull(findMethod(TestHandler.class, "throwRuntimeExceptionWithClassAnnotation")));
-  }
-
   /**
    * The test handler.
    */

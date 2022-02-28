@@ -51,9 +51,7 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
    * Instantiates a new rest api exception parser.
    */
   public RestApiExceptionParserImpl() {
-    this(
-        Jackson2ObjectMapperBuilder.json().build(),
-        Jackson2ObjectMapperBuilder.xml().createXmlMapper(true).build());
+    this(new Jackson2ObjectMapperBuilder());
   }
 
   /**
@@ -62,10 +60,7 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
    * @param defaultCharset the default charset
    */
   public RestApiExceptionParserImpl(Charset defaultCharset) {
-    this(
-        Jackson2ObjectMapperBuilder.json().build(),
-        Jackson2ObjectMapperBuilder.xml().createXmlMapper(true).build(),
-        defaultCharset);
+    this(new Jackson2ObjectMapperBuilder(), defaultCharset);
   }
 
   /**
@@ -125,7 +120,13 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
     return xmlMapper;
   }
 
-  private Optional<ObjectMapper> getObjectMapper(RestApiResponseType responseType) {
+  /**
+   * Gets object mapper.
+   *
+   * @param responseType the response type
+   * @return the object mapper
+   */
+  Optional<ObjectMapper> getObjectMapper(RestApiResponseType responseType) {
     if (responseType == RestApiResponseType.JSON) {
       return Optional.of(getJsonMapper());
     }
@@ -181,6 +182,14 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
         .orElseGet(() -> getRestApiExceptionFromHeaders(response, httpStatus, headers));
   }
 
+  /**
+   * Gets rest api exception from headers.
+   *
+   * @param response the response
+   * @param httpStatus the http status
+   * @param httpHeaders the http headers
+   * @return the rest api exception from headers
+   */
   protected RestApiException getRestApiExceptionFromHeaders(
       String response,
       HttpStatus httpStatus,
@@ -256,7 +265,17 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
    */
   protected Charset getContentTypeCharset(MediaType contentType) {
     return Optional.ofNullable(contentType)
-        .flatMap(ct -> Optional.ofNullable(ct.getCharset()))
+        .map(ct -> {
+          RestApiResponseType responseType = RestApiResponseType.detectByContentType(ct);
+          if (RestApiResponseType.JSON == responseType) {
+            return StandardCharsets.UTF_8;
+          }
+          Charset charset = ct.getCharset();
+          if (isNull(charset) && RestApiResponseType.XML == responseType) {
+            return StandardCharsets.UTF_8;
+          }
+          return charset;
+        })
         .orElseGet(this::getDefaultCharset);
   }
 
@@ -272,9 +291,7 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
       try {
         time = OffsetDateTime.parse(value, RestApiExceptionConstants.TIMESTAMP_FORMATTER);
       } catch (final Exception e) {
-        if (log.isDebugEnabled()) {
-          log.debug("Parsing timestamp failed, timestamp = '{}'.", value);
-        }
+        log.debug("Parsing timestamp failed, timestamp = '{}'.", value);
       }
     }
     return time;

@@ -116,8 +116,8 @@ public enum RestApiResponseType {
 
   private static boolean isJson(MediaType contentType) {
     return nonNull(contentType)
-        && contentType.isCompatibleWith(MediaType.APPLICATION_JSON)
-        || contentType.isCompatibleWith(APPLICATION_PLUS_JSON);
+        && (contentType.isCompatibleWith(MediaType.APPLICATION_JSON)
+        || contentType.isCompatibleWith(APPLICATION_PLUS_JSON));
   }
 
   private static boolean isJsonAccepted(List<MediaType> accepted) {
@@ -131,8 +131,8 @@ public enum RestApiResponseType {
 
   private static boolean isXml(MediaType contentType) {
     return nonNull(contentType)
-        && contentType.isCompatibleWith(APPLICATION_XML)
-        || contentType.isCompatibleWith(APPLICATION_PLUS_XML);
+        && (contentType.isCompatibleWith(APPLICATION_XML)
+        || contentType.isCompatibleWith(APPLICATION_PLUS_XML));
   }
 
   private static boolean isXmlAccepted(List<MediaType> accepted) {

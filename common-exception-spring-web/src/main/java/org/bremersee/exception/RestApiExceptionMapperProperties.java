@@ -91,7 +91,9 @@ public interface RestApiExceptionMapperProperties {
   @Value.Default
   @NotNull
   default ExceptionMappingConfig getDefaultExceptionMappingConfig() {
-    return ExceptionMappingConfig.builder().build();
+    return ExceptionMappingConfig.builder()
+        .exceptionClassName("*")
+        .build();
   }
 
   /**
@@ -243,7 +245,7 @@ public interface RestApiExceptionMapperProperties {
      *
      * @return the exception class name
      */
-    @Nullable
+    @NotNull
     String getExceptionClassName();
 
     @Value.Default

@@ -132,7 +132,8 @@ public enum RestApiResponseType {
   private static boolean isXml(MediaType contentType) {
     return nonNull(contentType)
         && (contentType.isCompatibleWith(APPLICATION_XML)
-        || contentType.isCompatibleWith(APPLICATION_PLUS_XML));
+        || contentType.isCompatibleWith(APPLICATION_PLUS_XML)
+        || TEXT_XML.isCompatibleWith(contentType));
   }
 
   private static boolean isXmlAccepted(List<MediaType> accepted) {

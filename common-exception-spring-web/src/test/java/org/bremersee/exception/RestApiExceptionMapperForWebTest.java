@@ -62,6 +62,7 @@ class RestApiExceptionMapperForWebTest {
     var includeAllProperties = RestApiExceptionMapperProperties
         .builder()
         .defaultExceptionMappingConfig(ExceptionMappingConfig.builder()
+            .exceptionClassName("*")
             .isIncludeException(true)
             .isIncludeMessage(true)
             .isIncludeApplicationName(true)
@@ -86,6 +87,7 @@ class RestApiExceptionMapperForWebTest {
     var includeNothingProperties = RestApiExceptionMapperProperties
         .builder()
         .defaultExceptionMappingConfig(ExceptionMappingConfig.builder()
+            .exceptionClassName("*")
             .isIncludeException(false)
             .isIncludeMessage(false)
             .isIncludeApplicationName(false)
@@ -102,6 +104,7 @@ class RestApiExceptionMapperForWebTest {
     var includeNothingBesidesCauseProperties = RestApiExceptionMapperProperties
         .builder()
         .defaultExceptionMappingConfig(ExceptionMappingConfig.builder()
+            .exceptionClassName("*")
             .isIncludeException(false)
             .isIncludeMessage(false)
             .isIncludeApplicationName(false)

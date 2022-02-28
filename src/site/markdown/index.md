@@ -1,1 +1,1 @@
-# Common Exception Parent
+# Common Exception Handling

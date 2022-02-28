@@ -36,6 +36,9 @@
     <github.repo>common-exception-handling</github.repo>
     <!--suppress UnresolvedMavenProperty -->
     <gh-pages-staging-dir>${maven.multiModuleProjectDirectory}/target/staging</gh-pages-staging-dir>
+
+    <!-- see https://www.eclemma.org/jacoco/trunk/doc/prepare-agent-mojo.html -->
+    <argLine>-Dorg.bremersee.test.executor=NOT_SPECIFIED</argLine>
   </properties>
 
   <developers>
@@ -98,5 +101,17 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>build-system</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <argLine>-Dorg.bremersee.test.executor=BUILD_SYSTEM</argLine>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>

@@ -50,7 +50,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
     ApiExceptionResolver.class
 })
 @ConditionalOnBean({
-    RestApiExceptionMapper.class,
     Jackson2ObjectMapperBuilder.class
 })
 @AutoConfigureAfter({

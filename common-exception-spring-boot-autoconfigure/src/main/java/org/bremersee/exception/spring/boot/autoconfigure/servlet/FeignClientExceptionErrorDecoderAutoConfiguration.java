@@ -24,7 +24,6 @@ import org.bremersee.exception.feign.FeignClientExceptionErrorDecoder;
 import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -44,9 +43,6 @@ import org.springframework.util.ClassUtils;
 @ConditionalOnClass({
     ObjectMapper.class,
     FeignClientExceptionErrorDecoder.class
-})
-@ConditionalOnBean({
-    RestApiExceptionParser.class
 })
 @AutoConfigureAfter({
     RestApiExceptionParserAutoConfiguration.class
@@ -78,7 +74,8 @@ public class FeignClientExceptionErrorDecoderAutoConfiguration {
   public FeignClientExceptionErrorDecoder feignClientExceptionErrorDecoder(
       ObjectProvider<RestApiExceptionParser> parserProvider) {
 
-    RestApiExceptionParser parser = parserProvider.getIfAvailable(RestApiExceptionParserImpl::new);
+    RestApiExceptionParser parser = parserProvider
+        .getIfAvailable(RestApiExceptionParserImpl::new);
     return new FeignClientExceptionErrorDecoder(parser);
   }
 

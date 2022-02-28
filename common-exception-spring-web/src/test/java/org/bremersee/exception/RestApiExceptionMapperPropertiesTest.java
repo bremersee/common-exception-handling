@@ -73,21 +73,21 @@ class RestApiExceptionMapperPropertiesTest {
         .getDefaultExceptionMappingConfig();
     softly.assertThat(target.getExceptionClassName())
         .isEqualTo("*");
-    softly.assertThat(target.isIncludeMessage())
+    softly.assertThat(target.getIncludeMessage())
         .isTrue();
-    softly.assertThat(target.isIncludeException())
+    softly.assertThat(target.getIncludeException())
         .isTrue();
-    softly.assertThat(target.isIncludeApplicationName())
+    softly.assertThat(target.getIncludeApplicationName())
         .isTrue();
-    softly.assertThat(target.isIncludePath())
+    softly.assertThat(target.getIncludePath())
         .isTrue();
-    softly.assertThat(target.isIncludeHandler())
+    softly.assertThat(target.getIncludeHandler())
         .isFalse();
-    softly.assertThat(target.isIncludeStackTrace())
+    softly.assertThat(target.getIncludeStackTrace())
         .isFalse();
-    softly.assertThat(target.isIncludeCause())
+    softly.assertThat(target.getIncludeCause())
         .isFalse();
-    softly.assertThat(target.isEvaluateAnnotationFirst())
+    softly.assertThat(target.getEvaluateAnnotationFirst())
         .isFalse();
   }
 
@@ -133,12 +133,12 @@ class RestApiExceptionMapperPropertiesTest {
         .isEqualTo(target.getDefaultExceptionMappingConfig());
 
     boolean switchedValue = !target.getDefaultExceptionMappingConfig()
-        .isEvaluateAnnotationFirst();
+        .getEvaluateAnnotationFirst();
     target = RestApiExceptionMapperProperties.builder()
         .from(target)
         .addExceptionMappingConfigs(ExceptionMappingConfig.builder()
             .exceptionClassName("java.lang.*")
-            .isEvaluateAnnotationFirst(switchedValue)
+            .evaluateAnnotationFirst(switchedValue)
             .build())
         .build();
 
@@ -146,7 +146,7 @@ class RestApiExceptionMapperPropertiesTest {
     softly.assertThat(actual)
         .isNotEqualTo(target.getDefaultExceptionMappingConfig())
         .extracting(
-            ExceptionMappingConfig::isEvaluateAnnotationFirst,
+            ExceptionMappingConfig::getEvaluateAnnotationFirst,
             InstanceOfAssertFactories.BOOLEAN)
         .isEqualTo(switchedValue);
 

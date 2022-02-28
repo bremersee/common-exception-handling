@@ -249,7 +249,8 @@ public interface RestApiExceptionMapperProperties {
     String getExceptionClassName();
 
     @Value.Default
-    default boolean isIncludeMessage() {
+    @NotNull
+    default Boolean getIncludeMessage() {
       return true;
     }
 
@@ -259,7 +260,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    default boolean isIncludeException() {
+    @NotNull
+    default Boolean getIncludeException() {
       return true;
     }
 
@@ -269,7 +271,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    default boolean isIncludeApplicationName() {
+    @NotNull
+    default Boolean getIncludeApplicationName() {
       return true;
     }
 
@@ -279,7 +282,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    default boolean isIncludePath() {
+    @NotNull
+    default Boolean getIncludePath() {
       return true;
     }
 
@@ -289,7 +293,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    default boolean isIncludeHandler() {
+    @NotNull
+    default Boolean getIncludeHandler() {
       return false;
     }
 
@@ -299,7 +304,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    default boolean isIncludeStackTrace() {
+    @NotNull
+    default Boolean getIncludeStackTrace() {
       return false;
     }
 
@@ -309,7 +315,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    default boolean isIncludeCause() {
+    @NotNull
+    default Boolean getIncludeCause() {
       return false;
     }
 
@@ -319,7 +326,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    default boolean isEvaluateAnnotationFirst() {
+    @NotNull
+    default Boolean getEvaluateAnnotationFirst() {
       return false;
     }
 

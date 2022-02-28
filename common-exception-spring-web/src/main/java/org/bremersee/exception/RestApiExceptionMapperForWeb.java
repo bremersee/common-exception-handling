@@ -186,7 +186,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       ExceptionMappingConfig config) {
 
     return Optional.of(exception)
-        .filter(exc -> (exc instanceof ErrorCodeAware) && !config.isEvaluateAnnotationFirst())
+        .filter(exc -> (exc instanceof ErrorCodeAware) && !config.getEvaluateAnnotationFirst())
         .map(exc -> ((ErrorCodeAware) exc).getErrorCode())
         .or(() -> findHandlerMethod(handler)
             .map(method -> findMergedAnnotation(method, ErrorCode.class))
@@ -221,11 +221,11 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       Object handler,
       ExceptionMappingConfig config) {
 
-    if (!config.isIncludeMessage()) {
+    if (!config.getIncludeMessage()) {
       return restApiException;
     }
     return Optional.ofNullable(exception.getMessage())
-        .filter(msg -> !msg.isBlank() && !config.isEvaluateAnnotationFirst())
+        .filter(msg -> !msg.isBlank() && !config.getEvaluateAnnotationFirst())
         .or(() -> findHandlerMethod(handler)
             .map(method -> findMergedAnnotation(method, ResponseStatus.class))
             .map(ResponseStatus::reason))
@@ -253,7 +253,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       Throwable exception,
       ExceptionMappingConfig config) {
 
-    if (!config.isIncludeException()) {
+    if (!config.getIncludeException()) {
       return restApiException;
     }
     return restApiException.toBuilder()
@@ -272,7 +272,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       RestApiException restApiException,
       ExceptionMappingConfig config) {
 
-    if (!config.isIncludeApplicationName()) {
+    if (!config.getIncludeApplicationName()) {
       return restApiException;
     }
     return restApiException.toBuilder().application(getApplicationName()).build();
@@ -291,7 +291,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       String path,
       ExceptionMappingConfig config) {
 
-    if (!config.isIncludePath() || isNull(path)) {
+    if (!config.getIncludePath() || isNull(path)) {
       return restApiException;
     }
     return restApiException.toBuilder().path(path).build();
@@ -310,7 +310,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       Object handler,
       ExceptionMappingConfig config) {
 
-    if (!config.isIncludeHandler() || isNull(handler)) {
+    if (!config.getIncludeHandler() || isNull(handler)) {
       return restApiException;
     }
     return findHandlerMethod(handler)
@@ -339,7 +339,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       StackTraceElement[] stackTrace,
       ExceptionMappingConfig config) {
 
-    if (!config.isIncludeStackTrace() || isNull(stackTrace) || stackTrace.length == 0) {
+    if (!config.getIncludeStackTrace() || isNull(stackTrace) || stackTrace.length == 0) {
       return restApiException;
     }
     return restApiException.toBuilder()
@@ -391,7 +391,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
                 .errorCode(causeErrorCode)
                 .errorCodeInherited(true);
           }
-          if (config.isIncludeCause()) {
+          if (config.getIncludeCause()) {
             builder = builder.cause(cause);
           }
           return builder.build();
@@ -419,25 +419,25 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       target.setErrorCode(source.getErrorCode());
       target.setErrorCodeInherited(source.getErrorCodeInherited());
     }
-    if (config.isIncludeMessage()) {
+    if (config.getIncludeMessage()) {
       target.setMessage(source.getMessage());
     }
-    if (config.isIncludeException()) {
+    if (config.getIncludeException()) {
       target.setException(source.getException());
     }
-    if (config.isIncludeApplicationName()) {
+    if (config.getIncludeApplicationName()) {
       target.setApplication(source.getApplication());
     }
-    if (config.isIncludePath()) {
+    if (config.getIncludePath()) {
       target.setPath(source.getPath());
     }
-    if (config.isIncludeHandler()) {
+    if (config.getIncludeHandler()) {
       target.setHandler(source.getHandler());
     }
-    if (config.isIncludeStackTrace()) {
+    if (config.getIncludeStackTrace()) {
       target.setStackTrace(source.getStackTrace());
     }
-    if (config.isIncludeCause() && nonNull(source.getCause())) {
+    if (config.getIncludeCause() && nonNull(source.getCause())) {
       target.setCause(reconfigureRestApiException(source.getCause(), config));
     }
     source.furtherDetails().forEach(target::furtherDetails);

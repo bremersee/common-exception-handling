@@ -35,8 +35,8 @@ import org.springframework.http.HttpStatus;
  * @author Christian Bremer
  */
 @Valid
-public class FeignClientException extends FeignException implements HttpStatusAware,
-    RestApiExceptionAware {
+public class FeignClientException extends FeignException
+    implements HttpStatusAware, RestApiExceptionAware {
 
   @Getter
   private final RestApiException restApiException;

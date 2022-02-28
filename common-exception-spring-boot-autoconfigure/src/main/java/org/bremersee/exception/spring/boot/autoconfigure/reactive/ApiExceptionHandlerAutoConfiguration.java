@@ -52,8 +52,7 @@ import org.springframework.util.ClassUtils;
 @ConditionalOnBean({
     ErrorAttributes.class,
     WebProperties.class,
-    ServerCodecConfigurer.class,
-    RestApiExceptionMapper.class
+    ServerCodecConfigurer.class
 })
 @AutoConfigureAfter({
     RestApiExceptionMapperForWebFluxAutoConfiguration.class
@@ -112,9 +111,6 @@ public class ApiExceptionHandlerAutoConfiguration {
     Assert.notNull(
         errorAttributes.getIfAvailable(),
         "Error attributes must be present.");
-    Assert.notNull(
-        webProperties.getIfAvailable(),
-        "Resources must be present.");
     Assert.notNull(
         serverCodecConfigurer.getIfAvailable(),
         "Server codec configurer must be present.");

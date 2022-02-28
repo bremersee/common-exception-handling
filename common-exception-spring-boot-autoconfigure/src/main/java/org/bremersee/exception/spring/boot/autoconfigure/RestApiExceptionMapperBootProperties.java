@@ -283,35 +283,43 @@ public class RestApiExceptionMapperBootProperties {
 
     @Getter
     @Setter
-    private boolean isIncludeMessage = true;
+    @NotNull
+    private Boolean includeMessage = true;
 
     @Getter
     @Setter
-    private boolean includeException = true;
+    @NotNull
+    private Boolean includeException = true;
 
     @Getter
     @Setter
-    private boolean includeApplicationName = true;
+    @NotNull
+    private Boolean includeApplicationName = true;
 
     @Getter
     @Setter
-    private boolean includePath = true;
+    @NotNull
+    private Boolean includePath = true;
 
     @Getter
     @Setter
-    private boolean includeHandler = false;
+    @NotNull
+    private Boolean includeHandler = false;
 
     @Getter
     @Setter
-    private boolean includeStackTrace = false;
+    @NotNull
+    private Boolean includeStackTrace = false;
 
     @Getter
     @Setter
-    private boolean includeCause = false;
+    @NotNull
+    private Boolean includeCause = false;
 
     @Getter
     @Setter
-    private boolean evaluateAnnotationFirst = false;
+    @NotNull
+    private Boolean evaluateAnnotationFirst = false;
 
   }
 

@@ -44,6 +44,7 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * @author Christian Bremer
  */
+@SuppressWarnings("SameNameButDifferent")
 public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
 
   @Getter(AccessLevel.PROTECTED)

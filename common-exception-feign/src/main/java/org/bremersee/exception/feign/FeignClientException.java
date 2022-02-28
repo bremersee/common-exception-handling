@@ -34,6 +34,7 @@ import org.springframework.http.HttpStatus;
  *
  * @author Christian Bremer
  */
+@SuppressWarnings("SameNameButDifferent")
 @Valid
 public class FeignClientException extends FeignException
     implements HttpStatusAware, RestApiExceptionAware {

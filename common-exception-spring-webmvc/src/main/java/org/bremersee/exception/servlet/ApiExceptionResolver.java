@@ -58,6 +58,7 @@ import org.springframework.web.util.WebUtils;
  *
  * @author Christian Bremer
  */
+@SuppressWarnings("SameNameButDifferent")
 @Slf4j
 public class ApiExceptionResolver implements HandlerExceptionResolver {
 
@@ -257,9 +258,9 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
 
     @Override
     protected void renderMergedOutputModel(
-        Map<String, Object> map,
+        @NonNull Map<String, Object> map,
         @NonNull HttpServletRequest httpServletRequest,
-        HttpServletResponse httpServletResponse) {
+        @NonNull HttpServletResponse httpServletResponse) {
 
       if (!isEmpty(restApiException.getId())) {
         httpServletResponse.addHeader(

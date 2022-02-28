@@ -27,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * @author Christian Bremer
  */
+@SuppressWarnings("SameNameButDifferent")
 public class RestApiResponseException
     extends ResponseStatusException
     implements RestApiExceptionAware {

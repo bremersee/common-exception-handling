@@ -26,6 +26,7 @@ import lombok.Getter;
  *
  * @author Christian Bremer
  */
+@SuppressWarnings("SameNameButDifferent")
 @EqualsAndHashCode(callSuper = true)
 public class ServiceException extends RuntimeException
     implements ErrorCodeAware, HttpStatusAware {

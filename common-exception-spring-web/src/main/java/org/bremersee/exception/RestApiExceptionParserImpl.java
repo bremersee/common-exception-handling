@@ -290,7 +290,7 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
     if (nonNull(value)) {
       try {
         time = OffsetDateTime.parse(value, RestApiExceptionConstants.TIMESTAMP_FORMATTER);
-      } catch (final Exception e) {
+      } catch (Exception e) {
         log.debug("Parsing timestamp failed, timestamp = '{}'.", value);
       }
     }

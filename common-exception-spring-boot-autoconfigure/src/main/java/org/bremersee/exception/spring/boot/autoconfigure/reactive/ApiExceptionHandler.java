@@ -55,6 +55,7 @@ import reactor.core.publisher.Mono;
  *
  * @author Christian Bremer
  */
+@SuppressWarnings("SameNameButDifferent")
 @Valid
 @Slf4j
 public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {

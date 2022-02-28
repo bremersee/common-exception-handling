@@ -37,6 +37,7 @@ import org.springframework.http.HttpStatus;
  *
  * @author Christian Bremer
  */
+@SuppressWarnings("SameNameButDifferent")
 @ConditionalOnClass(RestApiExceptionMapperProperties.class)
 @ConfigurationProperties(prefix = "bremersee.exception-mapping")
 @Getter
@@ -214,6 +215,7 @@ public class RestApiExceptionMapperBootProperties {
   /**
    * The exception mapping.
    */
+  @SuppressWarnings("SameNameButDifferent")
   @ToString
   @EqualsAndHashCode
   @NoArgsConstructor
@@ -227,7 +229,6 @@ public class RestApiExceptionMapperBootProperties {
      * @param httpStatus the http status
      * @param code the code
      */
-    @SuppressWarnings("WeakerAccess")
     public ExceptionMappingImpl(String exceptionClassName, HttpStatus httpStatus, String code) {
       this.exceptionClassName = exceptionClassName;
       if (httpStatus != null) {
@@ -269,7 +270,7 @@ public class RestApiExceptionMapperBootProperties {
   /**
    * The exception mapping config.
    */
-  @SuppressWarnings("WeakerAccess")
+  @SuppressWarnings("SameNameButDifferent")
   @ToString
   @EqualsAndHashCode
   @NoArgsConstructor

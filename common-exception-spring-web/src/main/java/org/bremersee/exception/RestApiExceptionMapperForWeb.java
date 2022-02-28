@@ -368,15 +368,12 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       Throwable exception,
       ExceptionMappingConfig config) {
 
-    if (isNull(exception)) {
-      return restApiException;
-    }
-
-    return Optional.of(exception)
+    return Optional.ofNullable(exception)
         .filter(exc -> exc instanceof RestApiExceptionAware)
         .map(exc -> ((RestApiExceptionAware) exc).getRestApiException())
         .map(cause -> reconfigureRestApiException(cause, config))
-        .or(() -> Optional.ofNullable(exception.getCause())
+        .or(() -> Optional.ofNullable(exception)
+            .map(Throwable::getCause)
             .map(cause -> {
               RestApiException rae = new RestApiException();
               rae = setErrorCode(rae, cause, null, config);

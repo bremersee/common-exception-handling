@@ -16,7 +16,6 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure;
 
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -271,31 +270,22 @@ public class RestApiExceptionMapperBootProperties {
   @AllArgsConstructor
   public static class ExceptionMappingConfigImpl implements ExceptionMappingConfig {
 
-    @NotNull
     private String exceptionClassName;
 
-    @NotNull
     private Boolean includeMessage = true;
 
-    @NotNull
     private Boolean includeException = true;
 
-    @NotNull
     private Boolean includeApplicationName = true;
 
-    @NotNull
     private Boolean includePath = true;
 
-    @NotNull
     private Boolean includeHandler = false;
 
-    @NotNull
     private Boolean includeStackTrace = false;
 
-    @NotNull
     private Boolean includeCause = false;
 
-    @NotNull
     private Boolean evaluateAnnotationFirst = false;
 
   }

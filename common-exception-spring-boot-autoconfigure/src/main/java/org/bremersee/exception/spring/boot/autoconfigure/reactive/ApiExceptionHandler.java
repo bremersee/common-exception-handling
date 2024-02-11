@@ -20,8 +20,6 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNullElse;
 import static org.springframework.util.StringUtils.hasText;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -55,7 +53,6 @@ import reactor.core.publisher.Mono;
  *
  * @author Christian Bremer
  */
-@Valid
 @Slf4j
 public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
 
@@ -64,11 +61,9 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
 
   @Getter(AccessLevel.PROTECTED)
   @Setter
-  @NotNull
   private PathMatcher pathMatcher = new AntPathMatcher();
 
   @Getter(AccessLevel.PROTECTED)
-  @NotNull
   private final RestApiExceptionMapper restApiExceptionMapper;
 
   /**
@@ -83,11 +78,11 @@ public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {
    */
   public ApiExceptionHandler(
       List<String> apiPaths,
-      @NotNull ErrorAttributes errorAttributes,
-      @NotNull WebProperties.Resources resources,
-      @NotNull ApplicationContext applicationContext,
+      ErrorAttributes errorAttributes,
+      WebProperties.Resources resources,
+      ApplicationContext applicationContext,
       ServerCodecConfigurer serverCodecConfigurer,
-      @NotNull RestApiExceptionMapper restApiExceptionMapper) {
+      RestApiExceptionMapper restApiExceptionMapper) {
 
     super(errorAttributes, resources, applicationContext);
     if (serverCodecConfigurer != null) {

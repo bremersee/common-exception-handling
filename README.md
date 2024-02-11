@@ -6,4 +6,4 @@
 
 - [Release](https://bremersee.github.io/common-exception-handling/index.html)
 
-- [Snapshot](https://nexus.bremersee.org/repository/maven-sites/common-exception-handling/0.0.1-SNAPSHOT/index.html)
+- [Snapshot](https://nexus.bremersee.org/repository/maven-sites/common-exception-handling/1.0.0-SNAPSHOT/index.html)

@@ -17,8 +17,6 @@
 package org.bremersee.exception;
 
 import java.util.List;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.immutables.value.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
@@ -29,7 +27,6 @@ import org.springframework.lang.Nullable;
  * @author Christian Bremer
  */
 @Value.Immutable
-@Valid
 public interface RestApiExceptionMapperProperties {
 
   /**
@@ -47,7 +44,6 @@ public interface RestApiExceptionMapperProperties {
    * @return the default exception mapping
    */
   @Value.Default
-  @NotNull
   default ExceptionMapping getDefaultExceptionMapping() {
     return ExceptionMapping.builder()
         .message(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
@@ -62,7 +58,6 @@ public interface RestApiExceptionMapperProperties {
    * @return the exception mappings
    */
   @Value.Default
-  @NotNull
   default List<ExceptionMapping> getExceptionMappings() {
     return List.of(
         ExceptionMapping.builder()
@@ -89,7 +84,6 @@ public interface RestApiExceptionMapperProperties {
    * @return the default exception mapping config
    */
   @Value.Default
-  @NotNull
   default ExceptionMappingConfig getDefaultExceptionMappingConfig() {
     return ExceptionMappingConfig.builder()
         .exceptionClassName("*")
@@ -102,7 +96,6 @@ public interface RestApiExceptionMapperProperties {
    * @return the exception mapping configs
    */
   @Value.Default
-  @NotNull
   default List<ExceptionMappingConfig> getExceptionMappingConfigs() {
     return List.of();
   }
@@ -113,7 +106,6 @@ public interface RestApiExceptionMapperProperties {
    * @param throwable the throwable
    * @return the exception mapping
    */
-  @NotNull
   default ExceptionMapping findExceptionMapping(Throwable throwable) {
     return getExceptionMappings()
         .stream()
@@ -129,7 +121,6 @@ public interface RestApiExceptionMapperProperties {
    * @param throwable the throwable
    * @return the exception mapping config
    */
-  @NotNull
   default ExceptionMappingConfig findExceptionMappingConfig(Throwable throwable) {
     return getExceptionMappingConfigs()
         .stream()
@@ -194,7 +185,6 @@ public interface RestApiExceptionMapperProperties {
      *
      * @return the exception class name
      */
-    @NotNull
     String getExceptionClassName();
 
     /**
@@ -245,11 +235,9 @@ public interface RestApiExceptionMapperProperties {
      *
      * @return the exception class name
      */
-    @NotNull
     String getExceptionClassName();
 
     @Value.Default
-    @NotNull
     default Boolean getIncludeMessage() {
       return true;
     }
@@ -260,7 +248,6 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludeException() {
       return true;
     }
@@ -271,7 +258,6 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludeApplicationName() {
       return true;
     }
@@ -282,7 +268,6 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludePath() {
       return true;
     }
@@ -293,7 +278,6 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludeHandler() {
       return false;
     }
@@ -304,7 +288,6 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludeStackTrace() {
       return false;
     }
@@ -315,7 +298,6 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludeCause() {
       return false;
     }
@@ -326,7 +308,6 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getEvaluateAnnotationFirst() {
       return false;
     }

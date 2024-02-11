@@ -16,8 +16,6 @@
 
 package org.bremersee.exception;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.lang.Nullable;
 
@@ -26,7 +24,6 @@ import org.springframework.lang.Nullable;
  *
  * @author Christian Bremer
  */
-@Valid
 public interface RestApiExceptionMapper {
 
   /**
@@ -38,8 +35,8 @@ public interface RestApiExceptionMapper {
    * @param handler the handler (optional)
    * @return the rest api exception
    */
-  @NotNull RestApiException build(
-      @NotNull Throwable exception,
+  RestApiException build(
+      Throwable exception,
       @Nullable String requestPath,
       @Nullable Object handler);
 

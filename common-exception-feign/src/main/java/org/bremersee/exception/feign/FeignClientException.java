@@ -20,7 +20,6 @@ import feign.FeignException;
 import feign.Request;
 import java.util.Collection;
 import java.util.Map;
-import jakarta.validation.Valid;
 import lombok.Getter;
 import org.bremersee.exception.HttpStatusAware;
 import org.bremersee.exception.RestApiExceptionAware;
@@ -35,7 +34,6 @@ import org.springframework.http.HttpStatus;
  * @author Christian Bremer
  */
 @Getter
-@Valid
 public class FeignClientException extends FeignException
     implements HttpStatusAware, RestApiExceptionAware {
 

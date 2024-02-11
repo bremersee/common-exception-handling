@@ -30,7 +30,6 @@ import feign.Response;
 import feign.RetryableException;
 import feign.Util;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -134,9 +133,14 @@ class FeignClientExceptionErrorDecoderTest {
     when(restApiExceptionParser.parseException(any(byte[].class), any(), any()))
         .thenReturn(restException);
 
-    Response response = createResponse(httpStatus, "30");
+    Response response = createResponse(httpStatus, "20");
 
-    Exception actual = target.decode("saveSomething", response);
+    FeignClientExceptionErrorDecoder spyTarget = spy(target);
+    doReturn(0L)
+        .when(spyTarget)
+        .currentTimeMillis();
+
+    Exception actual = spyTarget.decode("saveSomething", response);
     softly.assertThat(actual)
         .isNotNull()
         .isInstanceOf(RetryableException.class)
@@ -145,8 +149,8 @@ class FeignClientExceptionErrorDecoderTest {
     softly.assertThat(actual)
         .isNotNull()
         .isInstanceOf(RetryableException.class)
-        .extracting(exc -> ((RetryableException) exc).retryAfter(), InstanceOfAssertFactories.DATE)
-        .isBefore(Instant.now().plusMillis(30001));
+        .extracting(exc -> ((RetryableException) exc).retryAfter(), InstanceOfAssertFactories.LONG)
+        .isEqualTo(20000L);
     softly.assertThat(actual)
         .isNotNull()
         .isInstanceOf(RetryableException.class)

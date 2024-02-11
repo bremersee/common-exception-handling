@@ -26,7 +26,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * The rest api exception mapper for web flux test.
@@ -67,4 +69,32 @@ class RestApiExceptionMapperForWebFluxTest {
     softly.assertThat(target.detectHttpStatus(otherException, null))
         .isEqualTo(HttpStatus.BAD_REQUEST);
   }
+
+  /**
+   * Gets error.
+   *
+   * @param softly the softly
+   */
+  @Test
+  void getError(SoftAssertions softly) {
+    String expected = "Missing value xyz";
+    ResponseStatusException rse = new ResponseStatusException(HttpStatus.BAD_REQUEST, expected);
+    String actual = target.getError(rse, HttpStatus.BAD_REQUEST);
+    softly
+        .assertThat(actual)
+        .isEqualTo(expected);
+
+    rse = new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    actual = target.getError(rse, HttpStatus.BAD_REQUEST);
+    softly
+        .assertThat(actual)
+        .isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
+
+    actual = target
+        .getError(new Exception("Test exception"), HttpStatusCode.valueOf(599));
+    softly
+        .assertThat(actual)
+        .isNull();
+  }
+
 }

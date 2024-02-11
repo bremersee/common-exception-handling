@@ -105,9 +105,9 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
    * @param status the status
    * @return the optional
    */
-  protected Optional<HttpStatus> fromStatus(Integer status) {
+  protected Optional<HttpStatusCode> fromStatus(Integer status) {
     return Optional.ofNullable(status)
-        .map(HttpStatus::resolve);
+        .map(HttpStatus::valueOf);
   }
 
   @Nullable

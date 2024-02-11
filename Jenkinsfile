@@ -8,7 +8,7 @@ pipeline {
     DEPLOY = true
     SNAPSHOT_SITE = true
     RELEASE_SITE = true
-    DEPLOY_FEATURE = true
+    DEPLOY_FEATURE = false
   }
   tools {
     jdk 'jdk17'

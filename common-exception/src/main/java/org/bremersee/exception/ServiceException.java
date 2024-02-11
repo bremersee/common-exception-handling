@@ -444,7 +444,7 @@ public class ServiceException extends RuntimeException
    *
    * @return the builder
    */
-  public static ServiceExceptionBuilder<ServiceException> builder() {
+  public static ServiceExceptionBuilder<? extends ServiceException> builder() {
 
     return new AbstractServiceExceptionBuilder<>() {
 

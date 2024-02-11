@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bremersee.exception.spring.boot.autoconfigure;
+package org.bremersee.exception.spring.boot.autoconfigure.servlet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -34,16 +34,16 @@ import org.springframework.mock.env.MockEnvironment;
  *
  * @author Christian Bremer
  */
-class RestApiExceptionParserAutoConfigurationTest {
+class RestApiExceptionParserForWebAutoConfigurationTest {
 
-  private RestApiExceptionParserAutoConfiguration target;
+  private RestApiExceptionParserForWebAutoConfiguration target;
 
   /**
    * Sets .
    */
   @BeforeEach
   void setup() {
-    target = new RestApiExceptionParserAutoConfiguration();
+    target = new RestApiExceptionParserForWebAutoConfiguration();
   }
 
   /**
@@ -58,21 +58,10 @@ class RestApiExceptionParserAutoConfigurationTest {
    * Rest api exception parser for servlet.
    */
   @Test
-  void restApiExceptionParserForServlet() {
+  void restApiExceptionParser() {
     Environment environment = new MockEnvironment();
     RestApiExceptionParser actual = target
         .restApiExceptionParser(environment, objectMapperBuilderProvider());
-    assertThat(actual)
-        .isNotNull();
-  }
-
-  /**
-   * Rest api exception parser for reactive.
-   */
-  @Test
-  void restApiExceptionParserForReactive() {
-    RestApiExceptionParser actual = target
-        .restApiExceptionParser(objectMapperBuilderProvider());
     assertThat(actual)
         .isNotNull();
   }

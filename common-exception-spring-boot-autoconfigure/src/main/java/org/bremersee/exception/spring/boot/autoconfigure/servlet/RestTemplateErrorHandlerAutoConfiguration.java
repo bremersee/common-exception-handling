@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.RestApiResponseErrorHandler;
-import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -43,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
     RestApiResponseErrorHandler.class
 })
 @AutoConfigureAfter({
-    RestApiExceptionParserAutoConfiguration.class
+    RestApiExceptionParserForWebAutoConfiguration.class
 })
 @AutoConfiguration
 @Order(100)

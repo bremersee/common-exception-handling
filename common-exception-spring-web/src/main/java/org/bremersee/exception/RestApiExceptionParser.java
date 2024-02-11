@@ -16,13 +16,13 @@
 
 package org.bremersee.exception;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -43,7 +43,7 @@ public interface RestApiExceptionParser {
    */
   RestApiException parseException(
       String response,
-      @NotNull HttpStatus httpStatus,
+      @NotNull HttpStatusCode httpStatus,
       @NotNull HttpHeaders headers);
 
   /**
@@ -56,7 +56,7 @@ public interface RestApiExceptionParser {
    */
   RestApiException parseException(
       byte[] response,
-      @NotNull HttpStatus httpStatus,
+      @NotNull HttpStatusCode httpStatus,
       @NotNull HttpHeaders headers);
 
   /**
@@ -70,7 +70,7 @@ public interface RestApiExceptionParser {
    */
   default RestApiException parseException(
       InputStream response,
-      @NotNull HttpStatus httpStatus,
+      @NotNull HttpStatusCode httpStatus,
       @NotNull HttpHeaders headers) throws IOException {
 
     return parseException(FileCopyUtils.copyToByteArray(response), httpStatus, headers);

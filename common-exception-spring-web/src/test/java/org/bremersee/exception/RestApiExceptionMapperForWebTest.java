@@ -475,7 +475,6 @@ class RestApiExceptionMapperForWebTest {
   /**
    * The test handler.
    */
-  @SuppressWarnings("SameNameButDifferent")
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   @ErrorCode("2002")
   @ResponseStatus(code = HttpStatus.CONFLICT, reason = "Merge problem")

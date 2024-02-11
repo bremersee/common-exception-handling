@@ -23,12 +23,12 @@ import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.RestApiResponseErrorHandler;
 import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,7 +45,7 @@ import org.springframework.web.client.RestTemplate;
 @AutoConfigureAfter({
     RestApiExceptionParserAutoConfiguration.class
 })
-@Configuration
+@AutoConfiguration
 @Order(100)
 @Slf4j
 public class RestTemplateErrorHandlerAutoConfiguration implements RestTemplateCustomizer {

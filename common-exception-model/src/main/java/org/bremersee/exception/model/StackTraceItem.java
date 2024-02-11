@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serial;
 import java.io.Serializable;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -33,7 +34,6 @@ import lombok.ToString;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings("SameNameButDifferent")
 @Schema(description = "A stack trace element of an exception.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_EMPTY)
@@ -44,17 +44,30 @@ import lombok.ToString;
 @NoArgsConstructor
 public class StackTraceItem implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
+  /**
+   * The declaring class.
+   */
   @Schema(description = "The declaring class.")
   private String declaringClass;
 
+  /**
+   * The method name.
+   */
   @Schema(description = "The method name.")
   private String methodName;
 
+  /**
+   * The file name.
+   */
   @Schema(description = "The file name.")
   private String fileName;
 
+  /**
+   * The line number.
+   */
   @Schema(description = "The line number.")
   private Integer lineNumber;
 

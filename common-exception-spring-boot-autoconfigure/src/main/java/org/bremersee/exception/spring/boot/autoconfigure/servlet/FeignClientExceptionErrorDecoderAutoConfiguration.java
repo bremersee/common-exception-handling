@@ -23,6 +23,7 @@ import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.feign.FeignClientExceptionErrorDecoder;
 import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -30,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.ClassUtils;
 
@@ -47,7 +47,7 @@ import org.springframework.util.ClassUtils;
 @AutoConfigureAfter({
     RestApiExceptionParserAutoConfiguration.class
 })
-@Configuration
+@AutoConfiguration
 @Slf4j
 public class FeignClientExceptionErrorDecoderAutoConfiguration {
 
@@ -56,10 +56,11 @@ public class FeignClientExceptionErrorDecoderAutoConfiguration {
    */
   @EventListener(ApplicationReadyEvent.class)
   public void init() {
-    log.info("\n"
-            + "*********************************************************************************\n"
-            + "* {}\n"
-            + "*********************************************************************************",
+    log.info("""
+
+            *********************************************************************************
+            * {}
+            *********************************************************************************""",
         ClassUtils.getUserClass(getClass()).getSimpleName());
   }
 

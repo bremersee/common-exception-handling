@@ -30,8 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.util.ObjectUtils;
 
 /**
  * The default implementation of a http response parser that creates a {@link RestApiException}.
@@ -90,9 +92,7 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
    * @param objectMapper the object mapper
    * @param xmlMapper the xml mapper
    */
-  public RestApiExceptionParserImpl(
-      ObjectMapper objectMapper,
-      XmlMapper xmlMapper) {
+  public RestApiExceptionParserImpl(ObjectMapper objectMapper, XmlMapper xmlMapper) {
     this(objectMapper, xmlMapper, null);
   }
 
@@ -109,7 +109,8 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
       Charset defaultCharset) {
     this.objectMapper = objectMapper;
     this.xmlMapper = xmlMapper;
-    this.defaultCharset = nonNull(defaultCharset) ? defaultCharset : StandardCharsets.UTF_8;
+    this.defaultCharset = Optional.ofNullable(defaultCharset)
+        .orElse(StandardCharsets.UTF_8);
   }
 
   private ObjectMapper getJsonMapper() {
@@ -148,7 +149,7 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
   @Override
   public RestApiException parseException(
       byte[] response,
-      HttpStatus httpStatus,
+      HttpStatusCode httpStatus,
       HttpHeaders headers) {
 
     String responseStr;
@@ -163,7 +164,7 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
   @Override
   public RestApiException parseException(
       String response,
-      HttpStatus httpStatus,
+      HttpStatusCode httpStatus,
       HttpHeaders headers) {
 
     RestApiResponseType responseType = RestApiResponseType
@@ -178,7 +179,14 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
             return Optional.empty();
           }
         }))
-        .map(restApiException -> applyHttpStatus(restApiException, httpStatus))
+        .map(restApiException -> {
+          restApiException.setStatus(httpStatus.value());
+          if ((httpStatus instanceof HttpStatus status)
+              && ObjectUtils.isEmpty(restApiException.getError())) {
+            restApiException.setError(status.getReasonPhrase());
+          }
+          return restApiException;
+        })
         .orElseGet(() -> getRestApiExceptionFromHeaders(response, httpStatus, headers));
   }
 
@@ -192,7 +200,7 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
    */
   protected RestApiException getRestApiExceptionFromHeaders(
       String response,
-      HttpStatus httpStatus,
+      HttpStatusCode httpStatus,
       HttpHeaders httpHeaders) {
 
     RestApiException restApiException = new RestApiException();
@@ -237,24 +245,12 @@ public class RestApiExceptionParserImpl implements RestApiExceptionParser {
       restApiException.setPath(tmp);
     }
 
-    return applyHttpStatus(restApiException, httpStatus);
-  }
+    restApiException.setStatus(httpStatus.value());
+    if (httpStatus instanceof HttpStatus status) {
+      restApiException.setError(status.getReasonPhrase());
+    }
 
-  /**
-   * Apply http status rest api exception.
-   *
-   * @param restApiException the rest api exception
-   * @param httpStatus the http status
-   * @return the rest api exception
-   */
-  protected RestApiException applyHttpStatus(
-      RestApiException restApiException,
-      HttpStatus httpStatus) {
-
-    return restApiException.toBuilder()
-        .status(httpStatus.value())
-        .error(httpStatus.getReasonPhrase())
-        .build();
+    return restApiException;
   }
 
   /**

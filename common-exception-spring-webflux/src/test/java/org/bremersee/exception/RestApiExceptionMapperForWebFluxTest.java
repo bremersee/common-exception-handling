@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.bremersee.exception.model.RestApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,8 +60,10 @@ class RestApiExceptionMapperForWebFluxTest {
     softly.assertThat(target.detectHttpStatus(exception, null))
         .isEqualTo(HttpStatus.CONFLICT);
 
-    RestApiResponseException otherException = mock(RestApiResponseException.class);
-    when(otherException.getStatus()).thenReturn(HttpStatus.BAD_REQUEST);
+    RestApiResponseException otherException = new RestApiResponseException(
+        RestApiException.builder()
+            .status(HttpStatus.BAD_REQUEST.value())
+            .build());
     softly.assertThat(target.detectHttpStatus(otherException, null))
         .isEqualTo(HttpStatus.BAD_REQUEST);
   }

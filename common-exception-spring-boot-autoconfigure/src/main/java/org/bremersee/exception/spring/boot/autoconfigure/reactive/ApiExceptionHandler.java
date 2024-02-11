@@ -20,11 +20,11 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNullElse;
 import static org.springframework.util.StringUtils.hasText;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -55,7 +55,6 @@ import reactor.core.publisher.Mono;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings("SameNameButDifferent")
 @Valid
 @Slf4j
 public class ApiExceptionHandler extends AbstractErrorWebExceptionHandler {

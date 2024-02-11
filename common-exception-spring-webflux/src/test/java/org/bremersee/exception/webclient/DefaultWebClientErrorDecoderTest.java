@@ -81,7 +81,7 @@ class DefaultWebClientErrorDecoderTest {
 
     softy.assertThat(actual)
         .isNotNull()
-        .extracting(RestApiResponseException::getStatus)
+        .extracting(RestApiResponseException::getStatusCode)
         .isEqualTo(HttpStatus.BAD_REQUEST);
     softy.assertThat(actual)
         .isNotNull()

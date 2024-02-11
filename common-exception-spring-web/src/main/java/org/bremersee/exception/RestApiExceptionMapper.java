@@ -16,8 +16,8 @@
 
 package org.bremersee.exception;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.lang.Nullable;
 
@@ -30,7 +30,7 @@ import org.springframework.lang.Nullable;
 public interface RestApiExceptionMapper {
 
   /**
-   * Build the exception model from the exception, the requested path and an handler. Typically, the
+   * Build the exception model from the exception, the requested path and a handler. Typically, the
    * handler is of type {@link org.springframework.web.method.HandlerMethod}.
    *
    * @param exception the exception (required)

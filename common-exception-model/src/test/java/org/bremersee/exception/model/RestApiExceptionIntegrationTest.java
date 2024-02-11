@@ -30,14 +30,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
@@ -160,12 +161,12 @@ public class RestApiExceptionIntegrationTest {
     }
 
     @Override
-    public boolean hasError(ClientHttpResponse response) {
+    public boolean hasError(@NonNull ClientHttpResponse response) {
       return false;
     }
 
     @Override
-    public void handleError(ClientHttpResponse response) {
+    public void handleError(@NonNull ClientHttpResponse response) {
 
     }
   }

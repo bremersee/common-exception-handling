@@ -17,7 +17,7 @@
 package org.bremersee.exception.servlet;
 
 import java.util.function.Function;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * The http servlet request id provider.

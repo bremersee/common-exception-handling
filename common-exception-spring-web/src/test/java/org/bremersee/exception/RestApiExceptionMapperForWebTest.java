@@ -17,10 +17,12 @@
 package org.bremersee.exception;
 
 import static java.util.Objects.requireNonNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.assertj.core.api.SoftAssertions;
@@ -35,8 +37,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * The rest api exception mapper for spring web test.
@@ -117,6 +121,55 @@ class RestApiExceptionMapperForWebTest {
         .build();
     targetWithIncludeNothingBesidesCause = new RestApiExceptionMapperForWeb(
         includeNothingBesidesCauseProperties, APPLICATION_NAME);
+  }
+
+  /**
+   * Detect http status.
+   */
+  @Test
+  void detectHttpStatus() {
+    HttpStatusCode actual = targetWithIncludeAll
+        .detectHttpStatus(new Exception("Test exception"), null);
+    assertThat(actual)
+        .isEqualTo(HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
+  }
+
+  /**
+   * From status.
+   */
+  @Test
+  void fromStatus() {
+    Optional<HttpStatusCode> actual = targetWithIncludeAll
+        .fromStatus(404);
+    assertThat(actual)
+        .hasValue(HttpStatusCode.valueOf(404));
+  }
+
+  /**
+   * Gets error.
+   *
+   * @param softly the softly
+   */
+  @Test
+  void getError(SoftAssertions softly) {
+    String expected = "Missing value xyz";
+    ResponseStatusException rse = new ResponseStatusException(HttpStatus.BAD_REQUEST, expected);
+    String actual = targetWithIncludeAll.getError(rse, HttpStatus.BAD_REQUEST);
+    softly
+        .assertThat(actual)
+        .isEqualTo(expected);
+
+    rse = new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    actual = targetWithIncludeAll.getError(rse, HttpStatus.BAD_REQUEST);
+    softly
+        .assertThat(actual)
+        .isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase());
+
+    actual = targetWithIncludeAll
+        .getError(new Exception("Test exception"), HttpStatusCode.valueOf(599));
+    softly
+        .assertThat(actual)
+        .isNull();
   }
 
   /**
@@ -475,7 +528,6 @@ class RestApiExceptionMapperForWebTest {
   /**
    * The test handler.
    */
-  @SuppressWarnings("SameNameButDifferent")
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
   @ErrorCode("2002")
   @ResponseStatus(code = HttpStatus.CONFLICT, reason = "Merge problem")

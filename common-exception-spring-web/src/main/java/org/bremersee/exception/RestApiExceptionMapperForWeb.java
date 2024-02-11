@@ -35,6 +35,9 @@ import org.bremersee.exception.model.Handler;
 import org.bremersee.exception.model.RestApiException;
 import org.bremersee.exception.model.StackTraceItem;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
@@ -44,7 +47,6 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings("SameNameButDifferent")
 public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
 
   @Getter(AccessLevel.PROTECTED)
@@ -73,15 +75,14 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
    * @param handler the handler
    * @return the http status
    */
-  protected HttpStatus detectHttpStatus(Throwable exception, Object handler) {
-
+  protected HttpStatusCode detectHttpStatus(Throwable exception, Object handler) {
     return Optional.of(exception)
         .flatMap(exc -> {
-          if (exc instanceof HttpStatusAware) {
-            return fromStatus(((HttpStatusAware) exc).status());
+          if (exc instanceof HttpStatusAware hsa) {
+            return Optional.of(HttpStatusCode.valueOf(hsa.status()));
           }
-          if (exc instanceof ResponseStatusException) {
-            return Optional.of(((ResponseStatusException) exc).getStatus());
+          if (exc instanceof ResponseStatusException rse) {
+            return Optional.of(rse.getStatusCode());
           }
           return Optional.empty();
         })
@@ -104,9 +105,21 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
    * @param status the status
    * @return the optional
    */
-  protected Optional<HttpStatus> fromStatus(Integer status) {
+  protected Optional<HttpStatusCode> fromStatus(Integer status) {
     return Optional.ofNullable(status)
-        .map(HttpStatus::resolve);
+        .map(HttpStatus::valueOf);
+  }
+
+  @Nullable
+  protected String getError(Throwable throwable, HttpStatusCode httpStatusCode) {
+    if ((throwable instanceof ResponseStatusException rse)
+        && !(ObjectUtils.isEmpty(rse.getReason()))) {
+      return rse.getReason();
+    }
+    if (httpStatusCode instanceof HttpStatus hs) {
+      return hs.getReasonPhrase();
+    }
+    return null;
   }
 
   @Override
@@ -115,7 +128,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       String requestPath,
       Object handler) {
 
-    HttpStatus httpStatus = detectHttpStatus(exception, handler);
+    HttpStatusCode httpStatus = detectHttpStatus(exception, handler);
 
     RestApiException restApiException = new RestApiException();
 
@@ -123,7 +136,7 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
 
     restApiException.setStatus(httpStatus.value());
 
-    restApiException.setError(httpStatus.getReasonPhrase());
+    restApiException.setError(getError(exception, httpStatus));
 
     ExceptionMappingConfig config = getProperties().findExceptionMappingConfig(exception);
 

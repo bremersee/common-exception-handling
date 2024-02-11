@@ -25,6 +25,7 @@ import org.bremersee.exception.servlet.ApiExceptionResolver;
 import org.bremersee.exception.servlet.HttpServletRequestIdProvider;
 import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperBootProperties;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,7 +33,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.Assert;
@@ -55,7 +55,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @AutoConfigureAfter({
     RestApiExceptionMapperForWebAutoConfiguration.class
 })
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties({RestApiExceptionMapperBootProperties.class})
 @Slf4j
 public class ApiExceptionResolverAutoConfiguration implements WebMvcConfigurer {
@@ -95,12 +95,13 @@ public class ApiExceptionResolverAutoConfiguration implements WebMvcConfigurer {
    */
   @EventListener(ApplicationReadyEvent.class)
   public void init() {
-    log.info("\n"
-            + "*********************************************************************************\n"
-            + "* {}\n"
-            + "*********************************************************************************\n"
-            + "* apiPaths = {}\n"
-            + "*********************************************************************************",
+    log.info("""
+
+            *********************************************************************************
+            * {}
+            *********************************************************************************
+            * apiPaths = {}
+            *********************************************************************************""",
         ClassUtils.getUserClass(getClass()).getSimpleName(),
         properties.getApiPaths());
   }

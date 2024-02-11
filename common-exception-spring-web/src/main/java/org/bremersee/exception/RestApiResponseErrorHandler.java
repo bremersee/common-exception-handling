@@ -17,7 +17,7 @@
 package org.bremersee.exception;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.client.ClientHttpResponse;
@@ -46,11 +46,9 @@ public class RestApiResponseErrorHandler implements ResponseErrorHandler {
    *
    * @param restApiExceptionParser the rest api exception parser
    */
-  public RestApiResponseErrorHandler(
-      RestApiExceptionParser restApiExceptionParser) {
-    this.restApiExceptionParser = Objects.nonNull(restApiExceptionParser)
-        ? restApiExceptionParser
-        : new RestApiExceptionParserImpl();
+  public RestApiResponseErrorHandler(RestApiExceptionParser restApiExceptionParser) {
+    this.restApiExceptionParser = Optional.ofNullable(restApiExceptionParser)
+        .orElseGet(RestApiExceptionParserImpl::new);
   }
 
   @Override

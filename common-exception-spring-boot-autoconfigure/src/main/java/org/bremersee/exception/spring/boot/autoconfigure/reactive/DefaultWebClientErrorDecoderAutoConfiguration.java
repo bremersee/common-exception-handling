@@ -19,9 +19,9 @@ package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
-import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfiguration;
 import org.bremersee.exception.webclient.DefaultWebClientErrorDecoder;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.ClassUtils;
 
@@ -44,9 +43,9 @@ import org.springframework.util.ClassUtils;
     DefaultWebClientErrorDecoder.class
 })
 @AutoConfigureAfter({
-    RestApiExceptionParserAutoConfiguration.class
+    RestApiExceptionParserForWebFluxAutoConfiguration.class
 })
-@Configuration
+@AutoConfiguration
 @Slf4j
 public class DefaultWebClientErrorDecoderAutoConfiguration {
 
@@ -55,10 +54,11 @@ public class DefaultWebClientErrorDecoderAutoConfiguration {
    */
   @EventListener(ApplicationReadyEvent.class)
   public void init() {
-    log.info("\n"
-            + "*********************************************************************************\n"
-            + "* {}\n"
-            + "*********************************************************************************",
+    log.info("""
+
+            *********************************************************************************
+            * {}
+            *********************************************************************************""",
         ClassUtils.getUserClass(getClass()).getSimpleName());
   }
 

@@ -17,6 +17,7 @@
 package org.bremersee.exception.feign;
 
 import static feign.Util.RETRY_AFTER;
+import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -27,12 +28,8 @@ import feign.RetryableException;
 import feign.codec.ErrorDecoder;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -42,12 +39,12 @@ import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.util.FileCopyUtils;
 
 /**
- * This error decoder produces either a {@link FeignClientException} or a {@link
- * feign.RetryableException}.
+ * This error decoder produces either a {@link FeignClientException} or a
+ * {@link feign.RetryableException}.
  *
  * @author Christian Bremer
  */
@@ -89,8 +86,7 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
     byte[] body = getResponseBody(response);
     RestApiException restApiException = parser.parseException(
         body,
-        Optional.ofNullable(HttpStatus.resolve(response.status()))
-            .orElse(HttpStatus.INTERNAL_SERVER_ERROR),
+        HttpStatusCode.valueOf(response.status()),
         httpHeaders);
     FeignClientException feignClientException = new FeignClientException(
         response.status(),
@@ -105,7 +101,7 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
             feignClientException.getMessage(),
             getHttpMethod(response),
             feignClientException,
-            Date.from(retryAfter),
+            retryAfter,
             response.request()))
         .orElse(feignClientException);
   }
@@ -149,22 +145,24 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
    * @param retryAfter the retry after
    * @return the optional
    */
-  protected Optional<Instant> determineRetryAfter(String retryAfter) {
+  protected Optional<Long> determineRetryAfter(String retryAfter) {
     try {
       return Optional.ofNullable(retryAfter)
           .filter(retryAfterValue -> retryAfterValue.matches("^[0-9]+\\.?0*$"))
           .map(retryAfterValue -> retryAfterValue.replaceAll("\\.0*$", ""))
           .map(retryAfterValue -> SECONDS.toMillis(Long.parseLong(retryAfterValue)))
-          .map(deltaMillis -> Instant.now().plus(Duration.ofMillis(deltaMillis)))
+          .map(deltaMillis -> currentTimeMillis() + deltaMillis)
           .or(() -> Optional.ofNullable(retryAfter)
-              .map(retryAfterValue -> OffsetDateTime.parse(
-                  retryAfterValue,
-                  DateTimeFormatter.RFC_1123_DATE_TIME).toInstant()));
-
+              .map(retryAfterValue -> ZonedDateTime
+                  .parse(retryAfterValue, RFC_1123_DATE_TIME).toInstant().toEpochMilli()));
     } catch (Exception e) {
       log.warn("Parsing retry after date for feigns RetryableException failed.", e);
       return Optional.empty();
     }
+  }
+
+  protected long currentTimeMillis() {
+    return System.currentTimeMillis();
   }
 
 }

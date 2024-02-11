@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package org.bremersee.exception.spring.boot.autoconfigure.servlet;
+package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
-import org.bremersee.exception.feign.FeignClientExceptionErrorDecoder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -31,24 +30,23 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.ClassUtils;
 
 /**
- * The feign client exception error decoder autoconfiguration.
+ * The rest api exception parser autoconfiguration.
  *
  * @author Christian Bremer
  */
-@ConditionalOnWebApplication(type = Type.SERVLET)
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @ConditionalOnClass({
     ObjectMapper.class,
-    FeignClientExceptionErrorDecoder.class
-})
-@AutoConfigureAfter({
-    RestApiExceptionParserForWebAutoConfiguration.class
+    Jackson2ObjectMapperBuilder.class,
+    RestApiExceptionParserImpl.class
 })
 @AutoConfiguration
 @Slf4j
-public class FeignClientExceptionErrorDecoderAutoConfiguration {
+public class RestApiExceptionParserForWebFluxAutoConfiguration {
 
   /**
    * Init.
@@ -64,19 +62,21 @@ public class FeignClientExceptionErrorDecoderAutoConfiguration {
   }
 
   /**
-   * Creates feign client exception error decoder bean.
+   * Creates rest api exception parser for reactive web application.
    *
-   * @param parserProvider the parser provider
-   * @return the feign client exception error decoder
+   * @param objectMapperBuilderProvider the object mapper builder provider
+   * @return the rest api exception parser
    */
+  @ConditionalOnWebApplication(type = Type.REACTIVE)
   @ConditionalOnMissingBean
   @Bean
-  public FeignClientExceptionErrorDecoder feignClientExceptionErrorDecoder(
-      ObjectProvider<RestApiExceptionParser> parserProvider) {
+  public RestApiExceptionParser restApiExceptionParser(
+      ObjectProvider<Jackson2ObjectMapperBuilder> objectMapperBuilderProvider) {
 
-    RestApiExceptionParser parser = parserProvider
-        .getIfAvailable(RestApiExceptionParserImpl::new);
-    return new FeignClientExceptionErrorDecoder(parser);
+    Jackson2ObjectMapperBuilder objectMapperBuilder = objectMapperBuilderProvider.getIfAvailable();
+    return Optional.ofNullable(objectMapperBuilder)
+        .map(RestApiExceptionParserImpl::new)
+        .orElseGet(RestApiExceptionParserImpl::new);
   }
 
 }

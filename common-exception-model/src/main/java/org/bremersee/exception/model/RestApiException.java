@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
@@ -40,7 +41,6 @@ import lombok.ToString;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings("SameNameButDifferent")
 @Schema(description = "The serialized exception.")
 @JsonInclude(Include.NON_EMPTY)
 @EqualsAndHashCode(exclude = {"furtherDetails"})
@@ -48,72 +48,115 @@ import lombok.ToString;
 @NoArgsConstructor
 public class RestApiException implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
+  /**
+   * The id of the exception.
+   */
   @Schema(description = "The id of the exception.")
   @Getter
   @Setter
   private String id;
 
+  /**
+   * The timestamp.
+   */
   @Schema(description = "The timestamp.")
   @Getter
   @Setter
   private OffsetDateTime timestamp;
 
+  /**
+   * The http status code.
+   */
   @Schema(description = "The http status code.")
   @Getter
   @Setter
   private Integer status;
 
+  /**
+   * The http error message.
+   */
   @Schema(description = "The http error message.")
   @Getter
   @Setter
   private String error;
 
+  /**
+   * A service specific error code.
+   */
   @Schema(description = "A service specific error code.")
   @Getter
   @Setter
   private String errorCode;
 
+  /**
+   * Determines whether the error code is inherited from the cause or not.
+   */
   @Schema(description = "Determines whether the error code is inherited from the cause or not.")
   @Setter
   private Boolean errorCodeInherited;
 
-  @Schema(description = "A human readable exception message.")
+  /**
+   * A human-readable exception message.
+   */
+  @Schema(description = "A human-readable exception message.")
   @Getter
   @Setter
   private String message;
 
+  /**
+   * The class name of the exception.
+   */
   @Schema(description = "The class name of the exception.")
   @Getter
   @Setter
   private String exception;
 
+  /**
+   * The name of the application.
+   */
   @Schema(description = "The name of the application.")
   @Getter
   @Setter
   private String application;
 
+  /**
+   * The request path.
+   */
   @Schema(description = "The request path.")
   @Getter
   @Setter
   private String path;
 
+  /**
+   * The handler.
+   */
   @Schema(description = "The handler.")
   @Getter
   @Setter
   private Handler handler;
 
+  /**
+   * The stack trace.
+   */
   @Schema(description = "The stack trace.")
   @Getter
   @Setter
   private List<StackTraceItem> stackTrace;
 
+  /**
+   * The cause.
+   */
   @Schema(description = "The cause.")
   @Getter
   @Setter
   private RestApiException cause;
 
+  /**
+   * Further details.
+   */
   @Schema(hidden = true)
   @JsonIgnore
   private final Map<String, Object> furtherDetails = new LinkedHashMap<>();
@@ -134,6 +177,7 @@ public class RestApiException implements Serializable {
    * @param handler the handler
    * @param stackTrace the stack trace
    * @param cause the cause
+   * @param furtherDetails the further details
    */
   @Builder(toBuilder = true)
   protected RestApiException(

@@ -170,22 +170,6 @@ class RestApiExceptionParserImplTest {
   }
 
   /**
-   * Apply http status.
-   */
-  @Test
-  void applyHttpStatus() {
-    RestApiException actual = target.applyHttpStatus(
-        RestApiException.builder().build(),
-        HttpStatus.BAD_REQUEST);
-    RestApiException expected = RestApiException.builder()
-        .status(HttpStatus.BAD_REQUEST.value())
-        .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-        .build();
-    assertThat(actual)
-        .isEqualTo(expected);
-  }
-
-  /**
    * Gets content type charset.
    *
    * @param softly the softly

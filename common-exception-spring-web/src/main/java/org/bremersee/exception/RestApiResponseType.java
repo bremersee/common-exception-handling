@@ -25,6 +25,7 @@ import static org.springframework.http.MediaType.TEXT_XML;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import lombok.Getter;
 import org.springframework.http.MediaType;
 
 /**
@@ -32,6 +33,7 @@ import org.springframework.http.MediaType;
  *
  * @author Christian Bremer
  */
+@Getter
 public enum RestApiResponseType {
 
   /**
@@ -60,24 +62,6 @@ public enum RestApiResponseType {
   RestApiResponseType(MediaType contentType, String contentTypeValue) {
     this.contentType = contentType;
     this.contentTypeValue = contentTypeValue;
-  }
-
-  /**
-   * Gets content type.
-   *
-   * @return the content type
-   */
-  public MediaType getContentType() {
-    return contentType;
-  }
-
-  /**
-   * Gets content type value.
-   *
-   * @return the content type value
-   */
-  public String getContentTypeValue() {
-    return contentTypeValue;
   }
 
   /**

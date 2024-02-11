@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.bremersee.exception.spring.boot.autoconfigure;
+package org.bremersee.exception.spring.boot.autoconfigure.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.Charset;
@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -31,7 +32,6 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -42,43 +42,27 @@ import org.springframework.util.ClassUtils;
  *
  * @author Christian Bremer
  */
+@ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({
     ObjectMapper.class,
     Jackson2ObjectMapperBuilder.class,
     RestApiExceptionParserImpl.class
 })
-@Configuration
+@AutoConfiguration
 @Slf4j
-public class RestApiExceptionParserAutoConfiguration {
+public class RestApiExceptionParserForWebAutoConfiguration {
 
   /**
    * Init.
    */
   @EventListener(ApplicationReadyEvent.class)
   public void init() {
-    log.info("\n"
-            + "*********************************************************************************\n"
-            + "* {}\n"
-            + "*********************************************************************************",
+    log.info("""
+
+            *********************************************************************************
+            * {}
+            *********************************************************************************""",
         ClassUtils.getUserClass(getClass()).getSimpleName());
-  }
-
-  /**
-   * Creates rest api exception parser for reactive web application.
-   *
-   * @param objectMapperBuilderProvider the object mapper builder provider
-   * @return the rest api exception parser
-   */
-  @ConditionalOnWebApplication(type = Type.REACTIVE)
-  @ConditionalOnMissingBean
-  @Bean
-  public RestApiExceptionParser restApiExceptionParser(
-      ObjectProvider<Jackson2ObjectMapperBuilder> objectMapperBuilderProvider) {
-
-    Jackson2ObjectMapperBuilder objectMapperBuilder = objectMapperBuilderProvider.getIfAvailable();
-    return Optional.ofNullable(objectMapperBuilder)
-        .map(RestApiExceptionParserImpl::new)
-        .orElseGet(RestApiExceptionParserImpl::new);
   }
 
   /**
@@ -88,7 +72,6 @@ public class RestApiExceptionParserAutoConfiguration {
    * @param objectMapperBuilderProvider the object mapper builder provider
    * @return the rest api exception parser
    */
-  @ConditionalOnWebApplication(type = Type.SERVLET)
   @ConditionalOnMissingBean
   @Bean
   public RestApiExceptionParser restApiExceptionParser(

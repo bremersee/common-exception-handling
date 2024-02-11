@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Builder;
@@ -37,7 +38,6 @@ import lombok.ToString;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings("SameNameButDifferent")
 @Schema(description = "The handler where the exception occurred.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_EMPTY)
@@ -48,14 +48,24 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Handler implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
+  /**
+   * The class name of the handler.
+   */
   @Schema(description = "The class name of the handler.")
   private String className;
 
+  /**
+   * The method name of the handler.
+   */
   @Schema(description = "The method name of the handler.")
   private String methodName;
 
+  /**
+   * The method parameters.
+   */
   @JsonProperty("methodParameterTypes")
   @JacksonXmlElementWrapper(localName = "methodParameterTypes")
   @JacksonXmlProperty(localName = "methodParameterType")

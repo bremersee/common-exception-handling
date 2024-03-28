@@ -78,6 +78,15 @@ public abstract class AbstractServiceExceptionBuilder<T extends ServiceException
   }
 
   @Override
+  public ServiceExceptionBuilder<T> from(ServiceException serviceException) {
+    this.httpStatus = serviceException.status();
+    this.errorCode = serviceException.getErrorCode();
+    this.reason = serviceException.getMessage();
+    this.cause = serviceException.getCause();
+    return this;
+  }
+
+  @Override
   public T build() {
     if (nonNull(reason) && !reason.isBlank() && nonNull(cause)) {
       return buildWith(httpStatus, errorCode, reason, cause);

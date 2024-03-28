@@ -69,6 +69,14 @@ class ServiceExceptionBuilderTest {
     assertEquals("Something went wrong", builder.build().getCause().getMessage());
   }
 
+  @Test
+  void from() {
+    ServiceException from = ServiceException.alreadyExists();
+    ServiceExceptionBuilder<? extends ServiceException> builder = ServiceException.builder();
+    builder.from(from);
+    assertEquals(409, builder.build().status());
+  }
+
   /**
    * Build.
    */

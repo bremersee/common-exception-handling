@@ -51,12 +51,20 @@ public interface ServiceExceptionBuilder<T extends ServiceException> extends Ser
   ServiceExceptionBuilder<T> reason(String reason);
 
   /**
-   * sets cause on service exception builder.
+   * Sets cause on service exception builder.
    *
    * @param cause the cause
    * @return the service exception builder
    */
   ServiceExceptionBuilder<T> cause(Throwable cause);
+
+  /**
+   * From another service exception.
+   *
+   * @param serviceException the other service exception
+   * @return the service exception builder
+   */
+  ServiceExceptionBuilder<T> from(ServiceException serviceException);
 
   /**
    * Build the service exception.

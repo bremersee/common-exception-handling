@@ -20,6 +20,7 @@ import java.util.Optional;
 import lombok.Getter;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -27,12 +28,14 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings(&quot;SameNameButDifferent&quot;)
+@Getter
 public class RestApiResponseException
     extends ResponseStatusException
     implements RestApiExceptionAware {
 
-  @Getter
+  /**
+   * The parsed response of the server as {@link RestApiException}.
+   */
   private final RestApiException restApiException;
 
   /**
@@ -40,12 +43,10 @@ public class RestApiResponseException
    *
    * @param restApiException the rest api exception
    */
-  public RestApiResponseException(
-      RestApiException restApiException) {
-
-<span class="fc" id="L46">    super(detectHttpStatus(restApiException));</span>
-<span class="fc" id="L47">    this.restApiException = restApiException;</span>
-<span class="fc" id="L48">  }</span>
+  public RestApiResponseException(RestApiException restApiException) {
+<span class="fc" id="L47">    super(detectHttpStatus(restApiException));</span>
+<span class="fc" id="L48">    this.restApiException = restApiException;</span>
+<span class="fc" id="L49">  }</span>
 
   /**
    * Instantiates a new rest api response exception.
@@ -53,20 +54,17 @@ public class RestApiResponseException
    * @param status the status
    * @param restApiException the rest api exception
    */
-  public RestApiResponseException(
-      HttpStatus status,
-      RestApiException restApiException) {
+  public RestApiResponseException(HttpStatusCode status, RestApiException restApiException) {
+<span class="fc" id="L58">    super(status);</span>
+<span class="fc" id="L59">    this.restApiException = restApiException;</span>
+<span class="fc" id="L60">  }</span>
 
-<span class="fc" id="L60">    super(status);</span>
-<span class="fc" id="L61">    this.restApiException = restApiException;</span>
-<span class="fc" id="L62">  }</span>
-
-  private static HttpStatus detectHttpStatus(RestApiException restApiException) {
-<span class="fc" id="L65">    return Optional.ofNullable(restApiException)</span>
-<span class="fc" id="L66">        .map(RestApiException::getStatus)</span>
-<span class="fc" id="L67">        .map(HttpStatus::resolve)</span>
-<span class="fc" id="L68">        .orElse(HttpStatus.INTERNAL_SERVER_ERROR);</span>
+  private static HttpStatusCode detectHttpStatus(RestApiException restApiException) {
+<span class="fc" id="L63">    return Optional.ofNullable(restApiException)</span>
+<span class="fc" id="L64">        .map(RestApiException::getStatus)</span>
+<span class="fc" id="L65">        .map(HttpStatusCode::valueOf)</span>
+<span class="fc" id="L66">        .orElse(HttpStatus.INTERNAL_SERVER_ERROR);</span>
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

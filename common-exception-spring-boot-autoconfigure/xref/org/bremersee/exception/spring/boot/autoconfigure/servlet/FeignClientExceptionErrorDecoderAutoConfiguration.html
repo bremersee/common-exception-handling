@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>/Users/cbr/src/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/src/main/java/org/bremersee/exception/spring/boot/autoconfigure/servlet/FeignClientExceptionErrorDecoderAutoConfiguration.java xref</title>
+<title>/srv/jenkins/workspace/common-exception-handling_main/common-exception-spring-boot-autoconfigure/src/main/java/org/bremersee/exception/spring/boot/autoconfigure/servlet/FeignClientExceptionErrorDecoderAutoConfiguration.java xref</title>
 <link type="text/css" rel="stylesheet" href="../../../../../../../stylesheet.css" />
 </head>
 <body>
@@ -29,8 +29,8 @@
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> org.bremersee.exception.RestApiExceptionParser;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> org.bremersee.exception.RestApiExceptionParserImpl;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> org.bremersee.exception.feign.FeignClientExceptionErrorDecoder;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfiguration;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.springframework.beans.factory.ObjectProvider;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> org.springframework.beans.factory.ObjectProvider;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> org.springframework.boot.autoconfigure.AutoConfiguration;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> org.springframework.boot.autoconfigure.AutoConfigureAfter;
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,36 +38,36 @@
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> org.springframework.boot.context.event.ApplicationReadyEvent;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">import</strong> org.springframework.context.annotation.Bean;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.springframework.context.annotation.Configuration;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> org.springframework.context.event.EventListener;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> org.springframework.util.ClassUtils;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> * The feign client exception error decoder autoconfiguration.</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> * @author Christian Bremer</em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  @ConditionalOnWebApplication(type = Type.SERVLET)
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  @ConditionalOnClass({
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>      ObjectMapper.<strong class="jxr_keyword">class</strong>,
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>      FeignClientExceptionErrorDecoder.<strong class="jxr_keyword">class</strong>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  })
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  @AutoConfigureAfter({
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>      RestApiExceptionParserAutoConfiguration.<strong class="jxr_keyword">class</strong>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  })
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  @Configuration
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  @Slf4j
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> FeignClientExceptionErrorDecoderAutoConfiguration {
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>    <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">   * Init.</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">   */</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>    @EventListener(ApplicationReadyEvent.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> init() {
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>      log.info(<span class="jxr_string">"\n"</span>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>              + <span class="jxr_string">"*********************************************************************************\n"</span>
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>              + <span class="jxr_string">"* {}\n"</span>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>              + <span class="jxr_string">"*********************************************************************************"</span>,
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.springframework.context.event.EventListener;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> org.springframework.util.ClassUtils;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> * The feign client exception error decoder autoconfiguration.</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> * @author Christian Bremer</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  @ConditionalOnWebApplication(type = Type.SERVLET)
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  @ConditionalOnClass({
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>      ObjectMapper.<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>      FeignClientExceptionErrorDecoder.<strong class="jxr_keyword">class</strong>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  })
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  @AutoConfigureAfter({
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      RestApiExceptionParserForWebAutoConfiguration.<strong class="jxr_keyword">class</strong>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  })
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  @AutoConfiguration
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  @Slf4j
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> FeignClientExceptionErrorDecoderAutoConfiguration {
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>    <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">   * Init.</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>    @EventListener(ApplicationReadyEvent.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> init() {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      log.info(<span class="jxr_string">""</span><span class="jxr_string">"
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>              *********************************************************************************
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>              * {}
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>              *********************************************************************************<span class="jxr_string">""</span><span class="jxr_string">",
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>          ClassUtils.getUserClass(getClass()).getSimpleName());
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>    }
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  
@@ -90,6 +90,6 @@
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2022 <a href="https://bremersee.org">bremersee.org</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2022&#x2013;2024 <a href="https://bremersee.org">bremersee.org</a>. All rights reserved.</div>
 </body>
 </html>

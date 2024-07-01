@@ -17,8 +17,6 @@
 package org.bremersee.exception;
 
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.immutables.value.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
@@ -29,7 +27,6 @@ import org.springframework.lang.Nullable;
  * @author Christian Bremer
  */
 @Value.Immutable
-@Valid
 public interface RestApiExceptionMapperProperties {
 
   /**
@@ -38,7 +35,7 @@ public interface RestApiExceptionMapperProperties {
    * @return the builder
    */
   static ImmutableRestApiExceptionMapperProperties.Builder builder() {
-<span class="fc" id="L41">    return ImmutableRestApiExceptionMapperProperties.builder();</span>
+<span class="fc" id="L38">    return ImmutableRestApiExceptionMapperProperties.builder();</span>
   }
 
   /**
@@ -47,13 +44,12 @@ public interface RestApiExceptionMapperProperties {
    * @return the default exception mapping
    */
   @Value.Default
-  @NotNull
   default ExceptionMapping getDefaultExceptionMapping() {
-<span class="fc" id="L52">    return ExceptionMapping.builder()</span>
-<span class="fc" id="L53">        .message(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())</span>
-<span class="fc" id="L54">        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())</span>
-<span class="fc" id="L55">        .exceptionClassName(&quot;*&quot;)</span>
-<span class="fc" id="L56">        .build();</span>
+<span class="fc" id="L48">    return ExceptionMapping.builder()</span>
+<span class="fc" id="L49">        .message(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())</span>
+<span class="fc" id="L50">        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())</span>
+<span class="fc" id="L51">        .exceptionClassName(&quot;*&quot;)</span>
+<span class="fc" id="L52">        .build();</span>
   }
 
   /**
@@ -62,24 +58,23 @@ public interface RestApiExceptionMapperProperties {
    * @return the exception mappings
    */
   @Value.Default
-  @NotNull
   default List&lt;ExceptionMapping&gt; getExceptionMappings() {
-<span class="fc" id="L67">    return List.of(</span>
+<span class="fc" id="L62">    return List.of(</span>
+<span class="fc" id="L63">        ExceptionMapping.builder()</span>
+<span class="fc" id="L64">            .exceptionClassName(IllegalArgumentException.class.getName())</span>
+<span class="fc" id="L65">            .status(HttpStatus.BAD_REQUEST.value())</span>
+<span class="fc" id="L66">            .message(HttpStatus.BAD_REQUEST.getReasonPhrase())</span>
+<span class="fc" id="L67">            .build(),</span>
 <span class="fc" id="L68">        ExceptionMapping.builder()</span>
-<span class="fc" id="L69">            .exceptionClassName(IllegalArgumentException.class.getName())</span>
-<span class="fc" id="L70">            .status(HttpStatus.BAD_REQUEST.value())</span>
-<span class="fc" id="L71">            .message(HttpStatus.BAD_REQUEST.getReasonPhrase())</span>
+<span class="fc" id="L69">            .exceptionClassName(&quot;org.springframework.security.access.AccessDeniedException&quot;)</span>
+<span class="fc" id="L70">            .status(HttpStatus.FORBIDDEN.value())</span>
+<span class="fc" id="L71">            .message(HttpStatus.FORBIDDEN.getReasonPhrase())</span>
 <span class="fc" id="L72">            .build(),</span>
 <span class="fc" id="L73">        ExceptionMapping.builder()</span>
-<span class="fc" id="L74">            .exceptionClassName(&quot;org.springframework.security.access.AccessDeniedException&quot;)</span>
-<span class="fc" id="L75">            .status(HttpStatus.FORBIDDEN.value())</span>
-<span class="fc" id="L76">            .message(HttpStatus.FORBIDDEN.getReasonPhrase())</span>
-<span class="fc" id="L77">            .build(),</span>
-<span class="fc" id="L78">        ExceptionMapping.builder()</span>
-<span class="fc" id="L79">            .exceptionClassName(&quot;javax.persistence.EntityNotFoundException&quot;)</span>
-<span class="fc" id="L80">            .status(HttpStatus.NOT_FOUND.value())</span>
-<span class="fc" id="L81">            .message(HttpStatus.NOT_FOUND.getReasonPhrase())</span>
-<span class="fc" id="L82">            .build()</span>
+<span class="fc" id="L74">            .exceptionClassName(&quot;javax.persistence.EntityNotFoundException&quot;)</span>
+<span class="fc" id="L75">            .status(HttpStatus.NOT_FOUND.value())</span>
+<span class="fc" id="L76">            .message(HttpStatus.NOT_FOUND.getReasonPhrase())</span>
+<span class="fc" id="L77">            .build()</span>
     );
   }
 
@@ -89,11 +84,10 @@ public interface RestApiExceptionMapperProperties {
    * @return the default exception mapping config
    */
   @Value.Default
-  @NotNull
   default ExceptionMappingConfig getDefaultExceptionMappingConfig() {
-<span class="fc" id="L94">    return ExceptionMappingConfig.builder()</span>
-<span class="fc" id="L95">        .exceptionClassName(&quot;*&quot;)</span>
-<span class="fc" id="L96">        .build();</span>
+<span class="fc" id="L88">    return ExceptionMappingConfig.builder()</span>
+<span class="fc" id="L89">        .exceptionClassName(&quot;*&quot;)</span>
+<span class="fc" id="L90">        .build();</span>
   }
 
   /**
@@ -102,9 +96,8 @@ public interface RestApiExceptionMapperProperties {
    * @return the exception mapping configs
    */
   @Value.Default
-  @NotNull
   default List&lt;ExceptionMappingConfig&gt; getExceptionMappingConfigs() {
-<span class="fc" id="L107">    return List.of();</span>
+<span class="fc" id="L100">    return List.of();</span>
   }
 
   /**
@@ -113,14 +106,13 @@ public interface RestApiExceptionMapperProperties {
    * @param throwable the throwable
    * @return the exception mapping
    */
-  @NotNull
   default ExceptionMapping findExceptionMapping(Throwable throwable) {
-<span class="fc" id="L118">    return getExceptionMappings()</span>
-<span class="fc" id="L119">        .stream()</span>
-<span class="fc" id="L120">        .filter(exceptionMapping -&gt; matches(</span>
-<span class="fc" id="L121">            throwable, exceptionMapping.getExceptionClassName()))</span>
-<span class="fc" id="L122">        .findFirst()</span>
-<span class="fc" id="L123">        .orElseGet(this::getDefaultExceptionMapping);</span>
+<span class="fc" id="L110">    return getExceptionMappings()</span>
+<span class="fc" id="L111">        .stream()</span>
+<span class="fc" id="L112">        .filter(exceptionMapping -&gt; matches(</span>
+<span class="fc" id="L113">            throwable, exceptionMapping.getExceptionClassName()))</span>
+<span class="fc" id="L114">        .findFirst()</span>
+<span class="fc" id="L115">        .orElseGet(this::getDefaultExceptionMapping);</span>
   }
 
   /**
@@ -129,49 +121,48 @@ public interface RestApiExceptionMapperProperties {
    * @param throwable the throwable
    * @return the exception mapping config
    */
-  @NotNull
   default ExceptionMappingConfig findExceptionMappingConfig(Throwable throwable) {
-<span class="fc" id="L134">    return getExceptionMappingConfigs()</span>
-<span class="fc" id="L135">        .stream()</span>
-<span class="fc" id="L136">        .filter(exceptionMappingConfig -&gt; matches(</span>
-<span class="fc" id="L137">            throwable, exceptionMappingConfig.getExceptionClassName()))</span>
-<span class="fc" id="L138">        .findFirst()</span>
-<span class="fc" id="L139">        .orElseGet(this::getDefaultExceptionMappingConfig);</span>
+<span class="fc" id="L125">    return getExceptionMappingConfigs()</span>
+<span class="fc" id="L126">        .stream()</span>
+<span class="fc" id="L127">        .filter(exceptionMappingConfig -&gt; matches(</span>
+<span class="fc" id="L128">            throwable, exceptionMappingConfig.getExceptionClassName()))</span>
+<span class="fc" id="L129">        .findFirst()</span>
+<span class="fc" id="L130">        .orElseGet(this::getDefaultExceptionMappingConfig);</span>
   }
 
   private boolean matches(Throwable throwable, String exceptionClassName) {
-<span class="pc bpc" id="L143" title="1 of 4 branches missed.">    if (throwable == null || exceptionClassName == null) {</span>
-<span class="fc" id="L144">      return false;</span>
+<span class="pc bpc" id="L134" title="1 of 4 branches missed.">    if (throwable == null || exceptionClassName == null) {</span>
+<span class="fc" id="L135">      return false;</span>
     }
-<span class="fc bfc" id="L146" title="All 2 branches covered.">    if (throwable.getClass().getName().equals(exceptionClassName)) {</span>
-<span class="fc" id="L147">      return true;</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">    if (throwable.getClass().getName().equals(exceptionClassName)) {</span>
+<span class="fc" id="L138">      return true;</span>
     }
-<span class="fc bfc" id="L149" title="All 2 branches covered.">    if (exceptionClassName.endsWith(&quot;.*&quot;)) {</span>
-<span class="fc" id="L150">      String packagePrefix = exceptionClassName.substring(0, exceptionClassName.length() - 1);</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">      if (throwable.getClass().getName().startsWith(packagePrefix)) {</span>
-<span class="fc" id="L152">        return true;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">    if (exceptionClassName.endsWith(&quot;.*&quot;)) {</span>
+<span class="fc" id="L141">      String packagePrefix = exceptionClassName.substring(0, exceptionClassName.length() - 1);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">      if (throwable.getClass().getName().startsWith(packagePrefix)) {</span>
+<span class="fc" id="L143">        return true;</span>
       }
     }
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">    if (matches(throwable.getCause(), exceptionClassName)) {</span>
-<span class="nc" id="L156">      return true;</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">    if (matches(throwable.getCause(), exceptionClassName)) {</span>
+<span class="nc" id="L147">      return true;</span>
     }
-<span class="fc" id="L158">    return matches(throwable.getClass().getSuperclass(), exceptionClassName);</span>
+<span class="fc" id="L149">    return matches(throwable.getClass().getSuperclass(), exceptionClassName);</span>
   }
 
   private boolean matches(Class&lt;?&gt; exceptionClass, String exceptionClassName) {
-<span class="pc bpc" id="L162" title="1 of 4 branches missed.">    if (exceptionClass == null || exceptionClassName == null) {</span>
-<span class="fc" id="L163">      return false;</span>
+<span class="pc bpc" id="L153" title="1 of 4 branches missed.">    if (exceptionClass == null || exceptionClassName == null) {</span>
+<span class="fc" id="L154">      return false;</span>
     }
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">    if (exceptionClass.getName().equals(exceptionClassName)) {</span>
-<span class="nc" id="L166">      return true;</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">    if (exceptionClass.getName().equals(exceptionClassName)) {</span>
+<span class="nc" id="L157">      return true;</span>
     }
-<span class="fc bfc" id="L168" title="All 2 branches covered.">    if (exceptionClassName.endsWith(&quot;.*&quot;)) {</span>
-<span class="fc" id="L169">      String packagePrefix = exceptionClassName.substring(0, exceptionClassName.length() - 1);</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">      if (exceptionClass.getName().startsWith(packagePrefix)) {</span>
-<span class="fc" id="L171">        return true;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">    if (exceptionClassName.endsWith(&quot;.*&quot;)) {</span>
+<span class="fc" id="L160">      String packagePrefix = exceptionClassName.substring(0, exceptionClassName.length() - 1);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">      if (exceptionClass.getName().startsWith(packagePrefix)) {</span>
+<span class="fc" id="L162">        return true;</span>
       }
     }
-<span class="fc" id="L174">    return matches(exceptionClass.getSuperclass(), exceptionClassName);</span>
+<span class="fc" id="L165">    return matches(exceptionClass.getSuperclass(), exceptionClassName);</span>
   }
 
   /**
@@ -186,7 +177,7 @@ public interface RestApiExceptionMapperProperties {
      * @return the immutable exception mapping . builder
      */
     static ImmutableExceptionMapping.Builder builder() {
-<span class="fc" id="L189">      return ImmutableExceptionMapping.builder();</span>
+<span class="fc" id="L180">      return ImmutableExceptionMapping.builder();</span>
     }
 
     /**
@@ -194,7 +185,6 @@ public interface RestApiExceptionMapperProperties {
      *
      * @return the exception class name
      */
-    @NotNull
     String getExceptionClassName();
 
     /**
@@ -204,7 +194,7 @@ public interface RestApiExceptionMapperProperties {
      */
     @Value.Default
     default int getStatus() {
-<span class="nc" id="L207">      return HttpStatus.INTERNAL_SERVER_ERROR.value();</span>
+<span class="nc" id="L197">      return HttpStatus.INTERNAL_SERVER_ERROR.value();</span>
     }
 
     /**
@@ -237,7 +227,7 @@ public interface RestApiExceptionMapperProperties {
      * @return the builder
      */
     static ImmutableExceptionMappingConfig.Builder builder() {
-<span class="fc" id="L240">      return ImmutableExceptionMappingConfig.builder();</span>
+<span class="fc" id="L230">      return ImmutableExceptionMappingConfig.builder();</span>
     }
 
     /**
@@ -245,13 +235,11 @@ public interface RestApiExceptionMapperProperties {
      *
      * @return the exception class name
      */
-    @NotNull
     String getExceptionClassName();
 
     @Value.Default
-    @NotNull
     default Boolean getIncludeMessage() {
-<span class="fc" id="L254">      return true;</span>
+<span class="fc" id="L242">      return true;</span>
     }
 
     /**
@@ -260,9 +248,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludeException() {
-<span class="fc" id="L265">      return true;</span>
+<span class="fc" id="L252">      return true;</span>
     }
 
     /**
@@ -271,9 +258,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludeApplicationName() {
-<span class="fc" id="L276">      return true;</span>
+<span class="fc" id="L262">      return true;</span>
     }
 
     /**
@@ -282,9 +268,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludePath() {
-<span class="fc" id="L287">      return true;</span>
+<span class="fc" id="L272">      return true;</span>
     }
 
     /**
@@ -293,9 +278,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludeHandler() {
-<span class="fc" id="L298">      return false;</span>
+<span class="fc" id="L282">      return false;</span>
     }
 
     /**
@@ -304,9 +288,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludeStackTrace() {
-<span class="fc" id="L309">      return false;</span>
+<span class="fc" id="L292">      return false;</span>
     }
 
     /**
@@ -315,9 +298,8 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getIncludeCause() {
-<span class="fc" id="L320">      return false;</span>
+<span class="fc" id="L302">      return false;</span>
     }
 
     /**
@@ -326,12 +308,11 @@ public interface RestApiExceptionMapperProperties {
      * @return the boolean
      */
     @Value.Default
-    @NotNull
     default Boolean getEvaluateAnnotationFirst() {
-<span class="fc" id="L331">      return false;</span>
+<span class="fc" id="L312">      return false;</span>
     }
 
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

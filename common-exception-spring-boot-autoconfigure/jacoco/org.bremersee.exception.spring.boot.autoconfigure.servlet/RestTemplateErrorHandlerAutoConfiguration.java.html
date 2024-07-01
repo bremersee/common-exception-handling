@@ -21,14 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.RestApiResponseErrorHandler;
-import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestTemplate;
 
@@ -43,11 +42,11 @@ import org.springframework.web.client.RestTemplate;
     RestApiResponseErrorHandler.class
 })
 @AutoConfigureAfter({
-    RestApiExceptionParserAutoConfiguration.class
+    RestApiExceptionParserForWebAutoConfiguration.class
 })
-@Configuration
+@AutoConfiguration
 @Order(100)
-<span class="fc" id="L50">@Slf4j</span>
+<span class="fc" id="L49">@Slf4j</span>
 public class RestTemplateErrorHandlerAutoConfiguration implements RestTemplateCustomizer {
 
   private final RestApiExceptionParser restApiExceptionParser;
@@ -58,14 +57,14 @@ public class RestTemplateErrorHandlerAutoConfiguration implements RestTemplateCu
    * @param restApiExceptionParser the rest api exception parser
    */
   public RestTemplateErrorHandlerAutoConfiguration(
-<span class="fc" id="L61">      ObjectProvider&lt;RestApiExceptionParser&gt; restApiExceptionParser) {</span>
-<span class="fc" id="L62">    this.restApiExceptionParser = restApiExceptionParser</span>
-<span class="fc" id="L63">        .getIfAvailable(RestApiExceptionParserImpl::new);</span>
-<span class="fc" id="L64">  }</span>
+<span class="fc" id="L60">      ObjectProvider&lt;RestApiExceptionParser&gt; restApiExceptionParser) {</span>
+<span class="fc" id="L61">    this.restApiExceptionParser = restApiExceptionParser</span>
+<span class="fc" id="L62">        .getIfAvailable(RestApiExceptionParserImpl::new);</span>
+<span class="fc" id="L63">  }</span>
 
   @Override
   public void customize(RestTemplate restTemplate) {
-<span class="fc" id="L68">    restTemplate.setErrorHandler(new RestApiResponseErrorHandler(restApiExceptionParser));</span>
-<span class="fc" id="L69">  }</span>
+<span class="fc" id="L67">    restTemplate.setErrorHandler(new RestApiResponseErrorHandler(restApiExceptionParser));</span>
+<span class="fc" id="L68">  }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

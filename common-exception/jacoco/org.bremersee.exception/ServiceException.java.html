@@ -18,6 +18,7 @@ package org.bremersee.exception;
 
 import static java.util.Objects.isNull;
 
+import java.io.Serial;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -26,11 +27,11 @@ import lombok.Getter;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings(&quot;SameNameButDifferent&quot;)
 @EqualsAndHashCode(callSuper = true)
 public class ServiceException extends RuntimeException
     implements ErrorCodeAware, HttpStatusAware {
 
+  @Serial
   private static final long serialVersionUID = 2L;
 
   /**
@@ -38,8 +39,14 @@ public class ServiceException extends RuntimeException
    */
   public static final String ERROR_CODE_ALREADY_EXISTS = &quot;COMMON:ALREADY_EXISTS&quot;;
 
+  /**
+   * The http status.
+   */
   private final int httpStatus;
 
+  /**
+   * The error code.
+   */
   @Getter
   private final String errorCode;
 
@@ -47,10 +54,10 @@ public class ServiceException extends RuntimeException
    * Instantiates a new service exception.
    */
   protected ServiceException() {
-<span class="fc" id="L50">    super();</span>
-<span class="fc" id="L51">    this.httpStatus = 0;</span>
-<span class="fc" id="L52">    this.errorCode = null;</span>
-<span class="fc" id="L53">  }</span>
+<span class="fc" id="L57">    super();</span>
+<span class="fc" id="L58">    this.httpStatus = 0;</span>
+<span class="fc" id="L59">    this.errorCode = null;</span>
+<span class="fc" id="L60">  }</span>
 
   /**
    * Instantiates a new service exception.
@@ -59,10 +66,10 @@ public class ServiceException extends RuntimeException
    * @param errorCode the error code
    */
   protected ServiceException(int httpStatus, String errorCode) {
-<span class="fc" id="L62">    super();</span>
-<span class="fc" id="L63">    this.httpStatus = httpStatus;</span>
-<span class="fc" id="L64">    this.errorCode = errorCode;</span>
-<span class="fc" id="L65">  }</span>
+<span class="fc" id="L69">    super();</span>
+<span class="fc" id="L70">    this.httpStatus = httpStatus;</span>
+<span class="fc" id="L71">    this.errorCode = errorCode;</span>
+<span class="fc" id="L72">  }</span>
 
   /**
    * Instantiates a new service exception.
@@ -72,10 +79,10 @@ public class ServiceException extends RuntimeException
    * @param reason the reason
    */
   protected ServiceException(int httpStatus, String errorCode, String reason) {
-<span class="fc" id="L75">    super(reason);</span>
-<span class="fc" id="L76">    this.httpStatus = httpStatus;</span>
-<span class="fc" id="L77">    this.errorCode = errorCode;</span>
-<span class="fc" id="L78">  }</span>
+<span class="fc" id="L82">    super(reason);</span>
+<span class="fc" id="L83">    this.httpStatus = httpStatus;</span>
+<span class="fc" id="L84">    this.errorCode = errorCode;</span>
+<span class="fc" id="L85">  }</span>
 
   /**
    * Instantiates a new service exception.
@@ -85,10 +92,10 @@ public class ServiceException extends RuntimeException
    * @param cause the cause
    */
   protected ServiceException(int httpStatus, String errorCode, Throwable cause) {
-<span class="fc" id="L88">    super(cause);</span>
-<span class="fc" id="L89">    this.httpStatus = httpStatus;</span>
-<span class="fc" id="L90">    this.errorCode = errorCode;</span>
-<span class="fc" id="L91">  }</span>
+<span class="nc" id="L95">    super(cause);</span>
+<span class="nc" id="L96">    this.httpStatus = httpStatus;</span>
+<span class="nc" id="L97">    this.errorCode = errorCode;</span>
+<span class="nc" id="L98">  }</span>
 
   /**
    * Instantiates a new service exception.
@@ -103,10 +110,10 @@ public class ServiceException extends RuntimeException
       String errorCode,
       String reason,
       Throwable cause) {
-<span class="fc" id="L106">    super(reason, cause);</span>
-<span class="fc" id="L107">    this.httpStatus = httpStatus;</span>
-<span class="fc" id="L108">    this.errorCode = errorCode;</span>
-<span class="fc" id="L109">  }</span>
+<span class="fc" id="L113">    super(reason, cause);</span>
+<span class="fc" id="L114">    this.httpStatus = httpStatus;</span>
+<span class="fc" id="L115">    this.errorCode = errorCode;</span>
+<span class="fc" id="L116">  }</span>
 
   /**
    * Get the http status.
@@ -115,7 +122,7 @@ public class ServiceException extends RuntimeException
    */
   @Override
   public int status() {
-<span class="fc" id="L118">    return httpStatus;</span>
+<span class="fc" id="L125">    return httpStatus;</span>
   }
 
   /**
@@ -124,7 +131,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException internalServerError() {
-<span class="fc" id="L127">    return internalServerError(null);</span>
+<span class="fc" id="L134">    return internalServerError(null);</span>
   }
 
   /**
@@ -134,7 +141,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException internalServerError(String reason) {
-<span class="fc" id="L137">    return internalServerError(reason, (String) null);</span>
+<span class="fc" id="L144">    return internalServerError(reason, (String) null);</span>
   }
 
   /**
@@ -145,7 +152,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException internalServerError(String reason, Throwable cause) {
-<span class="fc" id="L148">    return internalServerError(reason, null, cause);</span>
+<span class="fc" id="L155">    return internalServerError(reason, null, cause);</span>
   }
 
   /**
@@ -156,7 +163,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException internalServerError(String reason, String errorCode) {
-<span class="fc" id="L159">    return internalServerError(reason, errorCode, null);</span>
+<span class="fc" id="L166">    return internalServerError(reason, errorCode, null);</span>
   }
 
   /**
@@ -171,12 +178,12 @@ public class ServiceException extends RuntimeException
       String reason,
       String errorCode,
       Throwable cause) {
-<span class="fc" id="L174">    return ServiceException.builder()</span>
-<span class="fc" id="L175">        .httpStatus(500)</span>
-<span class="fc" id="L176">        .reason(reason)</span>
-<span class="fc" id="L177">        .errorCode(errorCode)</span>
-<span class="fc" id="L178">        .cause(cause)</span>
-<span class="fc" id="L179">        .build();</span>
+<span class="fc" id="L181">    return ServiceException.builder()</span>
+<span class="fc" id="L182">        .httpStatus(500)</span>
+<span class="fc" id="L183">        .reason(reason)</span>
+<span class="fc" id="L184">        .errorCode(errorCode)</span>
+<span class="fc" id="L185">        .cause(cause)</span>
+<span class="fc" id="L186">        .build();</span>
   }
 
 
@@ -186,7 +193,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException badRequest() {
-<span class="fc" id="L189">    return badRequest(null);</span>
+<span class="fc" id="L196">    return badRequest(null);</span>
   }
 
   /**
@@ -196,7 +203,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException badRequest(String reason) {
-<span class="fc" id="L199">    return badRequest(reason, (String) null);</span>
+<span class="fc" id="L206">    return badRequest(reason, (String) null);</span>
   }
 
   /**
@@ -207,7 +214,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException badRequest(String reason, Throwable cause) {
-<span class="fc" id="L210">    return badRequest(reason, null, cause);</span>
+<span class="fc" id="L217">    return badRequest(reason, null, cause);</span>
   }
 
   /**
@@ -218,7 +225,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException badRequest(String reason, String errorCode) {
-<span class="fc" id="L221">    return badRequest(reason, errorCode, null);</span>
+<span class="fc" id="L228">    return badRequest(reason, errorCode, null);</span>
   }
 
   /**
@@ -233,12 +240,12 @@ public class ServiceException extends RuntimeException
       String reason,
       String errorCode,
       Throwable cause) {
-<span class="fc" id="L236">    return ServiceException.builder()</span>
-<span class="fc" id="L237">        .httpStatus(400)</span>
-<span class="fc" id="L238">        .reason(reason)</span>
-<span class="fc" id="L239">        .errorCode(errorCode)</span>
-<span class="fc" id="L240">        .cause(cause)</span>
-<span class="fc" id="L241">        .build();</span>
+<span class="fc" id="L243">    return ServiceException.builder()</span>
+<span class="fc" id="L244">        .httpStatus(400)</span>
+<span class="fc" id="L245">        .reason(reason)</span>
+<span class="fc" id="L246">        .errorCode(errorCode)</span>
+<span class="fc" id="L247">        .cause(cause)</span>
+<span class="fc" id="L248">        .build();</span>
   }
 
   /**
@@ -247,7 +254,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException notFound() {
-<span class="fc" id="L250">    return new ServiceException(404, null);</span>
+<span class="fc" id="L257">    return new ServiceException(404, null);</span>
   }
 
   /**
@@ -257,7 +264,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException notFound(Object entityName) {
-<span class="fc" id="L260">    return notFound(&quot;Entity&quot;, entityName);</span>
+<span class="fc" id="L267">    return notFound(&quot;Entity&quot;, entityName);</span>
   }
 
   /**
@@ -268,7 +275,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException notFound(String entityType, Object entityName) {
-<span class="fc" id="L271">    return notFoundWithErrorCode(entityType, entityName, null);</span>
+<span class="fc" id="L278">    return notFoundWithErrorCode(entityType, entityName, null);</span>
   }
 
   /**
@@ -281,7 +288,7 @@ public class ServiceException extends RuntimeException
   public static ServiceException notFoundWithErrorCode(
       Object entityName,
       String errorCode) {
-<span class="fc" id="L284">    return notFoundWithErrorCode(&quot;Entity&quot;, entityName, errorCode);</span>
+<span class="fc" id="L291">    return notFoundWithErrorCode(&quot;Entity&quot;, entityName, errorCode);</span>
   }
 
   /**
@@ -296,7 +303,7 @@ public class ServiceException extends RuntimeException
       String entityType,
       Object entityName,
       String errorCode) {
-<span class="fc" id="L299">    return new ServiceException(404, errorCode,</span>
+<span class="fc" id="L306">    return new ServiceException(404, errorCode,</span>
         entityType + &quot; with identifier [&quot; + entityName + &quot;] was not found.&quot;);
   }
 
@@ -306,7 +313,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException alreadyExists() {
-<span class="fc" id="L309">    return new ServiceException(409, null);</span>
+<span class="fc" id="L316">    return new ServiceException(409, null);</span>
   }
 
   /**
@@ -317,7 +324,7 @@ public class ServiceException extends RuntimeException
    */
   public static ServiceException alreadyExists(
       Object entityName) {
-<span class="fc" id="L320">    return alreadyExistsWithErrorCode(&quot;Entity&quot;, entityName, null);</span>
+<span class="fc" id="L327">    return alreadyExistsWithErrorCode(&quot;Entity&quot;, entityName, null);</span>
   }
 
   /**
@@ -330,7 +337,7 @@ public class ServiceException extends RuntimeException
   public static ServiceException alreadyExists(
       String entityType,
       Object entityName) {
-<span class="fc" id="L333">    return alreadyExistsWithErrorCode(entityType, entityName, null);</span>
+<span class="fc" id="L340">    return alreadyExistsWithErrorCode(entityType, entityName, null);</span>
   }
 
   /**
@@ -343,7 +350,7 @@ public class ServiceException extends RuntimeException
   public static ServiceException alreadyExistsWithErrorCode(
       Object entityName,
       String errorCode) {
-<span class="fc" id="L346">    return alreadyExistsWithErrorCode(&quot;Entity&quot;, entityName, errorCode);</span>
+<span class="fc" id="L353">    return alreadyExistsWithErrorCode(&quot;Entity&quot;, entityName, errorCode);</span>
   }
 
   /**
@@ -358,9 +365,9 @@ public class ServiceException extends RuntimeException
       String entityType,
       Object entityName,
       String errorCode) {
-<span class="fc" id="L361">    return new ServiceException(</span>
+<span class="fc" id="L368">    return new ServiceException(</span>
         409,
-<span class="pc bpc" id="L363" title="1 of 4 branches missed.">        isNull(errorCode) || errorCode.isBlank() ? ERROR_CODE_ALREADY_EXISTS : errorCode,</span>
+<span class="pc bpc" id="L370" title="1 of 4 branches missed.">        isNull(errorCode) || errorCode.isBlank() ? ERROR_CODE_ALREADY_EXISTS : errorCode,</span>
         entityType + &quot; with identifier [&quot; + entityName + &quot;] already exists.&quot;);
   }
 
@@ -370,7 +377,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException forbidden() {
-<span class="fc" id="L373">    return new ServiceException(403, null);</span>
+<span class="fc" id="L380">    return new ServiceException(403, null);</span>
   }
 
   /**
@@ -380,7 +387,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException forbidden(Object entityName) {
-<span class="fc" id="L383">    return forbiddenWithErrorCode(entityName, null);</span>
+<span class="fc" id="L390">    return forbiddenWithErrorCode(entityName, null);</span>
   }
 
   /**
@@ -391,7 +398,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException forbidden(String entityType, Object entityName) {
-<span class="fc" id="L394">    return forbiddenWithErrorCode(entityType, entityName, null);</span>
+<span class="fc" id="L401">    return forbiddenWithErrorCode(entityType, entityName, null);</span>
   }
 
   /**
@@ -401,7 +408,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException forbiddenWithErrorCode(String errorCode) {
-<span class="fc" id="L404">    return new ServiceException(403, errorCode);</span>
+<span class="fc" id="L411">    return new ServiceException(403, errorCode);</span>
   }
 
   /**
@@ -412,7 +419,7 @@ public class ServiceException extends RuntimeException
    * @return the service exception
    */
   public static ServiceException forbiddenWithErrorCode(Object entityName, String errorCode) {
-<span class="fc" id="L415">    return new ServiceException(403, errorCode,</span>
+<span class="fc" id="L422">    return new ServiceException(403, errorCode,</span>
         &quot;Access to entity with identifier [&quot; + entityName + &quot;] is forbidden.&quot;);
   }
 
@@ -428,7 +435,7 @@ public class ServiceException extends RuntimeException
       String entityType,
       Object entityName,
       String errorCode) {
-<span class="fc" id="L431">    return new ServiceException(403, errorCode,</span>
+<span class="fc" id="L438">    return new ServiceException(403, errorCode,</span>
         &quot;Access to [&quot; + entityType + &quot;] with identifier [&quot; + entityName + &quot;] is forbidden.&quot;);
   }
 
@@ -438,24 +445,11 @@ public class ServiceException extends RuntimeException
    * @return the builder
    */
   public static ServiceExceptionBuilder&lt;? extends ServiceException&gt; builder() {
-<span class="fc" id="L441">    return new AbstractServiceExceptionBuilder&lt;&gt;() {</span>
 
+<span class="fc" id="L449">    return new AbstractServiceExceptionBuilder&lt;&gt;() {</span>
+
+      @Serial
       private static final long serialVersionUID = 2L;
-
-      @Override
-      protected ServiceException buildWith(int httpStatus, String errorCode) {
-<span class="fc" id="L447">        return new ServiceException(httpStatus, errorCode);</span>
-      }
-
-      @Override
-      protected ServiceException buildWith(int httpStatus, String errorCode, String reason) {
-<span class="fc" id="L452">        return new ServiceException(httpStatus, errorCode, reason);</span>
-      }
-
-      @Override
-      protected ServiceException buildWith(int httpStatus, String errorCode, Throwable cause) {
-<span class="fc" id="L457">        return new ServiceException(httpStatus, errorCode, cause);</span>
-      }
 
       @Override
       protected ServiceException buildWith(
@@ -463,10 +457,10 @@ public class ServiceException extends RuntimeException
           String errorCode,
           String reason,
           Throwable cause) {
-<span class="fc" id="L466">        return new ServiceException(httpStatus, errorCode, reason, cause);</span>
+<span class="fc" id="L460">        return new ServiceException(httpStatus, errorCode, reason, cause);</span>
       }
     };
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

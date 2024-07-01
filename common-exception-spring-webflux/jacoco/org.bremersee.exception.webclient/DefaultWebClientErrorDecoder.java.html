@@ -16,8 +16,7 @@
 
 package org.bremersee.exception.webclient;
 
-import static java.util.Objects.nonNull;
-
+import java.util.Optional;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.RestApiResponseException;
@@ -39,29 +38,29 @@ public class DefaultWebClientErrorDecoder
    * Instantiates a new web client error decoder.
    */
   public DefaultWebClientErrorDecoder() {
-<span class="fc" id="L42">    this(null);</span>
-<span class="fc" id="L43">  }</span>
+<span class="fc" id="L41">    this(null);</span>
+<span class="fc" id="L42">  }</span>
 
   /**
    * Instantiates a new web client error decoder.
    *
    * @param parser the parser
    */
-<span class="fc" id="L50">  public DefaultWebClientErrorDecoder(RestApiExceptionParser parser) {</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">    this.parser = nonNull(parser) ? parser : new RestApiExceptionParserImpl();</span>
-<span class="fc" id="L52">  }</span>
+<span class="fc" id="L49">  public DefaultWebClientErrorDecoder(RestApiExceptionParser parser) {</span>
+<span class="fc" id="L50">    this.parser = Optional.ofNullable(parser).orElseGet(RestApiExceptionParserImpl::new);</span>
+<span class="fc" id="L51">  }</span>
 
   @Override
   public RestApiResponseException buildException(
       ClientResponse clientResponse,
       String response) {
 
-<span class="fc" id="L59">    RestApiException restApiException = parser.parseException(</span>
+<span class="fc" id="L58">    RestApiException restApiException = parser.parseException(</span>
         response,
-<span class="fc" id="L61">        clientResponse.statusCode(),</span>
-<span class="fc" id="L62">        clientResponse.headers().asHttpHeaders());</span>
-<span class="fc" id="L63">    return new RestApiResponseException(clientResponse.statusCode(), restApiException);</span>
+<span class="fc" id="L60">        clientResponse.statusCode(),</span>
+<span class="fc" id="L61">        clientResponse.headers().asHttpHeaders());</span>
+<span class="fc" id="L62">    return new RestApiResponseException(clientResponse.statusCode(), restApiException);</span>
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

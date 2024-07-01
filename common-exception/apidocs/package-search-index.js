@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.bremersee.exception"},{"l":"org.bremersee.exception.annotation"}]
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.bremersee.exception"},{"l":"org.bremersee.exception.annotation"}];updateSearchResults();

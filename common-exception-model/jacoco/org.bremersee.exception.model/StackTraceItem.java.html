@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serial;
 import java.io.Serializable;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -33,7 +34,6 @@ import lombok.ToString;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings(&quot;SameNameButDifferent&quot;)
 @Schema(description = &quot;A stack trace element of an exception.&quot;)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_EMPTY)
@@ -44,17 +44,30 @@ import lombok.ToString;
 @NoArgsConstructor
 public class StackTraceItem implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
+  /**
+   * The declaring class.
+   */
   @Schema(description = &quot;The declaring class.&quot;)
   private String declaringClass;
 
+  /**
+   * The method name.
+   */
   @Schema(description = &quot;The method name.&quot;)
   private String methodName;
 
+  /**
+   * The file name.
+   */
   @Schema(description = &quot;The file name.&quot;)
   private String fileName;
 
+  /**
+   * The line number.
+   */
   @Schema(description = &quot;The line number.&quot;)
   private Integer lineNumber;
 
@@ -71,12 +84,12 @@ public class StackTraceItem implements Serializable {
       String declaringClass,
       String methodName,
       String fileName,
-<span class="fc" id="L74">      Integer lineNumber) {</span>
-<span class="fc" id="L75">    this.declaringClass = declaringClass;</span>
-<span class="fc" id="L76">    this.methodName = methodName;</span>
-<span class="fc" id="L77">    this.fileName = fileName;</span>
-<span class="fc" id="L78">    this.lineNumber = lineNumber;</span>
-<span class="fc" id="L79">  }</span>
+<span class="fc" id="L87">      Integer lineNumber) {</span>
+<span class="fc" id="L88">    this.declaringClass = declaringClass;</span>
+<span class="fc" id="L89">    this.methodName = methodName;</span>
+<span class="fc" id="L90">    this.fileName = fileName;</span>
+<span class="fc" id="L91">    this.lineNumber = lineNumber;</span>
+<span class="fc" id="L92">  }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

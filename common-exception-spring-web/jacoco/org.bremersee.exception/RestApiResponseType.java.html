@@ -25,6 +25,7 @@ import static org.springframework.http.MediaType.TEXT_XML;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import lombok.Getter;
 import org.springframework.http.MediaType;
 
 /**
@@ -32,53 +33,36 @@ import org.springframework.http.MediaType;
  *
  * @author Christian Bremer
  */
-<span class="fc" id="L35">public enum RestApiResponseType {</span>
+<span class="fc" id="L36">@Getter</span>
+public enum RestApiResponseType {
 
   /**
    * Json rest api response type.
    */
-<span class="fc" id="L40">  JSON(APPLICATION_JSON, MediaType.APPLICATION_JSON_VALUE),</span>
+<span class="fc" id="L42">  JSON(APPLICATION_JSON, MediaType.APPLICATION_JSON_VALUE),</span>
 
   /**
    * Xml rest api response type.
    */
-<span class="fc" id="L45">  XML(APPLICATION_XML, MediaType.APPLICATION_XML_VALUE),</span>
+<span class="fc" id="L47">  XML(APPLICATION_XML, MediaType.APPLICATION_XML_VALUE),</span>
 
   /**
    * Header rest api response type.
    */
-<span class="fc" id="L50">  HEADER(TEXT_PLAIN, MediaType.TEXT_PLAIN_VALUE);</span>
+<span class="fc" id="L52">  HEADER(TEXT_PLAIN, MediaType.TEXT_PLAIN_VALUE);</span>
 
-<span class="fc" id="L52">  private static final MediaType APPLICATION_PLUS_JSON = new MediaType(&quot;application&quot;, &quot;*+json&quot;);</span>
+<span class="fc" id="L54">  private static final MediaType APPLICATION_PLUS_JSON = new MediaType(&quot;application&quot;, &quot;*+json&quot;);</span>
 
-<span class="fc" id="L54">  private static final MediaType APPLICATION_PLUS_XML = new MediaType(&quot;application&quot;, &quot;*+xml&quot;);</span>
+<span class="fc" id="L56">  private static final MediaType APPLICATION_PLUS_XML = new MediaType(&quot;application&quot;, &quot;*+xml&quot;);</span>
 
   private final MediaType contentType;
 
   private final String contentTypeValue;
 
-<span class="fc" id="L60">  RestApiResponseType(MediaType contentType, String contentTypeValue) {</span>
-<span class="fc" id="L61">    this.contentType = contentType;</span>
-<span class="fc" id="L62">    this.contentTypeValue = contentTypeValue;</span>
-<span class="fc" id="L63">  }</span>
-
-  /**
-   * Gets content type.
-   *
-   * @return the content type
-   */
-  public MediaType getContentType() {
-<span class="fc" id="L71">    return contentType;</span>
-  }
-
-  /**
-   * Gets content type value.
-   *
-   * @return the content type value
-   */
-  public String getContentTypeValue() {
-<span class="fc" id="L80">    return contentTypeValue;</span>
-  }
+<span class="fc" id="L62">  RestApiResponseType(MediaType contentType, String contentTypeValue) {</span>
+<span class="fc" id="L63">    this.contentType = contentType;</span>
+<span class="fc" id="L64">    this.contentTypeValue = contentTypeValue;</span>
+<span class="fc" id="L65">  }</span>
 
   /**
    * Detect rest api response type by accept header.
@@ -88,14 +72,14 @@ import org.springframework.http.MediaType;
    */
   public static RestApiResponseType detectByAccepted(List&lt;MediaType&gt; accepted) {
     RestApiResponseType contentType;
-<span class="fc bfc" id="L91" title="All 2 branches covered.">    if (isJsonAccepted(accepted)) {</span>
-<span class="fc" id="L92">      contentType = JSON;</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">    } else if (isXmlAccepted(accepted)) {</span>
-<span class="fc" id="L94">      contentType = XML;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">    if (isJsonAccepted(accepted)) {</span>
+<span class="fc" id="L76">      contentType = JSON;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">    } else if (isXmlAccepted(accepted)) {</span>
+<span class="fc" id="L78">      contentType = XML;</span>
     } else {
-<span class="fc" id="L96">      contentType = HEADER;</span>
+<span class="fc" id="L80">      contentType = HEADER;</span>
     }
-<span class="fc" id="L98">    return contentType;</span>
+<span class="fc" id="L82">    return contentType;</span>
   }
 
   /**
@@ -105,45 +89,45 @@ import org.springframework.http.MediaType;
    * @return the rest api response type
    */
   public static RestApiResponseType detectByContentType(MediaType contentType) {
-<span class="fc bfc" id="L108" title="All 2 branches covered.">    if (isJson(contentType)) {</span>
-<span class="fc" id="L109">      return JSON;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">    if (isJson(contentType)) {</span>
+<span class="fc" id="L93">      return JSON;</span>
     }
-<span class="fc bfc" id="L111" title="All 2 branches covered.">    if (isXml(contentType)) {</span>
-<span class="fc" id="L112">      return XML;</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">    if (isXml(contentType)) {</span>
+<span class="fc" id="L96">      return XML;</span>
     }
-<span class="fc" id="L114">    return HEADER;</span>
+<span class="fc" id="L98">    return HEADER;</span>
   }
 
   private static boolean isJson(MediaType contentType) {
-<span class="fc bfc" id="L118" title="All 2 branches covered.">    return nonNull(contentType)</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">        &amp;&amp; (contentType.isCompatibleWith(APPLICATION_JSON)</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">        || contentType.isCompatibleWith(APPLICATION_PLUS_JSON));</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">    return nonNull(contentType)</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        &amp;&amp; (contentType.isCompatibleWith(APPLICATION_JSON)</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        || contentType.isCompatibleWith(APPLICATION_PLUS_JSON));</span>
   }
 
   private static boolean isJsonAccepted(List&lt;MediaType&gt; accepted) {
-<span class="fc" id="L124">    return Optional.ofNullable(accepted)</span>
-<span class="fc" id="L125">        .stream()</span>
-<span class="fc" id="L126">        .flatMap(Collection::stream)</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">        .anyMatch(mediaType -&gt; mediaType.includes(APPLICATION_JSON)</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">            || APPLICATION_PLUS_JSON.includes(mediaType)</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">            || mediaType.includes(TEXT_PLAIN));</span>
+<span class="fc" id="L108">    return Optional.ofNullable(accepted)</span>
+<span class="fc" id="L109">        .stream()</span>
+<span class="fc" id="L110">        .flatMap(Collection::stream)</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        .anyMatch(mediaType -&gt; mediaType.includes(APPLICATION_JSON)</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            || APPLICATION_PLUS_JSON.includes(mediaType)</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">            || mediaType.includes(TEXT_PLAIN));</span>
   }
 
   private static boolean isXml(MediaType contentType) {
-<span class="fc bfc" id="L133" title="All 2 branches covered.">    return nonNull(contentType)</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">        &amp;&amp; (contentType.isCompatibleWith(APPLICATION_XML)</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">        || contentType.isCompatibleWith(APPLICATION_PLUS_XML)</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">        || TEXT_XML.isCompatibleWith(contentType));</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">    return nonNull(contentType)</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        &amp;&amp; (contentType.isCompatibleWith(APPLICATION_XML)</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        || contentType.isCompatibleWith(APPLICATION_PLUS_XML)</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        || TEXT_XML.isCompatibleWith(contentType));</span>
   }
 
   private static boolean isXmlAccepted(List&lt;MediaType&gt; accepted) {
-<span class="fc" id="L140">    return Optional.ofNullable(accepted)</span>
-<span class="fc" id="L141">        .stream()</span>
-<span class="fc" id="L142">        .flatMap(Collection::stream)</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">        .anyMatch(mediaType -&gt; mediaType.includes(APPLICATION_XML)</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">            || APPLICATION_PLUS_XML.includes(mediaType)</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">            || mediaType.includes(TEXT_XML));</span>
+<span class="fc" id="L124">    return Optional.ofNullable(accepted)</span>
+<span class="fc" id="L125">        .stream()</span>
+<span class="fc" id="L126">        .flatMap(Collection::stream)</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        .anyMatch(mediaType -&gt; mediaType.includes(APPLICATION_XML)</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">            || APPLICATION_PLUS_XML.includes(mediaType)</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">            || mediaType.includes(TEXT_XML));</span>
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

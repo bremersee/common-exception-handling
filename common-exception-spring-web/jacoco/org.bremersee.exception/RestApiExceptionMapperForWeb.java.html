@@ -35,6 +35,9 @@ import org.bremersee.exception.model.Handler;
 import org.bremersee.exception.model.RestApiException;
 import org.bremersee.exception.model.StackTraceItem;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.server.ResponseStatusException;
@@ -44,7 +47,6 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings(&quot;SameNameButDifferent&quot;)
 public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
 
   @Getter(AccessLevel.PROTECTED)
@@ -61,10 +63,10 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
    */
   public RestApiExceptionMapperForWeb(
       RestApiExceptionMapperProperties properties,
-<span class="fc" id="L64">      String applicationName) {</span>
-<span class="fc" id="L65">    this.properties = properties;</span>
-<span class="fc" id="L66">    this.applicationName = applicationName;</span>
-<span class="fc" id="L67">  }</span>
+<span class="fc" id="L66">      String applicationName) {</span>
+<span class="fc" id="L67">    this.properties = properties;</span>
+<span class="fc" id="L68">    this.applicationName = applicationName;</span>
+<span class="fc" id="L69">  }</span>
 
   /**
    * Detect http status http status.
@@ -73,29 +75,28 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
    * @param handler the handler
    * @return the http status
    */
-  protected HttpStatus detectHttpStatus(Throwable exception, Object handler) {
-
-<span class="fc" id="L78">    return Optional.of(exception)</span>
-<span class="fc" id="L79">        .flatMap(exc -&gt; {</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">          if (exc instanceof HttpStatusAware) {</span>
-<span class="fc" id="L81">            return fromStatus(((HttpStatusAware) exc).status());</span>
+  protected HttpStatusCode detectHttpStatus(Throwable exception, Object handler) {
+<span class="fc" id="L79">    return Optional.of(exception)</span>
+<span class="fc" id="L80">        .flatMap(exc -&gt; {</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">          if (exc instanceof HttpStatusAware hsa) {</span>
+<span class="fc" id="L82">            return Optional.of(HttpStatusCode.valueOf(hsa.status()));</span>
           }
-<span class="fc bfc" id="L83" title="All 2 branches covered.">          if (exc instanceof ResponseStatusException) {</span>
-<span class="fc" id="L84">            return Optional.of(((ResponseStatusException) exc).getStatus());</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">          if (exc instanceof ResponseStatusException rse) {</span>
+<span class="fc" id="L85">            return Optional.of(rse.getStatusCode());</span>
           }
-<span class="fc" id="L86">          return Optional.empty();</span>
+<span class="fc" id="L87">          return Optional.empty();</span>
         })
-<span class="fc" id="L88">        .or(() -&gt; findHandlerMethod(handler)</span>
-<span class="fc" id="L89">            .map(method -&gt; findMergedAnnotation(method, ResponseStatus.class))</span>
-<span class="fc" id="L90">            .map(ResponseStatus::code))</span>
-<span class="fc" id="L91">        .or(() -&gt; findHandlerClass(handler)</span>
-<span class="fc" id="L92">            .map(handlerClass -&gt; findMergedAnnotation(handlerClass, ResponseStatus.class))</span>
-<span class="fc" id="L93">            .map(ResponseStatus::code))</span>
-<span class="fc" id="L94">        .or(() -&gt; Optional</span>
-<span class="fc" id="L95">            .ofNullable(findMergedAnnotation(exception.getClass(), ResponseStatus.class))</span>
-<span class="fc" id="L96">            .map(ResponseStatus::code))</span>
-<span class="fc" id="L97">        .or(() -&gt; fromStatus(properties.findExceptionMapping(exception).getStatus()))</span>
-<span class="fc" id="L98">        .orElse(HttpStatus.INTERNAL_SERVER_ERROR);</span>
+<span class="fc" id="L89">        .or(() -&gt; findHandlerMethod(handler)</span>
+<span class="fc" id="L90">            .map(method -&gt; findMergedAnnotation(method, ResponseStatus.class))</span>
+<span class="fc" id="L91">            .map(ResponseStatus::code))</span>
+<span class="fc" id="L92">        .or(() -&gt; findHandlerClass(handler)</span>
+<span class="fc" id="L93">            .map(handlerClass -&gt; findMergedAnnotation(handlerClass, ResponseStatus.class))</span>
+<span class="fc" id="L94">            .map(ResponseStatus::code))</span>
+<span class="fc" id="L95">        .or(() -&gt; Optional</span>
+<span class="fc" id="L96">            .ofNullable(findMergedAnnotation(exception.getClass(), ResponseStatus.class))</span>
+<span class="fc" id="L97">            .map(ResponseStatus::code))</span>
+<span class="fc" id="L98">        .or(() -&gt; fromStatus(properties.findExceptionMapping(exception).getStatus()))</span>
+<span class="fc" id="L99">        .orElse(HttpStatus.INTERNAL_SERVER_ERROR);</span>
   }
 
   /**
@@ -104,9 +105,21 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
    * @param status the status
    * @return the optional
    */
-  protected Optional&lt;HttpStatus&gt; fromStatus(Integer status) {
-<span class="fc" id="L108">    return Optional.ofNullable(status)</span>
-<span class="fc" id="L109">        .map(HttpStatus::resolve);</span>
+  protected Optional&lt;HttpStatusCode&gt; fromStatus(Integer status) {
+<span class="fc" id="L109">    return Optional.ofNullable(status)</span>
+<span class="fc" id="L110">        .map(HttpStatus::valueOf);</span>
+  }
+
+  @Nullable
+  protected String getError(Throwable throwable, HttpStatusCode httpStatusCode) {
+<span class="fc bfc" id="L115" title="All 2 branches covered.">    if ((throwable instanceof ResponseStatusException rse)</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        &amp;&amp; !(ObjectUtils.isEmpty(rse.getReason()))) {</span>
+<span class="fc" id="L117">      return rse.getReason();</span>
+    }
+<span class="fc bfc" id="L119" title="All 2 branches covered.">    if (httpStatusCode instanceof HttpStatus hs) {</span>
+<span class="fc" id="L120">      return hs.getReasonPhrase();</span>
+    }
+<span class="fc" id="L122">    return null;</span>
   }
 
   @Override
@@ -115,33 +128,33 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       String requestPath,
       Object handler) {
 
-<span class="fc" id="L118">    HttpStatus httpStatus = detectHttpStatus(exception, handler);</span>
+<span class="fc" id="L131">    HttpStatusCode httpStatus = detectHttpStatus(exception, handler);</span>
 
-<span class="fc" id="L120">    RestApiException restApiException = new RestApiException();</span>
+<span class="fc" id="L133">    RestApiException restApiException = new RestApiException();</span>
 
-<span class="fc" id="L122">    restApiException.setTimestamp(OffsetDateTime.now(ZoneOffset.UTC));</span>
+<span class="fc" id="L135">    restApiException.setTimestamp(OffsetDateTime.now(ZoneOffset.UTC));</span>
 
-<span class="fc" id="L124">    restApiException.setStatus(httpStatus.value());</span>
+<span class="fc" id="L137">    restApiException.setStatus(httpStatus.value());</span>
 
-<span class="fc" id="L126">    restApiException.setError(httpStatus.getReasonPhrase());</span>
+<span class="fc" id="L139">    restApiException.setError(getError(exception, httpStatus));</span>
 
-<span class="fc" id="L128">    ExceptionMappingConfig config = getProperties().findExceptionMappingConfig(exception);</span>
+<span class="fc" id="L141">    ExceptionMappingConfig config = getProperties().findExceptionMappingConfig(exception);</span>
 
-<span class="fc" id="L130">    restApiException = setErrorCode(restApiException, exception, handler, config);</span>
+<span class="fc" id="L143">    restApiException = setErrorCode(restApiException, exception, handler, config);</span>
 
-<span class="fc" id="L132">    restApiException = setMessage(restApiException, exception, handler, config);</span>
+<span class="fc" id="L145">    restApiException = setMessage(restApiException, exception, handler, config);</span>
 
-<span class="fc" id="L134">    restApiException = setClassName(restApiException, exception, config);</span>
+<span class="fc" id="L147">    restApiException = setClassName(restApiException, exception, config);</span>
 
-<span class="fc" id="L136">    restApiException = setApplication(restApiException, config);</span>
+<span class="fc" id="L149">    restApiException = setApplication(restApiException, config);</span>
 
-<span class="fc" id="L138">    restApiException = setPath(restApiException, requestPath, config);</span>
+<span class="fc" id="L151">    restApiException = setPath(restApiException, requestPath, config);</span>
 
-<span class="fc" id="L140">    restApiException = setHandler(restApiException, handler, config);</span>
+<span class="fc" id="L153">    restApiException = setHandler(restApiException, handler, config);</span>
 
-<span class="fc" id="L142">    restApiException = setStackTrace(restApiException, exception.getStackTrace(), config);</span>
+<span class="fc" id="L155">    restApiException = setStackTrace(restApiException, exception.getStackTrace(), config);</span>
 
-<span class="fc" id="L144">    return setCause(restApiException, exception, config);</span>
+<span class="fc" id="L157">    return setCause(restApiException, exception, config);</span>
   }
 
   /**
@@ -151,12 +164,12 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
    * @return the class
    */
   protected Optional&lt;Class&lt;?&gt;&gt; findHandlerClass(Object handler) {
-<span class="fc" id="L154">    return Optional.ofNullable(handler)</span>
-<span class="fc" id="L155">        .map(h -&gt; {</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">          if (h instanceof HandlerMethod) {</span>
-<span class="fc" id="L157">            return ((HandlerMethod) h).getBean().getClass();</span>
+<span class="fc" id="L167">    return Optional.ofNullable(handler)</span>
+<span class="fc" id="L168">        .map(h -&gt; {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">          if (h instanceof HandlerMethod) {</span>
+<span class="fc" id="L170">            return ((HandlerMethod) h).getBean().getClass();</span>
           }
-<span class="pc bpc" id="L159" title="1 of 2 branches missed.">          return (h instanceof Class) ? (Class&lt;?&gt;) h : h.getClass();</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">          return (h instanceof Class) ? (Class&lt;?&gt;) h : h.getClass();</span>
         });
   }
 
@@ -167,9 +180,9 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
    * @return the method
    */
   protected Optional&lt;Method&gt; findHandlerMethod(Object handler) {
-<span class="fc" id="L170">    return Optional.ofNullable(handler)</span>
-<span class="fc" id="L171">        .filter(h -&gt; h instanceof HandlerMethod)</span>
-<span class="fc" id="L172">        .map(h -&gt; ((HandlerMethod) h).getMethod());</span>
+<span class="fc" id="L183">    return Optional.ofNullable(handler)</span>
+<span class="fc" id="L184">        .filter(h -&gt; h instanceof HandlerMethod)</span>
+<span class="fc" id="L185">        .map(h -&gt; ((HandlerMethod) h).getMethod());</span>
   }
 
   /**
@@ -187,25 +200,25 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       Object handler,
       ExceptionMappingConfig config) {
 
-<span class="fc" id="L190">    return Optional.of(exception)</span>
-<span class="pc bpc" id="L191" title="1 of 4 branches missed.">        .filter(exc -&gt; (exc instanceof ErrorCodeAware) &amp;&amp; !config.getEvaluateAnnotationFirst())</span>
-<span class="fc" id="L192">        .map(exc -&gt; ((ErrorCodeAware) exc).getErrorCode())</span>
-<span class="fc" id="L193">        .or(() -&gt; findHandlerMethod(handler)</span>
-<span class="fc" id="L194">            .map(method -&gt; findMergedAnnotation(method, ErrorCode.class))</span>
-<span class="fc" id="L195">            .map(ErrorCode::value))</span>
-<span class="fc" id="L196">        .or(() -&gt; findHandlerClass(handler)</span>
-<span class="fc" id="L197">            .map(handlerClass -&gt; findMergedAnnotation(handlerClass, ErrorCode.class))</span>
-<span class="fc" id="L198">            .map(ErrorCode::value))</span>
-<span class="fc" id="L199">        .or(() -&gt; Optional</span>
-<span class="fc" id="L200">            .ofNullable(findMergedAnnotation(getUserClass(exception), ErrorCode.class))</span>
-<span class="fc" id="L201">            .map(ErrorCode::value))</span>
-<span class="fc" id="L202">        .or(() -&gt; Optional.ofNullable(getProperties().findExceptionMapping(exception).getCode()))</span>
-<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        .filter(errorCode -&gt; !errorCode.isBlank())</span>
-<span class="fc" id="L204">        .map(errorCode -&gt; restApiException.toBuilder()</span>
-<span class="fc" id="L205">            .errorCode(errorCode)</span>
-<span class="fc" id="L206">            .errorCodeInherited(false)</span>
-<span class="fc" id="L207">            .build())</span>
-<span class="fc" id="L208">        .orElse(restApiException);</span>
+<span class="fc" id="L203">    return Optional.of(exception)</span>
+<span class="pc bpc" id="L204" title="1 of 4 branches missed.">        .filter(exc -&gt; (exc instanceof ErrorCodeAware) &amp;&amp; !config.getEvaluateAnnotationFirst())</span>
+<span class="fc" id="L205">        .map(exc -&gt; ((ErrorCodeAware) exc).getErrorCode())</span>
+<span class="fc" id="L206">        .or(() -&gt; findHandlerMethod(handler)</span>
+<span class="fc" id="L207">            .map(method -&gt; findMergedAnnotation(method, ErrorCode.class))</span>
+<span class="fc" id="L208">            .map(ErrorCode::value))</span>
+<span class="fc" id="L209">        .or(() -&gt; findHandlerClass(handler)</span>
+<span class="fc" id="L210">            .map(handlerClass -&gt; findMergedAnnotation(handlerClass, ErrorCode.class))</span>
+<span class="fc" id="L211">            .map(ErrorCode::value))</span>
+<span class="fc" id="L212">        .or(() -&gt; Optional</span>
+<span class="fc" id="L213">            .ofNullable(findMergedAnnotation(getUserClass(exception), ErrorCode.class))</span>
+<span class="fc" id="L214">            .map(ErrorCode::value))</span>
+<span class="fc" id="L215">        .or(() -&gt; Optional.ofNullable(getProperties().findExceptionMapping(exception).getCode()))</span>
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        .filter(errorCode -&gt; !errorCode.isBlank())</span>
+<span class="fc" id="L217">        .map(errorCode -&gt; restApiException.toBuilder()</span>
+<span class="fc" id="L218">            .errorCode(errorCode)</span>
+<span class="fc" id="L219">            .errorCodeInherited(false)</span>
+<span class="fc" id="L220">            .build())</span>
+<span class="fc" id="L221">        .orElse(restApiException);</span>
   }
 
   /**
@@ -223,23 +236,23 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       Object handler,
       ExceptionMappingConfig config) {
 
-<span class="fc bfc" id="L226" title="All 2 branches covered.">    if (!config.getIncludeMessage()) {</span>
-<span class="fc" id="L227">      return restApiException;</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">    if (!config.getIncludeMessage()) {</span>
+<span class="fc" id="L240">      return restApiException;</span>
     }
-<span class="fc" id="L229">    return Optional.ofNullable(exception.getMessage())</span>
-<span class="pc bpc" id="L230" title="2 of 4 branches missed.">        .filter(msg -&gt; !msg.isBlank() &amp;&amp; !config.getEvaluateAnnotationFirst())</span>
-<span class="fc" id="L231">        .or(() -&gt; findHandlerMethod(handler)</span>
-<span class="fc" id="L232">            .map(method -&gt; findMergedAnnotation(method, ResponseStatus.class))</span>
-<span class="fc" id="L233">            .map(ResponseStatus::reason))</span>
-<span class="fc" id="L234">        .or(() -&gt; findHandlerClass(handler)</span>
-<span class="fc" id="L235">            .map(handlerClass -&gt; findMergedAnnotation(handlerClass, ResponseStatus.class))</span>
-<span class="fc" id="L236">            .map(ResponseStatus::reason))</span>
-<span class="fc" id="L237">        .or(() -&gt; Optional</span>
-<span class="fc" id="L238">            .ofNullable(findMergedAnnotation(getUserClass(exception), ResponseStatus.class))</span>
-<span class="fc" id="L239">            .map(ResponseStatus::reason))</span>
-<span class="fc" id="L240">        .or(() -&gt; Optional.ofNullable(getProperties().findExceptionMapping(exception).getMessage()))</span>
-<span class="fc" id="L241">        .map(msg -&gt; restApiException.toBuilder().message(msg).build())</span>
-<span class="fc" id="L242">        .orElse(restApiException);</span>
+<span class="fc" id="L242">    return Optional.ofNullable(exception.getMessage())</span>
+<span class="pc bpc" id="L243" title="2 of 4 branches missed.">        .filter(msg -&gt; !msg.isBlank() &amp;&amp; !config.getEvaluateAnnotationFirst())</span>
+<span class="fc" id="L244">        .or(() -&gt; findHandlerMethod(handler)</span>
+<span class="fc" id="L245">            .map(method -&gt; findMergedAnnotation(method, ResponseStatus.class))</span>
+<span class="fc" id="L246">            .map(ResponseStatus::reason))</span>
+<span class="fc" id="L247">        .or(() -&gt; findHandlerClass(handler)</span>
+<span class="fc" id="L248">            .map(handlerClass -&gt; findMergedAnnotation(handlerClass, ResponseStatus.class))</span>
+<span class="fc" id="L249">            .map(ResponseStatus::reason))</span>
+<span class="fc" id="L250">        .or(() -&gt; Optional</span>
+<span class="fc" id="L251">            .ofNullable(findMergedAnnotation(getUserClass(exception), ResponseStatus.class))</span>
+<span class="fc" id="L252">            .map(ResponseStatus::reason))</span>
+<span class="fc" id="L253">        .or(() -&gt; Optional.ofNullable(getProperties().findExceptionMapping(exception).getMessage()))</span>
+<span class="fc" id="L254">        .map(msg -&gt; restApiException.toBuilder().message(msg).build())</span>
+<span class="fc" id="L255">        .orElse(restApiException);</span>
   }
 
   /**
@@ -255,12 +268,12 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       Throwable exception,
       ExceptionMappingConfig config) {
 
-<span class="fc bfc" id="L258" title="All 2 branches covered.">    if (!config.getIncludeException()) {</span>
-<span class="fc" id="L259">      return restApiException;</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">    if (!config.getIncludeException()) {</span>
+<span class="fc" id="L272">      return restApiException;</span>
     }
-<span class="fc" id="L261">    return restApiException.toBuilder()</span>
-<span class="fc" id="L262">        .exception(getUserClass(exception).getName())</span>
-<span class="fc" id="L263">        .build();</span>
+<span class="fc" id="L274">    return restApiException.toBuilder()</span>
+<span class="fc" id="L275">        .exception(getUserClass(exception).getName())</span>
+<span class="fc" id="L276">        .build();</span>
   }
 
   /**
@@ -274,10 +287,10 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       RestApiException restApiException,
       ExceptionMappingConfig config) {
 
-<span class="fc bfc" id="L277" title="All 2 branches covered.">    if (!config.getIncludeApplicationName()) {</span>
-<span class="fc" id="L278">      return restApiException;</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">    if (!config.getIncludeApplicationName()) {</span>
+<span class="fc" id="L291">      return restApiException;</span>
     }
-<span class="fc" id="L280">    return restApiException.toBuilder().application(getApplicationName()).build();</span>
+<span class="fc" id="L293">    return restApiException.toBuilder().application(getApplicationName()).build();</span>
   }
 
   /**
@@ -293,10 +306,10 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       String path,
       ExceptionMappingConfig config) {
 
-<span class="pc bpc" id="L296" title="1 of 4 branches missed.">    if (!config.getIncludePath() || isNull(path)) {</span>
-<span class="fc" id="L297">      return restApiException;</span>
+<span class="pc bpc" id="L309" title="1 of 4 branches missed.">    if (!config.getIncludePath() || isNull(path)) {</span>
+<span class="fc" id="L310">      return restApiException;</span>
     }
-<span class="fc" id="L299">    return restApiException.toBuilder().path(path).build();</span>
+<span class="fc" id="L312">    return restApiException.toBuilder().path(path).build();</span>
   }
 
   /**
@@ -312,20 +325,20 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       Object handler,
       ExceptionMappingConfig config) {
 
-<span class="fc bfc" id="L315" title="All 4 branches covered.">    if (!config.getIncludeHandler() || isNull(handler)) {</span>
-<span class="fc" id="L316">      return restApiException;</span>
+<span class="fc bfc" id="L328" title="All 4 branches covered.">    if (!config.getIncludeHandler() || isNull(handler)) {</span>
+<span class="fc" id="L329">      return restApiException;</span>
     }
-<span class="fc" id="L318">    return findHandlerMethod(handler)</span>
-<span class="fc" id="L319">        .map(method -&gt; Handler.builder()</span>
-<span class="fc" id="L320">            .methodName(method.getName())</span>
-<span class="fc" id="L321">            .methodParameterTypes(Arrays.stream(method.getParameterTypes())</span>
-<span class="fc" id="L322">                .map(Class::getName)</span>
-<span class="fc" id="L323">                .collect(Collectors.toList()))</span>
-<span class="fc" id="L324">            .build())</span>
-<span class="fc" id="L325">        .flatMap(h -&gt; findHandlerClass(handler)</span>
-<span class="fc" id="L326">            .map(cls -&gt; h.toBuilder().className(cls.getName()).build()))</span>
-<span class="fc" id="L327">        .map(h -&gt; restApiException.toBuilder().handler(h).build())</span>
-<span class="fc" id="L328">        .orElse(restApiException);</span>
+<span class="fc" id="L331">    return findHandlerMethod(handler)</span>
+<span class="fc" id="L332">        .map(method -&gt; Handler.builder()</span>
+<span class="fc" id="L333">            .methodName(method.getName())</span>
+<span class="fc" id="L334">            .methodParameterTypes(Arrays.stream(method.getParameterTypes())</span>
+<span class="fc" id="L335">                .map(Class::getName)</span>
+<span class="fc" id="L336">                .collect(Collectors.toList()))</span>
+<span class="fc" id="L337">            .build())</span>
+<span class="fc" id="L338">        .flatMap(h -&gt; findHandlerClass(handler)</span>
+<span class="fc" id="L339">            .map(cls -&gt; h.toBuilder().className(cls.getName()).build()))</span>
+<span class="fc" id="L340">        .map(h -&gt; restApiException.toBuilder().handler(h).build())</span>
+<span class="fc" id="L341">        .orElse(restApiException);</span>
   }
 
   /**
@@ -341,20 +354,20 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       StackTraceElement[] stackTrace,
       ExceptionMappingConfig config) {
 
-<span class="pc bpc" id="L344" title="2 of 6 branches missed.">    if (!config.getIncludeStackTrace() || isNull(stackTrace) || stackTrace.length == 0) {</span>
-<span class="fc" id="L345">      return restApiException;</span>
+<span class="pc bpc" id="L357" title="2 of 6 branches missed.">    if (!config.getIncludeStackTrace() || isNull(stackTrace) || stackTrace.length == 0) {</span>
+<span class="fc" id="L358">      return restApiException;</span>
     }
-<span class="fc" id="L347">    return restApiException.toBuilder()</span>
-<span class="fc" id="L348">        .stackTrace(Arrays.stream(stackTrace)</span>
-<span class="fc" id="L349">            .map(st -&gt; StackTraceItem</span>
-<span class="fc" id="L350">                .builder()</span>
-<span class="fc" id="L351">                .declaringClass(st.getClassName())</span>
-<span class="fc" id="L352">                .fileName(st.getFileName())</span>
-<span class="fc" id="L353">                .lineNumber(st.getLineNumber())</span>
-<span class="fc" id="L354">                .methodName(st.getMethodName())</span>
-<span class="fc" id="L355">                .build())</span>
-<span class="fc" id="L356">            .collect(Collectors.toList()))</span>
-<span class="fc" id="L357">        .build();</span>
+<span class="fc" id="L360">    return restApiException.toBuilder()</span>
+<span class="fc" id="L361">        .stackTrace(Arrays.stream(stackTrace)</span>
+<span class="fc" id="L362">            .map(st -&gt; StackTraceItem</span>
+<span class="fc" id="L363">                .builder()</span>
+<span class="fc" id="L364">                .declaringClass(st.getClassName())</span>
+<span class="fc" id="L365">                .fileName(st.getFileName())</span>
+<span class="fc" id="L366">                .lineNumber(st.getLineNumber())</span>
+<span class="fc" id="L367">                .methodName(st.getMethodName())</span>
+<span class="fc" id="L368">                .build())</span>
+<span class="fc" id="L369">            .collect(Collectors.toList()))</span>
+<span class="fc" id="L370">        .build();</span>
   }
 
   /**
@@ -370,35 +383,35 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       Throwable exception,
       ExceptionMappingConfig config) {
 
-<span class="fc" id="L373">    return Optional.ofNullable(exception)</span>
-<span class="fc" id="L374">        .filter(exc -&gt; exc instanceof RestApiExceptionAware)</span>
-<span class="fc" id="L375">        .map(exc -&gt; ((RestApiExceptionAware) exc).getRestApiException())</span>
-<span class="fc" id="L376">        .map(cause -&gt; reconfigureRestApiException(cause, config))</span>
-<span class="fc" id="L377">        .or(() -&gt; Optional.ofNullable(exception)</span>
-<span class="fc" id="L378">            .map(Throwable::getCause)</span>
-<span class="fc" id="L379">            .map(cause -&gt; {</span>
-<span class="fc" id="L380">              RestApiException rae = new RestApiException();</span>
-<span class="fc" id="L381">              rae = setErrorCode(rae, cause, null, config);</span>
-<span class="fc" id="L382">              rae = setMessage(rae, cause, null, config);</span>
-<span class="fc" id="L383">              rae = setClassName(rae, cause, config);</span>
-<span class="fc" id="L384">              rae = setStackTrace(rae, cause.getStackTrace(), config);</span>
-<span class="fc" id="L385">              rae = setCause(rae, cause.getCause(), config);</span>
-<span class="fc" id="L386">              return rae;</span>
+<span class="fc" id="L386">    return Optional.ofNullable(exception)</span>
+<span class="fc" id="L387">        .filter(exc -&gt; exc instanceof RestApiExceptionAware)</span>
+<span class="fc" id="L388">        .map(exc -&gt; ((RestApiExceptionAware) exc).getRestApiException())</span>
+<span class="fc" id="L389">        .map(cause -&gt; reconfigureRestApiException(cause, config))</span>
+<span class="fc" id="L390">        .or(() -&gt; Optional.ofNullable(exception)</span>
+<span class="fc" id="L391">            .map(Throwable::getCause)</span>
+<span class="fc" id="L392">            .map(cause -&gt; {</span>
+<span class="fc" id="L393">              RestApiException rae = new RestApiException();</span>
+<span class="fc" id="L394">              rae = setErrorCode(rae, cause, null, config);</span>
+<span class="fc" id="L395">              rae = setMessage(rae, cause, null, config);</span>
+<span class="fc" id="L396">              rae = setClassName(rae, cause, config);</span>
+<span class="fc" id="L397">              rae = setStackTrace(rae, cause.getStackTrace(), config);</span>
+<span class="fc" id="L398">              rae = setCause(rae, cause.getCause(), config);</span>
+<span class="fc" id="L399">              return rae;</span>
             }))
-<span class="fc" id="L388">        .map(cause -&gt; {</span>
-<span class="fc" id="L389">          RestApiException.RestApiExceptionBuilder builder = restApiException.toBuilder();</span>
-<span class="fc" id="L390">          String causeErrorCode = cause.getErrorCode();</span>
-<span class="pc bpc" id="L391" title="1 of 4 branches missed.">          if (nonNull(causeErrorCode) &amp;&amp; !causeErrorCode.isBlank()) {</span>
-<span class="fc" id="L392">            builder = builder</span>
-<span class="fc" id="L393">                .errorCode(causeErrorCode)</span>
-<span class="fc" id="L394">                .errorCodeInherited(true);</span>
+<span class="fc" id="L401">        .map(cause -&gt; {</span>
+<span class="fc" id="L402">          RestApiException.RestApiExceptionBuilder builder = restApiException.toBuilder();</span>
+<span class="fc" id="L403">          String causeErrorCode = cause.getErrorCode();</span>
+<span class="pc bpc" id="L404" title="1 of 4 branches missed.">          if (nonNull(causeErrorCode) &amp;&amp; !causeErrorCode.isBlank()) {</span>
+<span class="fc" id="L405">            builder = builder</span>
+<span class="fc" id="L406">                .errorCode(causeErrorCode)</span>
+<span class="fc" id="L407">                .errorCodeInherited(true);</span>
           }
-<span class="fc bfc" id="L396" title="All 2 branches covered.">          if (config.getIncludeCause()) {</span>
-<span class="fc" id="L397">            builder = builder.cause(cause);</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">          if (config.getIncludeCause()) {</span>
+<span class="fc" id="L410">            builder = builder.cause(cause);</span>
           }
-<span class="fc" id="L399">          return builder.build();</span>
+<span class="fc" id="L412">          return builder.build();</span>
         })
-<span class="fc" id="L401">        .orElse(restApiException);</span>
+<span class="fc" id="L414">        .orElse(restApiException);</span>
   }
 
   /**
@@ -412,39 +425,39 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
       RestApiException source,
       ExceptionMappingConfig config) {
 
-<span class="fc" id="L415">    RestApiException target = new RestApiException();</span>
-<span class="fc" id="L416">    target.setId(source.getId());</span>
-<span class="fc" id="L417">    target.setTimestamp(source.getTimestamp());</span>
-<span class="fc" id="L418">    target.setStatus(source.getStatus());</span>
-<span class="fc" id="L419">    target.setError(source.getError());</span>
-<span class="pc bpc" id="L420" title="1 of 4 branches missed.">    if (nonNull(source.getErrorCode()) &amp;&amp; !source.getErrorCode().isBlank()) {</span>
-<span class="fc" id="L421">      target.setErrorCode(source.getErrorCode());</span>
-<span class="fc" id="L422">      target.setErrorCodeInherited(source.getErrorCodeInherited());</span>
+<span class="fc" id="L428">    RestApiException target = new RestApiException();</span>
+<span class="fc" id="L429">    target.setId(source.getId());</span>
+<span class="fc" id="L430">    target.setTimestamp(source.getTimestamp());</span>
+<span class="fc" id="L431">    target.setStatus(source.getStatus());</span>
+<span class="fc" id="L432">    target.setError(source.getError());</span>
+<span class="pc bpc" id="L433" title="1 of 4 branches missed.">    if (nonNull(source.getErrorCode()) &amp;&amp; !source.getErrorCode().isBlank()) {</span>
+<span class="fc" id="L434">      target.setErrorCode(source.getErrorCode());</span>
+<span class="fc" id="L435">      target.setErrorCodeInherited(source.getErrorCodeInherited());</span>
     }
-<span class="fc bfc" id="L424" title="All 2 branches covered.">    if (config.getIncludeMessage()) {</span>
-<span class="fc" id="L425">      target.setMessage(source.getMessage());</span>
+<span class="fc bfc" id="L437" title="All 2 branches covered.">    if (config.getIncludeMessage()) {</span>
+<span class="fc" id="L438">      target.setMessage(source.getMessage());</span>
     }
-<span class="fc bfc" id="L427" title="All 2 branches covered.">    if (config.getIncludeException()) {</span>
-<span class="fc" id="L428">      target.setException(source.getException());</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">    if (config.getIncludeException()) {</span>
+<span class="fc" id="L441">      target.setException(source.getException());</span>
     }
-<span class="fc bfc" id="L430" title="All 2 branches covered.">    if (config.getIncludeApplicationName()) {</span>
-<span class="fc" id="L431">      target.setApplication(source.getApplication());</span>
+<span class="fc bfc" id="L443" title="All 2 branches covered.">    if (config.getIncludeApplicationName()) {</span>
+<span class="fc" id="L444">      target.setApplication(source.getApplication());</span>
     }
-<span class="fc bfc" id="L433" title="All 2 branches covered.">    if (config.getIncludePath()) {</span>
-<span class="fc" id="L434">      target.setPath(source.getPath());</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">    if (config.getIncludePath()) {</span>
+<span class="fc" id="L447">      target.setPath(source.getPath());</span>
     }
-<span class="fc bfc" id="L436" title="All 2 branches covered.">    if (config.getIncludeHandler()) {</span>
-<span class="fc" id="L437">      target.setHandler(source.getHandler());</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">    if (config.getIncludeHandler()) {</span>
+<span class="fc" id="L450">      target.setHandler(source.getHandler());</span>
     }
-<span class="fc bfc" id="L439" title="All 2 branches covered.">    if (config.getIncludeStackTrace()) {</span>
-<span class="fc" id="L440">      target.setStackTrace(source.getStackTrace());</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">    if (config.getIncludeStackTrace()) {</span>
+<span class="fc" id="L453">      target.setStackTrace(source.getStackTrace());</span>
     }
-<span class="fc bfc" id="L442" title="All 4 branches covered.">    if (config.getIncludeCause() &amp;&amp; nonNull(source.getCause())) {</span>
-<span class="fc" id="L443">      target.setCause(reconfigureRestApiException(source.getCause(), config));</span>
+<span class="fc bfc" id="L455" title="All 4 branches covered.">    if (config.getIncludeCause() &amp;&amp; nonNull(source.getCause())) {</span>
+<span class="fc" id="L456">      target.setCause(reconfigureRestApiException(source.getCause(), config));</span>
     }
-<span class="fc" id="L445">    source.furtherDetails().forEach(target::furtherDetails);</span>
-<span class="fc" id="L446">    return target;</span>
+<span class="fc" id="L458">    source.furtherDetails().forEach(target::furtherDetails);</span>
+<span class="fc" id="L459">    return target;</span>
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

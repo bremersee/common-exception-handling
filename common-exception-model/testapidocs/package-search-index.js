@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.bremersee.exception.model"},{"l":"org.bremersee.exception.model.app"}]
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.bremersee.exception.model"},{"l":"org.bremersee.exception.model.app"}];updateSearchResults();

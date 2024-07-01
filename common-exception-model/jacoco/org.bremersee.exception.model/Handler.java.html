@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Builder;
@@ -37,7 +38,6 @@ import lombok.ToString;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings(&quot;SameNameButDifferent&quot;)
 @Schema(description = &quot;The handler where the exception occurred.&quot;)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_EMPTY)
@@ -48,14 +48,24 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Handler implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
+  /**
+   * The class name of the handler.
+   */
   @Schema(description = &quot;The class name of the handler.&quot;)
   private String className;
 
+  /**
+   * The method name of the handler.
+   */
   @Schema(description = &quot;The method name of the handler.&quot;)
   private String methodName;
 
+  /**
+   * The method parameters.
+   */
   @JsonProperty(&quot;methodParameterTypes&quot;)
   @JacksonXmlElementWrapper(localName = &quot;methodParameterTypes&quot;)
   @JacksonXmlProperty(localName = &quot;methodParameterType&quot;)
@@ -73,12 +83,12 @@ public class Handler implements Serializable {
   protected Handler(
       String className,
       String methodName,
-<span class="fc" id="L76">      List&lt;String&gt; methodParameterTypes) {</span>
-<span class="fc" id="L77">    this.className = className;</span>
-<span class="fc" id="L78">    this.methodName = methodName;</span>
-<span class="fc" id="L79">    this.methodParameterTypes = methodParameterTypes;</span>
-<span class="fc" id="L80">  }</span>
+<span class="fc" id="L86">      List&lt;String&gt; methodParameterTypes) {</span>
+<span class="fc" id="L87">    this.className = className;</span>
+<span class="fc" id="L88">    this.methodName = methodName;</span>
+<span class="fc" id="L89">    this.methodParameterTypes = methodParameterTypes;</span>
+<span class="fc" id="L90">  }</span>
 
 }
 
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

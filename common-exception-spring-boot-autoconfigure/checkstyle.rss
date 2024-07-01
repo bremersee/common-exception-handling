@@ -23,9 +23,9 @@ under the License.
     <link>https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure</link>
     <description>Common Exception Spring Boot Autoconfiguration - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;2022 bremersee.org</copyright>
+    <copyright>&#169;2022 - 2024 bremersee.org</copyright>
     <item>
-      <title>File: 24,
+      <title>File: 26,
              Errors: 0,
              Warnings: 0,
              Infos: 0
@@ -116,7 +116,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.servlet.ServletIntegrationTest.java">org/bremersee/exception/spring/boot/autoconfigure/servlet/ServletIntegrationTest.java</a>
+                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.reactive.RestApiExceptionParserForWebFluxAutoConfigurationTest.java">org/bremersee/exception/spring/boot/autoconfigure/reactive/RestApiExceptionParserForWebFluxAutoConfigurationTest.java</a>
                 </td>
                 <td>
                   0
@@ -131,6 +131,90 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.reactive.ReactiveIntegrationTest.java">org/bremersee/exception/spring/boot/autoconfigure/reactive/ReactiveIntegrationTest.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.servlet.RestApiExceptionParserForWebAutoConfigurationTest.java">org/bremersee/exception/spring/boot/autoconfigure/servlet/RestApiExceptionParserForWebAutoConfigurationTest.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.reactive.RestApiExceptionParserForWebFluxAutoConfiguration.java">org/bremersee/exception/spring/boot/autoconfigure/reactive/RestApiExceptionParserForWebFluxAutoConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.reactive.DefaultWebClientErrorDecoderAutoConfigurationTest.java">org/bremersee/exception/spring/boot/autoconfigure/reactive/DefaultWebClientErrorDecoderAutoConfigurationTest.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.servlet.RestApiExceptionParserForWebAutoConfiguration.java">org/bremersee/exception/spring/boot/autoconfigure/servlet/RestApiExceptionParserForWebAutoConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.reactive.ApiExceptionHandlerAutoConfiguration.java">org/bremersee/exception/spring/boot/autoconfigure/reactive/ApiExceptionHandlerAutoConfiguration.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.servlet.ServletIntegrationTest.java">org/bremersee/exception/spring/boot/autoconfigure/servlet/ServletIntegrationTest.java</a>
                 </td>
                 <td>
                   0
@@ -256,34 +340,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfigurationTest.java">org/bremersee/exception/spring/boot/autoconfigure/RestApiExceptionParserAutoConfigurationTest.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.reactive.DefaultWebClientErrorDecoderAutoConfigurationTest.java">org/bremersee/exception/spring/boot/autoconfigure/reactive/DefaultWebClientErrorDecoderAutoConfigurationTest.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.servlet.RestApiExceptionMapperForWebAutoConfiguration.java">org/bremersee/exception/spring/boot/autoconfigure/servlet/RestApiExceptionMapperForWebAutoConfiguration.java</a>
                 </td>
                 <td>
@@ -340,35 +396,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionParserAutoConfiguration.java">org/bremersee/exception/spring/boot/autoconfigure/RestApiExceptionParserAutoConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.servlet.FeignClientExceptionErrorDecoderAutoConfiguration.java">org/bremersee/exception/spring/boot/autoconfigure/servlet/FeignClientExceptionErrorDecoderAutoConfiguration.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/bremersee/common-exception-handling/common-exception-spring-boot-autoconfigure/checkstyle.html#org.bremersee.exception.spring.boot.autoconfigure.reactive.ApiExceptionHandlerAutoConfiguration.java">org/bremersee/exception/spring/boot/autoconfigure/reactive/ApiExceptionHandlerAutoConfiguration.java</a>
                 </td>
                 <td>
                   0

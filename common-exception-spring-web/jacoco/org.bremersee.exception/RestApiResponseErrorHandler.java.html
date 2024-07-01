@@ -17,7 +17,7 @@
 package org.bremersee.exception;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.client.ClientHttpResponse;
@@ -46,29 +46,27 @@ public class RestApiResponseErrorHandler implements ResponseErrorHandler {
    *
    * @param restApiExceptionParser the rest api exception parser
    */
-  public RestApiResponseErrorHandler(
-<span class="fc" id="L50">      RestApiExceptionParser restApiExceptionParser) {</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">    this.restApiExceptionParser = Objects.nonNull(restApiExceptionParser)</span>
-<span class="fc" id="L52">        ? restApiExceptionParser</span>
-<span class="fc" id="L53">        : new RestApiExceptionParserImpl();</span>
-<span class="fc" id="L54">  }</span>
+<span class="fc" id="L49">  public RestApiResponseErrorHandler(RestApiExceptionParser restApiExceptionParser) {</span>
+<span class="fc" id="L50">    this.restApiExceptionParser = Optional.ofNullable(restApiExceptionParser)</span>
+<span class="fc" id="L51">        .orElseGet(RestApiExceptionParserImpl::new);</span>
+<span class="fc" id="L52">  }</span>
 
   @Override
   public boolean hasError(@NonNull ClientHttpResponse response) throws IOException {
-<span class="fc" id="L58">    return response.getStatusCode().isError();</span>
+<span class="fc" id="L56">    return response.getStatusCode().isError();</span>
   }
 
   @Override
   public void handleError(@NonNull ClientHttpResponse response) throws IOException {
-<span class="fc" id="L63">    RestApiException restApiException = restApiExceptionParser.parseException(</span>
-<span class="fc" id="L64">        response.getBody(),</span>
-<span class="fc" id="L65">        response.getStatusCode(),</span>
-<span class="fc" id="L66">        response.getHeaders());</span>
-<span class="fc" id="L67">    RestApiResponseException exception = new RestApiResponseException(</span>
-<span class="fc" id="L68">        response.getStatusCode(), restApiException);</span>
-<span class="fc" id="L69">    log.error(&quot;A rest api exception occurred: {}&quot;, restApiException, exception);</span>
-<span class="fc" id="L70">    throw exception;</span>
+<span class="fc" id="L61">    RestApiException restApiException = restApiExceptionParser.parseException(</span>
+<span class="fc" id="L62">        response.getBody(),</span>
+<span class="fc" id="L63">        response.getStatusCode(),</span>
+<span class="fc" id="L64">        response.getHeaders());</span>
+<span class="fc" id="L65">    RestApiResponseException exception = new RestApiResponseException(</span>
+<span class="fc" id="L66">        response.getStatusCode(), restApiException);</span>
+<span class="fc" id="L67">    log.error(&quot;A rest api exception occurred: {}&quot;, restApiException, exception);</span>
+<span class="fc" id="L68">    throw exception;</span>
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

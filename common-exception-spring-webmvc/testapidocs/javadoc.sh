@@ -1,1 +1,1 @@
-/Library/Java/JavaVirtualMachines/adoptopenjdk-11.jdk/Contents/Home/bin/javadoc @options @packages
+/usr/lib/jvm/java-17-openjdk-amd64/bin/javadoc @options @packages

@@ -1,3 +1,3 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-Common Exception Feign,org.bremersee.exception.feign,FeignClientExceptionErrorDecoder,12,200,3,7,4,48,3,17,0,15
+Common Exception Feign,org.bremersee.exception.feign,FeignClientExceptionErrorDecoder,12,201,3,7,4,47,3,18,0,16
 Common Exception Feign,org.bremersee.exception.feign,FeignClientException,2,21,1,1,0,6,1,2,0,2

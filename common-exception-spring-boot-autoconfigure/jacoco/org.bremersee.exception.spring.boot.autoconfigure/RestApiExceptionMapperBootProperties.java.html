@@ -18,8 +18,8 @@ package org.bremersee.exception.spring.boot.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +37,6 @@ import org.springframework.http.HttpStatus;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings(&quot;SameNameButDifferent&quot;)
 @ConditionalOnClass(RestApiExceptionMapperProperties.class)
 @ConfigurationProperties(prefix = &quot;bremersee.exception-mapping&quot;)
 @Getter
@@ -49,7 +48,7 @@ public class RestApiExceptionMapperBootProperties {
   /**
    * The request paths the handler is responsible for. Default is empty.
    */
-<span class="fc" id="L52">  private List&lt;String&gt; apiPaths = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L51">  private List&lt;String&gt; apiPaths = new ArrayList&lt;&gt;();</span>
 
   /**
    * The default values of a rest api exception that will be set, if a value is not detected. The
@@ -98,7 +97,7 @@ public class RestApiExceptionMapperBootProperties {
    *       code: GEN:404
    * &lt;/pre&gt;
    */
-<span class="fc" id="L101">  private List&lt;ExceptionMappingImpl&gt; exceptionMappings = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L100">  private List&lt;ExceptionMappingImpl&gt; exceptionMappings = new ArrayList&lt;&gt;();</span>
 
   /**
    * The default configuration of the exception mapping.
@@ -167,36 +166,36 @@ public class RestApiExceptionMapperBootProperties {
    *       include-cause: false
    * &lt;/pre&gt;
    */
-<span class="fc" id="L170">  private List&lt;ExceptionMappingConfigImpl&gt; exceptionMappingConfigs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L169">  private List&lt;ExceptionMappingConfigImpl&gt; exceptionMappingConfigs = new ArrayList&lt;&gt;();</span>
 
   /**
    * Instantiates rest api exception mapper properties.
    */
-<span class="fc" id="L175">  public RestApiExceptionMapperBootProperties() {</span>
+<span class="fc" id="L174">  public RestApiExceptionMapperBootProperties() {</span>
 
-<span class="fc" id="L177">    defaultExceptionMapping = new ExceptionMappingImpl();</span>
-<span class="fc" id="L178">    defaultExceptionMapping.setExceptionClassName(&quot;*&quot;);</span>
-<span class="fc" id="L179">    defaultExceptionMapping.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());</span>
-<span class="fc" id="L180">    defaultExceptionMapping.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());</span>
+<span class="fc" id="L176">    defaultExceptionMapping = new ExceptionMappingImpl();</span>
+<span class="fc" id="L177">    defaultExceptionMapping.setExceptionClassName(&quot;*&quot;);</span>
+<span class="fc" id="L178">    defaultExceptionMapping.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());</span>
+<span class="fc" id="L179">    defaultExceptionMapping.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());</span>
 
-<span class="fc" id="L182">    defaultExceptionMappingConfig = new ExceptionMappingConfigImpl();</span>
-<span class="fc" id="L183">    defaultExceptionMappingConfig.setExceptionClassName(&quot;*&quot;);</span>
+<span class="fc" id="L181">    defaultExceptionMappingConfig = new ExceptionMappingConfigImpl();</span>
+<span class="fc" id="L182">    defaultExceptionMappingConfig.setExceptionClassName(&quot;*&quot;);</span>
 
-<span class="fc" id="L185">    exceptionMappings.add(new ExceptionMappingImpl(</span>
-<span class="fc" id="L186">        IllegalArgumentException.class.getName(),</span>
+<span class="fc" id="L184">    exceptionMappings.add(new ExceptionMappingImpl(</span>
+<span class="fc" id="L185">        IllegalArgumentException.class.getName(),</span>
         HttpStatus.BAD_REQUEST,
         null));
 
-<span class="fc" id="L190">    exceptionMappings.add(new ExceptionMappingImpl(</span>
+<span class="fc" id="L189">    exceptionMappings.add(new ExceptionMappingImpl(</span>
         &quot;org.springframework.security.access.AccessDeniedException&quot;,
         HttpStatus.FORBIDDEN,
         null));
 
-<span class="fc" id="L195">    exceptionMappings.add(new ExceptionMappingImpl(</span>
+<span class="fc" id="L194">    exceptionMappings.add(new ExceptionMappingImpl(</span>
         &quot;javax.persistence.EntityNotFoundException&quot;,
         HttpStatus.NOT_FOUND,
         null));
-<span class="fc" id="L199">  }</span>
+<span class="fc" id="L198">  }</span>
 
   /**
    * To rest api exception mapper properties rest api exception mapper properties.
@@ -204,18 +203,18 @@ public class RestApiExceptionMapperBootProperties {
    * @return the rest api exception mapper properties
    */
   public RestApiExceptionMapperProperties toRestApiExceptionMapperProperties() {
-<span class="fc" id="L207">    return RestApiExceptionMapperProperties.builder()</span>
-<span class="fc" id="L208">        .defaultExceptionMapping(getDefaultExceptionMapping())</span>
-<span class="fc" id="L209">        .exceptionMappings(getExceptionMappings())</span>
-<span class="fc" id="L210">        .defaultExceptionMappingConfig(getDefaultExceptionMappingConfig())</span>
-<span class="fc" id="L211">        .exceptionMappingConfigs(getExceptionMappingConfigs())</span>
-<span class="fc" id="L212">        .build();</span>
+<span class="fc" id="L206">    return RestApiExceptionMapperProperties.builder()</span>
+<span class="fc" id="L207">        .defaultExceptionMapping(getDefaultExceptionMapping())</span>
+<span class="fc" id="L208">        .exceptionMappings(getExceptionMappings())</span>
+<span class="fc" id="L209">        .defaultExceptionMappingConfig(getDefaultExceptionMappingConfig())</span>
+<span class="fc" id="L210">        .exceptionMappingConfigs(getExceptionMappingConfigs())</span>
+<span class="fc" id="L211">        .build();</span>
   }
 
   /**
    * The exception mapping.
    */
-  @SuppressWarnings(&quot;SameNameButDifferent&quot;)
+  @Setter
   @ToString
   @EqualsAndHashCode
   @NoArgsConstructor
@@ -229,28 +228,24 @@ public class RestApiExceptionMapperBootProperties {
      * @param httpStatus the http status
      * @param code the code
      */
-<span class="fc" id="L232">    public ExceptionMappingImpl(String exceptionClassName, HttpStatus httpStatus, String code) {</span>
-<span class="fc" id="L233">      this.exceptionClassName = exceptionClassName;</span>
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">      if (httpStatus != null) {</span>
-<span class="fc" id="L235">        this.status = httpStatus.value();</span>
-<span class="fc" id="L236">        this.message = httpStatus.getReasonPhrase();</span>
+<span class="fc" id="L231">    public ExceptionMappingImpl(String exceptionClassName, HttpStatus httpStatus, String code) {</span>
+<span class="fc" id="L232">      this.exceptionClassName = exceptionClassName;</span>
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">      if (httpStatus != null) {</span>
+<span class="fc" id="L234">        this.status = httpStatus.value();</span>
+<span class="fc" id="L235">        this.message = httpStatus.getReasonPhrase();</span>
       }
-<span class="fc" id="L238">      this.code = code;</span>
-<span class="fc" id="L239">    }</span>
+<span class="fc" id="L237">      this.code = code;</span>
+<span class="fc" id="L238">    }</span>
 
     @Getter
-    @Setter
     private String exceptionClassName;
 
-    @Setter
     private int status;
 
     @Getter
-    @Setter
     private String message;
 
     @Getter
-    @Setter
     private String code;
 
     /**
@@ -259,10 +254,10 @@ public class RestApiExceptionMapperBootProperties {
      * @return the status
      */
     public int getStatus() {
-<span class="pc bpc" id="L262" title="1 of 2 branches missed.">      if (HttpStatus.resolve(status) == null) {</span>
-<span class="nc" id="L263">        return HttpStatus.INTERNAL_SERVER_ERROR.value();</span>
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">      if (HttpStatus.resolve(status) == null) {</span>
+<span class="nc" id="L258">        return HttpStatus.INTERNAL_SERVER_ERROR.value();</span>
       }
-<span class="fc" id="L265">      return status;</span>
+<span class="fc" id="L260">      return status;</span>
     }
 
   }
@@ -270,59 +265,30 @@ public class RestApiExceptionMapperBootProperties {
   /**
    * The exception mapping config.
    */
-  @SuppressWarnings(&quot;SameNameButDifferent&quot;)
-  @ToString
-  @EqualsAndHashCode
+  @Data
   @NoArgsConstructor
   @AllArgsConstructor
   public static class ExceptionMappingConfigImpl implements ExceptionMappingConfig {
 
-    @Getter
-    @Setter
-    @NotNull
     private String exceptionClassName;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeMessage = true;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeException = true;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeApplicationName = true;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includePath = true;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeHandler = false;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeStackTrace = false;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeCause = false;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean evaluateAnnotationFirst = false;
 
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

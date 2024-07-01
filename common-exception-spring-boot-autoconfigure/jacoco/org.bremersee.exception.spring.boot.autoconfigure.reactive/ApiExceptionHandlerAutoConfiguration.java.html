@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
 import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperBootProperties;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -32,7 +33,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -57,7 +57,7 @@ import org.springframework.util.ClassUtils;
 @AutoConfigureAfter({
     RestApiExceptionMapperForWebFluxAutoConfiguration.class
 })
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties({RestApiExceptionMapperBootProperties.class})
 <span class="fc" id="L62">@Slf4j</span>
 public class ApiExceptionHandlerAutoConfiguration {
@@ -79,15 +79,16 @@ public class ApiExceptionHandlerAutoConfiguration {
    */
   @EventListener(ApplicationReadyEvent.class)
   public void init() {
-<span class="fc" id="L82">    log.info(&quot;\n&quot;</span>
-            + &quot;*********************************************************************************\n&quot;
-            + &quot;* {}\n&quot;
-            + &quot;*********************************************************************************\n&quot;
-            + &quot;* apiPaths = {}\n&quot;
-            + &quot;*********************************************************************************&quot;,
-<span class="fc" id="L88">        ClassUtils.getUserClass(getClass()).getSimpleName(),</span>
-<span class="fc" id="L89">        properties.getApiPaths());</span>
-<span class="fc" id="L90">  }</span>
+<span class="fc" id="L82">    log.info(&quot;&quot;&quot;</span>
+
+            *********************************************************************************
+            * {}
+            *********************************************************************************
+            * apiPaths = {}
+            *********************************************************************************&quot;&quot;&quot;,
+<span class="fc" id="L89">        ClassUtils.getUserClass(getClass()).getSimpleName(),</span>
+<span class="fc" id="L90">        properties.getApiPaths());</span>
+<span class="fc" id="L91">  }</span>
 
   /**
    * Builds api exception handler bean.
@@ -108,24 +109,24 @@ public class ApiExceptionHandlerAutoConfiguration {
       ObjectProvider&lt;ServerCodecConfigurer&gt; serverCodecConfigurer,
       ObjectProvider&lt;RestApiExceptionMapper&gt; restApiExceptionMapper) {
 
-<span class="fc" id="L111">    Assert.notNull(</span>
-<span class="fc" id="L112">        errorAttributes.getIfAvailable(),</span>
+<span class="fc" id="L112">    Assert.notNull(</span>
+<span class="fc" id="L113">        errorAttributes.getIfAvailable(),</span>
         &quot;Error attributes must be present.&quot;);
-<span class="fc" id="L114">    Assert.notNull(</span>
-<span class="fc" id="L115">        serverCodecConfigurer.getIfAvailable(),</span>
+<span class="fc" id="L115">    Assert.notNull(</span>
+<span class="fc" id="L116">        serverCodecConfigurer.getIfAvailable(),</span>
         &quot;Server codec configurer must be present.&quot;);
-<span class="fc" id="L117">    Assert.notNull(</span>
-<span class="fc" id="L118">        restApiExceptionMapper.getIfAvailable(),</span>
+<span class="fc" id="L118">    Assert.notNull(</span>
+<span class="fc" id="L119">        restApiExceptionMapper.getIfAvailable(),</span>
         &quot;Rest api exception mapper must be present.&quot;);
 
-<span class="fc" id="L121">    return new ApiExceptionHandler(</span>
-<span class="fc" id="L122">        properties.getApiPaths(),</span>
-<span class="fc" id="L123">        errorAttributes.getIfAvailable(),</span>
-<span class="fc" id="L124">        webProperties.getIfAvailable(WebProperties::new).getResources(),</span>
+<span class="fc" id="L122">    return new ApiExceptionHandler(</span>
+<span class="fc" id="L123">        properties.getApiPaths(),</span>
+<span class="fc" id="L124">        errorAttributes.getIfAvailable(),</span>
+<span class="fc" id="L125">        webProperties.getIfAvailable(WebProperties::new).getResources(),</span>
         applicationContext,
-<span class="fc" id="L126">        serverCodecConfigurer.getIfAvailable(),</span>
-<span class="fc" id="L127">        restApiExceptionMapper.getIfAvailable());</span>
+<span class="fc" id="L127">        serverCodecConfigurer.getIfAvailable(),</span>
+<span class="fc" id="L128">        restApiExceptionMapper.getIfAvailable());</span>
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

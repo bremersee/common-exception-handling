@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RestApiExceptionParserForWebAutoConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Common Exception Spring Boot Autoconfiguration</a> &gt; <a href="index.source.html" class="el_package">org.bremersee.exception.spring.boot.autoconfigure.servlet</a> &gt; <span class="el_source">RestApiExceptionParserForWebAutoConfiguration.java</span></div><h1>RestApiExceptionParserForWebAutoConfiguration.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2020-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.bremersee.exception.spring.boot.autoconfigure.servlet;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.Charset;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.bremersee.exception.RestApiExceptionParser;
+import org.bremersee.exception.RestApiExceptionParserImpl;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.web.servlet.server.Encoding;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.util.ClassUtils;
+
+/**
+ * The rest api exception parser autoconfiguration.
+ *
+ * @author Christian Bremer
+ */
+@ConditionalOnWebApplication(type = Type.SERVLET)
+@ConditionalOnClass({
+    ObjectMapper.class,
+    Jackson2ObjectMapperBuilder.class,
+    RestApiExceptionParserImpl.class
+})
+@AutoConfiguration
+<span class="fc" id="L52">@Slf4j</span>
+<span class="fc" id="L53">public class RestApiExceptionParserForWebAutoConfiguration {</span>
+
+  /**
+   * Init.
+   */
+  @EventListener(ApplicationReadyEvent.class)
+  public void init() {
+<span class="fc" id="L60">    log.info(&quot;&quot;&quot;</span>
+
+            *********************************************************************************
+            * {}
+            *********************************************************************************&quot;&quot;&quot;,
+<span class="fc" id="L65">        ClassUtils.getUserClass(getClass()).getSimpleName());</span>
+<span class="fc" id="L66">  }</span>
+
+  /**
+   * Creates rest api exception parser for servlet based web application.
+   *
+   * @param environment the environment
+   * @param objectMapperBuilderProvider the object mapper builder provider
+   * @return the rest api exception parser
+   */
+  @ConditionalOnMissingBean
+  @Bean
+  public RestApiExceptionParser restApiExceptionParser(
+      Environment environment,
+      ObjectProvider&lt;Jackson2ObjectMapperBuilder&gt; objectMapperBuilderProvider) {
+
+<span class="fc" id="L81">    Jackson2ObjectMapperBuilder objectMapperBuilder = objectMapperBuilderProvider.getIfAvailable();</span>
+<span class="fc" id="L82">    Charset charset = Binder</span>
+<span class="fc" id="L83">        .get(environment)</span>
+<span class="fc" id="L84">        .bindOrCreate(&quot;server.servlet.encoding&quot;, Encoding.class)</span>
+<span class="fc" id="L85">        .getCharset();</span>
+<span class="fc" id="L86">    return Optional.ofNullable(objectMapperBuilder)</span>
+<span class="fc" id="L87">        .map(builder -&gt; new RestApiExceptionParserImpl(builder, charset))</span>
+<span class="pc" id="L88">        .orElseGet(() -&gt; new RestApiExceptionParserImpl(charset));</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

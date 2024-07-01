@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>/Users/cbr/src/bremersee/common-exception-handling/common-exception-spring-web/target/generated-sources/annotations/org/bremersee/exception/ImmutableRestApiExceptionMapperProperties.java xref</title>
+<title>/srv/jenkins/workspace/common-exception-handling_main/common-exception-spring-web/target/generated-sources/annotations/org/bremersee/exception/ImmutableRestApiExceptionMapperProperties.java xref</title>
 <link type="text/css" rel="stylesheet" href="../../../stylesheet.css" />
 </head>
 <body>
@@ -313,10 +313,10 @@
 <a class="jxr_linenumber" name="L305" href="#L305">305</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> equals(Object another) {
 <a class="jxr_linenumber" name="L306" href="#L306">306</a>     <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong> == another) <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L307" href="#L307">307</a>     <strong class="jxr_keyword">return</strong> another instanceof ImmutableRestApiExceptionMapperProperties
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>         &amp;&amp; equalTo((ImmutableRestApiExceptionMapperProperties) another);
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>         &amp;&amp; equalTo(0, (ImmutableRestApiExceptionMapperProperties) another);
 <a class="jxr_linenumber" name="L309" href="#L309">309</a>   }
 <a class="jxr_linenumber" name="L310" href="#L310">310</a> 
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>   <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> equalTo(ImmutableRestApiExceptionMapperProperties another) {
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>   <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> equalTo(<strong class="jxr_keyword">int</strong> synthetic, ImmutableRestApiExceptionMapperProperties another) {
 <a class="jxr_linenumber" name="L312" href="#L312">312</a>     <strong class="jxr_keyword">return</strong> defaultExceptionMapping.equals(another.defaultExceptionMapping)
 <a class="jxr_linenumber" name="L313" href="#L313">313</a>         &amp;&amp; exceptionMappings.equals(another.exceptionMappings)
 <a class="jxr_linenumber" name="L314" href="#L314">314</a>         &amp;&amp; defaultExceptionMappingConfig.equals(another.defaultExceptionMappingConfig)
@@ -562,7 +562,7 @@
 <a class="jxr_linenumber" name="L554" href="#L554">554</a>     <strong class="jxr_keyword">if</strong> (iterable instanceof Collection&lt;?&gt;) {
 <a class="jxr_linenumber" name="L555" href="#L555">555</a>       <strong class="jxr_keyword">int</strong> size = ((Collection&lt;?&gt;) iterable).size();
 <a class="jxr_linenumber" name="L556" href="#L556">556</a>       <strong class="jxr_keyword">if</strong> (size == 0) <strong class="jxr_keyword">return</strong> Collections.emptyList();
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>       list = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L557" href="#L557">557</a>       list = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(size);
 <a class="jxr_linenumber" name="L558" href="#L558">558</a>     } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L559" href="#L559">559</a>       list = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L560" href="#L560">560</a>     }
@@ -592,6 +592,6 @@
 <a class="jxr_linenumber" name="L584" href="#L584">584</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2022 <a href="https://bremersee.org">bremersee.org</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2022&#x2013;2024 <a href="https://bremersee.org">bremersee.org</a>. All rights reserved.</div>
 </body>
 </html>

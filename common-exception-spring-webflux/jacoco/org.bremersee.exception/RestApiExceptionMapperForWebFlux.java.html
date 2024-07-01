@@ -16,7 +16,8 @@
 
 package org.bremersee.exception;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
@@ -35,20 +36,24 @@ public class RestApiExceptionMapperForWebFlux extends RestApiExceptionMapperForW
   public RestApiExceptionMapperForWebFlux(
       RestApiExceptionMapperProperties properties,
       String applicationName) {
-<span class="fc" id="L38">    super(properties, applicationName);</span>
-<span class="fc" id="L39">  }</span>
+<span class="fc" id="L39">    super(properties, applicationName);</span>
+<span class="fc" id="L40">  }</span>
 
   @Override
-  public HttpStatus detectHttpStatus(Throwable exception, Object handler) {
-<span class="fc bfc" id="L43" title="All 2 branches covered.">    if (exception instanceof WebClientResponseException) {</span>
-      try {
-<span class="fc" id="L45">        return ((WebClientResponseException) exception).getStatusCode();</span>
-
-<span class="nc" id="L47">      } catch (IllegalArgumentException ignored) {</span>
-        // ignored
-      }
+  protected HttpStatusCode detectHttpStatus(Throwable exception, Object handler) {
+<span class="fc bfc" id="L44" title="All 2 branches covered.">    if (exception instanceof WebClientResponseException cre) {</span>
+<span class="fc" id="L45">      return cre.getStatusCode();</span>
     }
-<span class="fc" id="L51">    return super.detectHttpStatus(exception, handler);</span>
+<span class="fc" id="L47">    return super.detectHttpStatus(exception, handler);</span>
+  }
+
+  @Override
+  protected String getError(Throwable exception, HttpStatusCode httpStatusCode) {
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">    if ((exception instanceof WebClientResponseException cre)</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        &amp;&amp; !(ObjectUtils.isEmpty(cre.getStatusText()))) {</span>
+<span class="nc" id="L54">      return cre.getStatusText();</span>
+    }
+<span class="fc" id="L56">    return super.getError(exception, httpStatusCode);</span>
   }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

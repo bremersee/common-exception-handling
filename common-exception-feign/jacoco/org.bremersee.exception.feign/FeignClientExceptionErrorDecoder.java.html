@@ -17,6 +17,7 @@
 package org.bremersee.exception.feign;
 
 import static feign.Util.RETRY_AFTER;
+import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -27,12 +28,8 @@ import feign.RetryableException;
 import feign.codec.ErrorDecoder;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -42,16 +39,16 @@ import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.util.FileCopyUtils;
 
 /**
- * This error decoder produces either a {@link FeignClientException} or a {@link
- * feign.RetryableException}.
+ * This error decoder produces either a {@link FeignClientException} or a
+ * {@link feign.RetryableException}.
  *
  * @author Christian Bremer
  */
-<span class="fc" id="L54">@Slf4j</span>
+<span class="fc" id="L51">@Slf4j</span>
 public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
 
   private final RestApiExceptionParser parser;
@@ -60,54 +57,53 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
    * Instantiates a new feign client exception error decoder.
    */
   public FeignClientExceptionErrorDecoder() {
-<span class="fc" id="L63">    this(null);</span>
-<span class="fc" id="L64">  }</span>
+<span class="fc" id="L60">    this(null);</span>
+<span class="fc" id="L61">  }</span>
 
   /**
    * Instantiates a new feign client exception error decoder.
    *
    * @param parser the parser
    */
-<span class="fc" id="L71">  public FeignClientExceptionErrorDecoder(RestApiExceptionParser parser) {</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">    this.parser = nonNull(parser) ? parser : new RestApiExceptionParserImpl();</span>
-<span class="fc" id="L73">  }</span>
+<span class="fc" id="L68">  public FeignClientExceptionErrorDecoder(RestApiExceptionParser parser) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">    this.parser = nonNull(parser) ? parser : new RestApiExceptionParserImpl();</span>
+<span class="fc" id="L70">  }</span>
 
   @Override
   public Exception decode(String methodKey, Response response) {
 
-<span class="pc bpc" id="L78" title="1 of 2 branches missed.">    if (log.isDebugEnabled()) {</span>
-<span class="nc" id="L79">      log.debug(&quot;Decoding feign exception at {}&quot;, methodKey);</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">    if (log.isDebugEnabled()) {</span>
+<span class="nc" id="L76">      log.debug(&quot;Decoding feign exception at {}&quot;, methodKey);</span>
     }
-<span class="fc" id="L81">    Map&lt;String, Collection&lt;String&gt;&gt; headers = Objects</span>
-<span class="fc" id="L82">        .requireNonNullElseGet(response.headers(), Map::of);</span>
-<span class="fc" id="L83">    HttpHeaders httpHeaders = headers.entrySet()</span>
-<span class="fc" id="L84">        .stream()</span>
-<span class="fc" id="L85">        .collect(</span>
+<span class="fc" id="L78">    Map&lt;String, Collection&lt;String&gt;&gt; headers = Objects</span>
+<span class="fc" id="L79">        .requireNonNullElseGet(response.headers(), Map::of);</span>
+<span class="fc" id="L80">    HttpHeaders httpHeaders = headers.entrySet()</span>
+<span class="fc" id="L81">        .stream()</span>
+<span class="fc" id="L82">        .collect(</span>
             HttpHeaders::new,
-<span class="fc" id="L87">            (a, b) -&gt; a.addAll(b.getKey(), List.copyOf(b.getValue())),</span>
+<span class="fc" id="L84">            (a, b) -&gt; a.addAll(b.getKey(), List.copyOf(b.getValue())),</span>
             HttpHeaders::putAll);
-<span class="fc" id="L89">    byte[] body = getResponseBody(response);</span>
-<span class="fc" id="L90">    RestApiException restApiException = parser.parseException(</span>
+<span class="fc" id="L86">    byte[] body = getResponseBody(response);</span>
+<span class="fc" id="L87">    RestApiException restApiException = parser.parseException(</span>
         body,
-<span class="fc" id="L92">        Optional.ofNullable(HttpStatus.resolve(response.status()))</span>
-<span class="fc" id="L93">            .orElse(HttpStatus.INTERNAL_SERVER_ERROR),</span>
+<span class="fc" id="L89">        HttpStatusCode.valueOf(response.status()),</span>
         httpHeaders);
-<span class="fc" id="L95">    FeignClientException feignClientException = new FeignClientException(</span>
-<span class="fc" id="L96">        response.status(),</span>
-<span class="fc" id="L97">        String.format(&quot;Status %s reading %s&quot;, response.status(), methodKey),</span>
-<span class="fc" id="L98">        response.request(),</span>
+<span class="fc" id="L91">    FeignClientException feignClientException = new FeignClientException(</span>
+<span class="fc" id="L92">        response.status(),</span>
+<span class="fc" id="L93">        String.format(&quot;Status %s reading %s&quot;, response.status(), methodKey),</span>
+<span class="fc" id="L94">        response.request(),</span>
         headers,
         body,
         restApiException);
-<span class="fc" id="L102">    return determineRetryAfter(httpHeaders.getFirst(RETRY_AFTER))</span>
-<span class="fc" id="L103">        .map(retryAfter -&gt; (Exception) new RetryableException(</span>
-<span class="fc" id="L104">            response.status(),</span>
-<span class="fc" id="L105">            feignClientException.getMessage(),</span>
-<span class="fc" id="L106">            getHttpMethod(response),</span>
+<span class="fc" id="L98">    return determineRetryAfter(httpHeaders.getFirst(RETRY_AFTER))</span>
+<span class="fc" id="L99">        .map(retryAfter -&gt; (Exception) new RetryableException(</span>
+<span class="fc" id="L100">            response.status(),</span>
+<span class="fc" id="L101">            feignClientException.getMessage(),</span>
+<span class="fc" id="L102">            getHttpMethod(response),</span>
             feignClientException,
-<span class="fc" id="L108">            Date.from(retryAfter),</span>
-<span class="fc" id="L109">            response.request()))</span>
-<span class="fc" id="L110">        .orElse(feignClientException);</span>
+            retryAfter,
+<span class="fc" id="L105">            response.request()))</span>
+<span class="fc" id="L106">        .orElse(feignClientException);</span>
   }
 
   /**
@@ -118,16 +114,16 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
    */
   protected byte[] getResponseBody(Response response) {
     byte[] body;
-<span class="pc bpc" id="L121" title="1 of 2 branches missed.">    if (isNull(response.body())) {</span>
-<span class="nc" id="L122">      body = new byte[0];</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">    if (isNull(response.body())) {</span>
+<span class="nc" id="L118">      body = new byte[0];</span>
     } else {
-<span class="fc" id="L124">      try (InputStream in = response.body().asInputStream()) {</span>
-<span class="fc" id="L125">        body = FileCopyUtils.copyToByteArray(in);</span>
-<span class="nc" id="L126">      } catch (IOException e) {</span>
-<span class="nc" id="L127">        body = new byte[0];</span>
-<span class="fc" id="L128">      }</span>
+<span class="fc" id="L120">      try (InputStream in = response.body().asInputStream()) {</span>
+<span class="fc" id="L121">        body = FileCopyUtils.copyToByteArray(in);</span>
+<span class="nc" id="L122">      } catch (IOException e) {</span>
+<span class="nc" id="L123">        body = new byte[0];</span>
+<span class="fc" id="L124">      }</span>
     }
-<span class="fc" id="L130">    return body;</span>
+<span class="fc" id="L126">    return body;</span>
   }
 
   /**
@@ -137,10 +133,10 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
    * @return the http method
    */
   protected HttpMethod getHttpMethod(Response response) {
-<span class="pc bpc" id="L140" title="1 of 4 branches missed.">    if (isNull(response) || isNull(response.request())) {</span>
-<span class="fc" id="L141">      return null;</span>
+<span class="pc bpc" id="L136" title="1 of 4 branches missed.">    if (isNull(response) || isNull(response.request())) {</span>
+<span class="fc" id="L137">      return null;</span>
     }
-<span class="fc" id="L143">    return response.request().httpMethod();</span>
+<span class="fc" id="L139">    return response.request().httpMethod();</span>
   }
 
   /**
@@ -149,23 +145,25 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
    * @param retryAfter the retry after
    * @return the optional
    */
-  protected Optional&lt;Instant&gt; determineRetryAfter(String retryAfter) {
+  protected Optional&lt;Long&gt; determineRetryAfter(String retryAfter) {
     try {
-<span class="fc" id="L154">      return Optional.ofNullable(retryAfter)</span>
-<span class="fc" id="L155">          .filter(retryAfterValue -&gt; retryAfterValue.matches(&quot;^[0-9]+\\.?0*$&quot;))</span>
-<span class="fc" id="L156">          .map(retryAfterValue -&gt; retryAfterValue.replaceAll(&quot;\\.0*$&quot;, &quot;&quot;))</span>
-<span class="fc" id="L157">          .map(retryAfterValue -&gt; SECONDS.toMillis(Long.parseLong(retryAfterValue)))</span>
-<span class="fc" id="L158">          .map(deltaMillis -&gt; Instant.now().plus(Duration.ofMillis(deltaMillis)))</span>
-<span class="fc" id="L159">          .or(() -&gt; Optional.ofNullable(retryAfter)</span>
-<span class="fc" id="L160">              .map(retryAfterValue -&gt; OffsetDateTime.parse(</span>
-                  retryAfterValue,
-<span class="fc" id="L162">                  DateTimeFormatter.RFC_1123_DATE_TIME).toInstant()));</span>
-
-<span class="fc" id="L164">    } catch (Exception e) {</span>
-<span class="fc" id="L165">      log.warn(&quot;Parsing retry after date for feigns RetryableException failed.&quot;, e);</span>
-<span class="fc" id="L166">      return Optional.empty();</span>
+<span class="fc" id="L150">      return Optional.ofNullable(retryAfter)</span>
+<span class="fc" id="L151">          .filter(retryAfterValue -&gt; retryAfterValue.matches(&quot;^[0-9]+\\.?0*$&quot;))</span>
+<span class="fc" id="L152">          .map(retryAfterValue -&gt; retryAfterValue.replaceAll(&quot;\\.0*$&quot;, &quot;&quot;))</span>
+<span class="fc" id="L153">          .map(retryAfterValue -&gt; SECONDS.toMillis(Long.parseLong(retryAfterValue)))</span>
+<span class="fc" id="L154">          .map(deltaMillis -&gt; currentTimeMillis() + deltaMillis)</span>
+<span class="fc" id="L155">          .or(() -&gt; Optional.ofNullable(retryAfter)</span>
+<span class="fc" id="L156">              .map(retryAfterValue -&gt; ZonedDateTime</span>
+<span class="fc" id="L157">                  .parse(retryAfterValue, RFC_1123_DATE_TIME).toInstant().toEpochMilli()));</span>
+<span class="fc" id="L158">    } catch (Exception e) {</span>
+<span class="fc" id="L159">      log.warn(&quot;Parsing retry after date for feigns RetryableException failed.&quot;, e);</span>
+<span class="fc" id="L160">      return Optional.empty();</span>
     }
   }
 
+  protected long currentTimeMillis() {
+<span class="fc" id="L165">    return System.currentTimeMillis();</span>
+  }
+
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

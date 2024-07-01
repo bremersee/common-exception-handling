@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
@@ -40,7 +41,6 @@ import lombok.ToString;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings(&quot;SameNameButDifferent&quot;)
 @Schema(description = &quot;The serialized exception.&quot;)
 @JsonInclude(Include.NON_EMPTY)
 @EqualsAndHashCode(exclude = {&quot;furtherDetails&quot;})
@@ -48,73 +48,116 @@ import lombok.ToString;
 @NoArgsConstructor
 public class RestApiException implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
+  /**
+   * The id of the exception.
+   */
   @Schema(description = &quot;The id of the exception.&quot;)
   @Getter
   @Setter
   private String id;
 
+  /**
+   * The timestamp.
+   */
   @Schema(description = &quot;The timestamp.&quot;)
   @Getter
   @Setter
   private OffsetDateTime timestamp;
 
+  /**
+   * The http status code.
+   */
   @Schema(description = &quot;The http status code.&quot;)
   @Getter
   @Setter
   private Integer status;
 
+  /**
+   * The http error message.
+   */
   @Schema(description = &quot;The http error message.&quot;)
   @Getter
   @Setter
   private String error;
 
+  /**
+   * A service specific error code.
+   */
   @Schema(description = &quot;A service specific error code.&quot;)
   @Getter
   @Setter
   private String errorCode;
 
+  /**
+   * Determines whether the error code is inherited from the cause or not.
+   */
   @Schema(description = &quot;Determines whether the error code is inherited from the cause or not.&quot;)
   @Setter
   private Boolean errorCodeInherited;
 
-  @Schema(description = &quot;A human readable exception message.&quot;)
+  /**
+   * A human-readable exception message.
+   */
+  @Schema(description = &quot;A human-readable exception message.&quot;)
   @Getter
   @Setter
   private String message;
 
+  /**
+   * The class name of the exception.
+   */
   @Schema(description = &quot;The class name of the exception.&quot;)
   @Getter
   @Setter
   private String exception;
 
+  /**
+   * The name of the application.
+   */
   @Schema(description = &quot;The name of the application.&quot;)
   @Getter
   @Setter
   private String application;
 
+  /**
+   * The request path.
+   */
   @Schema(description = &quot;The request path.&quot;)
   @Getter
   @Setter
   private String path;
 
+  /**
+   * The handler.
+   */
   @Schema(description = &quot;The handler.&quot;)
   @Getter
   @Setter
   private Handler handler;
 
+  /**
+   * The stack trace.
+   */
   @Schema(description = &quot;The stack trace.&quot;)
   @Getter
   @Setter
   private List&lt;StackTraceItem&gt; stackTrace;
 
+  /**
+   * The cause.
+   */
   @Schema(description = &quot;The cause.&quot;)
   @Getter
   @Setter
   private RestApiException cause;
 
-<span class="fc" id="L117">  @Schema(hidden = true)</span>
+  /**
+   * Further details.
+   */
+<span class="fc" id="L160">  @Schema(hidden = true)</span>
   @JsonIgnore
   private final Map&lt;String, Object&gt; furtherDetails = new LinkedHashMap&lt;&gt;();
 
@@ -134,6 +177,7 @@ public class RestApiException implements Serializable {
    * @param handler the handler
    * @param stackTrace the stack trace
    * @param cause the cause
+   * @param furtherDetails the further details
    */
   @Builder(toBuilder = true)
   protected RestApiException(
@@ -150,24 +194,24 @@ public class RestApiException implements Serializable {
       Handler handler,
       List&lt;StackTraceItem&gt; stackTrace,
       RestApiException cause,
-<span class="fc" id="L153">      Map&lt;String, Object&gt; furtherDetails) {</span>
-<span class="fc" id="L154">    this.id = id;</span>
-<span class="fc" id="L155">    this.timestamp = timestamp;</span>
-<span class="fc" id="L156">    this.status = status;</span>
-<span class="fc" id="L157">    this.error = error;</span>
-<span class="fc" id="L158">    this.errorCode = errorCode;</span>
-<span class="fc" id="L159">    this.errorCodeInherited = errorCodeInherited;</span>
-<span class="fc" id="L160">    this.message = message;</span>
-<span class="fc" id="L161">    this.exception = exception;</span>
-<span class="fc" id="L162">    this.application = application;</span>
-<span class="fc" id="L163">    this.path = path;</span>
-<span class="fc" id="L164">    this.handler = handler;</span>
-<span class="fc" id="L165">    this.stackTrace = stackTrace;</span>
-<span class="fc" id="L166">    this.cause = cause;</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">    if (nonNull(furtherDetails)) {</span>
-<span class="fc" id="L168">      this.furtherDetails.putAll(furtherDetails);</span>
+<span class="fc" id="L197">      Map&lt;String, Object&gt; furtherDetails) {</span>
+<span class="fc" id="L198">    this.id = id;</span>
+<span class="fc" id="L199">    this.timestamp = timestamp;</span>
+<span class="fc" id="L200">    this.status = status;</span>
+<span class="fc" id="L201">    this.error = error;</span>
+<span class="fc" id="L202">    this.errorCode = errorCode;</span>
+<span class="fc" id="L203">    this.errorCodeInherited = errorCodeInherited;</span>
+<span class="fc" id="L204">    this.message = message;</span>
+<span class="fc" id="L205">    this.exception = exception;</span>
+<span class="fc" id="L206">    this.application = application;</span>
+<span class="fc" id="L207">    this.path = path;</span>
+<span class="fc" id="L208">    this.handler = handler;</span>
+<span class="fc" id="L209">    this.stackTrace = stackTrace;</span>
+<span class="fc" id="L210">    this.cause = cause;</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">    if (nonNull(furtherDetails)) {</span>
+<span class="fc" id="L212">      this.furtherDetails.putAll(furtherDetails);</span>
     }
-<span class="fc" id="L170">  }</span>
+<span class="fc" id="L214">  }</span>
 
   /**
    * Is the error code inherited from the cause.
@@ -175,7 +219,7 @@ public class RestApiException implements Serializable {
    * @return errorCodeInherited error code inherited
    */
   public Boolean getErrorCodeInherited() {
-<span class="fc" id="L178">    return Boolean.TRUE.equals(errorCodeInherited);</span>
+<span class="fc" id="L222">    return Boolean.TRUE.equals(errorCodeInherited);</span>
   }
 
   /**
@@ -186,10 +230,10 @@ public class RestApiException implements Serializable {
    */
   @JsonAnySetter
   public void furtherDetails(String name, Object value) {
-<span class="pc bpc" id="L189" title="2 of 4 branches missed.">    if (nonNull(name) &amp;&amp; !name.isBlank()) {</span>
-<span class="fc" id="L190">      furtherDetails.put(name, value);</span>
+<span class="pc bpc" id="L233" title="2 of 4 branches missed.">    if (nonNull(name) &amp;&amp; !name.isBlank()) {</span>
+<span class="fc" id="L234">      furtherDetails.put(name, value);</span>
     }
-<span class="fc" id="L192">  }</span>
+<span class="fc" id="L236">  }</span>
 
   /**
    * Further details map.
@@ -198,9 +242,9 @@ public class RestApiException implements Serializable {
    */
   @JsonAnySetter
   public Map&lt;String, Object&gt; furtherDetails() {
-<span class="fc" id="L201">    return furtherDetails;</span>
+<span class="fc" id="L245">    return furtherDetails;</span>
   }
 
 }
 
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

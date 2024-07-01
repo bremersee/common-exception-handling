@@ -27,8 +27,8 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,7 +58,6 @@ import org.springframework.web.util.WebUtils;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings("SameNameButDifferent")
 @Slf4j
 public class ApiExceptionResolver implements HandlerExceptionResolver {
 
@@ -90,6 +89,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
   /**
    * Instantiates a new api exception resolver.
    *
+   * @param apiPaths the api paths
    * @param exceptionMapper the exception mapper
    */
   public ApiExceptionResolver(
@@ -101,6 +101,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
   /**
    * Instantiates a new api exception resolver.
    *
+   * @param apiPaths the api paths
    * @param exceptionMapper the exception mapper
    * @param objectMapperBuilder the object mapper builder
    */
@@ -118,6 +119,7 @@ public class ApiExceptionResolver implements HandlerExceptionResolver {
   /**
    * Instantiates a new api exception resolver.
    *
+   * @param apiPaths the api paths
    * @param exceptionMapper the exception mapper
    * @param objectMapper the object mapper
    * @param xmlMapper the xml mapper

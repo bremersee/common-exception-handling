@@ -18,8 +18,8 @@ package org.bremersee.exception.spring.boot.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +37,6 @@ import org.springframework.http.HttpStatus;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings("SameNameButDifferent")
 @ConditionalOnClass(RestApiExceptionMapperProperties.class)
 @ConfigurationProperties(prefix = "bremersee.exception-mapping")
 @Getter
@@ -215,7 +214,7 @@ public class RestApiExceptionMapperBootProperties {
   /**
    * The exception mapping.
    */
-  @SuppressWarnings("SameNameButDifferent")
+  @Setter
   @ToString
   @EqualsAndHashCode
   @NoArgsConstructor
@@ -239,18 +238,14 @@ public class RestApiExceptionMapperBootProperties {
     }
 
     @Getter
-    @Setter
     private String exceptionClassName;
 
-    @Setter
     private int status;
 
     @Getter
-    @Setter
     private String message;
 
     @Getter
-    @Setter
     private String code;
 
     /**
@@ -270,56 +265,27 @@ public class RestApiExceptionMapperBootProperties {
   /**
    * The exception mapping config.
    */
-  @SuppressWarnings("SameNameButDifferent")
-  @ToString
-  @EqualsAndHashCode
+  @Data
   @NoArgsConstructor
   @AllArgsConstructor
   public static class ExceptionMappingConfigImpl implements ExceptionMappingConfig {
 
-    @Getter
-    @Setter
-    @NotNull
     private String exceptionClassName;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeMessage = true;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeException = true;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeApplicationName = true;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includePath = true;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeHandler = false;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeStackTrace = false;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean includeCause = false;
 
-    @Getter
-    @Setter
-    @NotNull
     private Boolean evaluateAnnotationFirst = false;
 
   }

@@ -18,6 +18,7 @@ package org.bremersee.exception;
 
 import static java.util.Objects.isNull;
 
+import java.io.Serial;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -26,11 +27,11 @@ import lombok.Getter;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings("SameNameButDifferent")
 @EqualsAndHashCode(callSuper = true)
 public class ServiceException extends RuntimeException
     implements ErrorCodeAware, HttpStatusAware {
 
+  @Serial
   private static final long serialVersionUID = 2L;
 
   /**
@@ -38,8 +39,14 @@ public class ServiceException extends RuntimeException
    */
   public static final String ERROR_CODE_ALREADY_EXISTS = "COMMON:ALREADY_EXISTS";
 
+  /**
+   * The http status.
+   */
   private final int httpStatus;
 
+  /**
+   * The error code.
+   */
   @Getter
   private final String errorCode;
 
@@ -438,24 +445,11 @@ public class ServiceException extends RuntimeException
    * @return the builder
    */
   public static ServiceExceptionBuilder<? extends ServiceException> builder() {
+
     return new AbstractServiceExceptionBuilder<>() {
 
+      @Serial
       private static final long serialVersionUID = 2L;
-
-      @Override
-      protected ServiceException buildWith(int httpStatus, String errorCode) {
-        return new ServiceException(httpStatus, errorCode);
-      }
-
-      @Override
-      protected ServiceException buildWith(int httpStatus, String errorCode, String reason) {
-        return new ServiceException(httpStatus, errorCode, reason);
-      }
-
-      @Override
-      protected ServiceException buildWith(int httpStatus, String errorCode, Throwable cause) {
-        return new ServiceException(httpStatus, errorCode, cause);
-      }
 
       @Override
       protected ServiceException buildWith(

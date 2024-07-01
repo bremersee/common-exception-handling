@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 /**
  * The rest api exception parser test.
@@ -67,7 +68,7 @@ class RestApiExceptionParserTest {
   private static class RestApiExceptionParserTestImpl implements RestApiExceptionParser {
 
     @Override
-    public RestApiException parseException(String response, HttpStatus httpStatus,
+    public RestApiException parseException(String response, HttpStatusCode httpStatus,
         HttpHeaders headers) {
 
       return RestApiException.builder()
@@ -76,7 +77,7 @@ class RestApiExceptionParserTest {
     }
 
     @Override
-    public RestApiException parseException(byte[] response, HttpStatus httpStatus,
+    public RestApiException parseException(byte[] response, HttpStatusCode httpStatus,
         HttpHeaders headers) {
 
       return parseException(new String(response, StandardCharsets.UTF_8), httpStatus, headers);

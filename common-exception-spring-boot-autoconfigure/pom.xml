@@ -7,7 +7,7 @@
   <parent>
     <artifactId>common-exception-parent</artifactId>
     <groupId>org.bremersee</groupId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
   </parent>
 
   <artifactId>common-exception-spring-boot-autoconfigure</artifactId>
@@ -47,10 +47,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-autoconfigure</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
     </dependency>
 
     <dependency>
@@ -94,11 +90,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>

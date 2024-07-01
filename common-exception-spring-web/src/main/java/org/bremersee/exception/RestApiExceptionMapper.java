@@ -16,8 +16,6 @@
 
 package org.bremersee.exception;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.lang.Nullable;
 
@@ -26,11 +24,10 @@ import org.springframework.lang.Nullable;
  *
  * @author Christian Bremer
  */
-@Valid
 public interface RestApiExceptionMapper {
 
   /**
-   * Build the exception model from the exception, the requested path and an handler. Typically, the
+   * Build the exception model from the exception, the requested path and a handler. Typically, the
    * handler is of type {@link org.springframework.web.method.HandlerMethod}.
    *
    * @param exception the exception (required)
@@ -38,8 +35,8 @@ public interface RestApiExceptionMapper {
    * @param handler the handler (optional)
    * @return the rest api exception
    */
-  @NotNull RestApiException build(
-      @NotNull Throwable exception,
+  RestApiException build(
+      Throwable exception,
       @Nullable String requestPath,
       @Nullable Object handler);
 

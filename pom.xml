@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.bremersee</groupId>
     <artifactId>common-parent</artifactId>
-    <version>2.4.0</version>
+    <version>3.0.0</version>
     <relativePath/>
   </parent>
 
   <artifactId>common-exception-parent</artifactId>
-  <version>0.0.1</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <name>Common Exception Parent Module</name>
@@ -91,17 +91,5 @@
       </url>
     </site>
   </distributionManagement>
-
-  <profiles>
-    <profile>
-      <id>build-system</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <argLine>-Dorg.bremersee.test.executor=BUILD_SYSTEM</argLine>
-      </properties>
-    </profile>
-  </profiles>
 
 </project>

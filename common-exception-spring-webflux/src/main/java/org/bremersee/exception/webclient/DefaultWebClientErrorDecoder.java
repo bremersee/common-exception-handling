@@ -16,8 +16,7 @@
 
 package org.bremersee.exception.webclient;
 
-import static java.util.Objects.nonNull;
-
+import java.util.Optional;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
 import org.bremersee.exception.RestApiResponseException;
@@ -48,7 +47,7 @@ public class DefaultWebClientErrorDecoder
    * @param parser the parser
    */
   public DefaultWebClientErrorDecoder(RestApiExceptionParser parser) {
-    this.parser = nonNull(parser) ? parser : new RestApiExceptionParserImpl();
+    this.parser = Optional.ofNullable(parser).orElseGet(RestApiExceptionParserImpl::new);
   }
 
   @Override

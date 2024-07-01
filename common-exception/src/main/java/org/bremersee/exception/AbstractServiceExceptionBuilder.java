@@ -19,6 +19,8 @@ package org.bremersee.exception;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+import java.io.Serial;
+
 /**
  * The abstract service exception builder.
  *
@@ -28,6 +30,7 @@ import static java.util.Objects.nonNull;
 public abstract class AbstractServiceExceptionBuilder<T extends ServiceException>
     implements ServiceExceptionBuilder<T> {
 
+  @Serial
   private static final long serialVersionUID = 2L;
 
   /**
@@ -75,6 +78,15 @@ public abstract class AbstractServiceExceptionBuilder<T extends ServiceException
   }
 
   @Override
+  public ServiceExceptionBuilder<T> from(ServiceException serviceException) {
+    this.httpStatus = serviceException.status();
+    this.errorCode = serviceException.getErrorCode();
+    this.reason = serviceException.getMessage();
+    this.cause = serviceException.getCause();
+    return this;
+  }
+
+  @Override
   public T build() {
     if (nonNull(reason) && !reason.isBlank() && nonNull(cause)) {
       return buildWith(httpStatus, errorCode, reason, cause);
@@ -82,7 +94,7 @@ public abstract class AbstractServiceExceptionBuilder<T extends ServiceException
     if ((isNull(reason) || reason.isBlank()) && nonNull(cause)) {
       return buildWith(httpStatus, errorCode, cause);
     }
-    if (nonNull(reason) && !reason.isBlank() && isNull(cause)) {
+    if (nonNull(reason) && !reason.isBlank()) {
       return buildWith(httpStatus, errorCode, reason);
     }
     return buildWith(httpStatus, errorCode);
@@ -95,7 +107,9 @@ public abstract class AbstractServiceExceptionBuilder<T extends ServiceException
    * @param errorCode the error code
    * @return the service exception
    */
-  protected abstract T buildWith(int httpStatus, String errorCode);
+  protected T buildWith(int httpStatus, String errorCode) {
+    return buildWith(httpStatus, errorCode, null, null);
+  }
 
   /**
    * Build the service exception with the given values.
@@ -105,7 +119,9 @@ public abstract class AbstractServiceExceptionBuilder<T extends ServiceException
    * @param reason the reason
    * @return the service exception
    */
-  protected abstract T buildWith(int httpStatus, String errorCode, String reason);
+  protected T buildWith(int httpStatus, String errorCode, String reason) {
+    return buildWith(httpStatus, errorCode, reason, null);
+  }
 
   /**
    * Build the service exception with the given values.
@@ -115,7 +131,9 @@ public abstract class AbstractServiceExceptionBuilder<T extends ServiceException
    * @param cause the cause
    * @return the t
    */
-  protected abstract T buildWith(int httpStatus, String errorCode, Throwable cause);
+  protected T buildWith(int httpStatus, String errorCode, Throwable cause) {
+    return buildWith(httpStatus, errorCode, null, cause);
+  }
 
   /**
    * Build the service exception with the given values.

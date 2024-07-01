@@ -28,8 +28,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
 
@@ -96,11 +97,10 @@ class ReactiveIntegrationTest {
             .get()
             .uri("/api/exception")
             .retrieve()
-            .onStatus(HttpStatus::isError, errorDecoder)
+            .onStatus(HttpStatusCode::isError, errorDecoder)
             .bodyToMono(String.class))
         .expectErrorMatches(throwable -> {
-          if (throwable instanceof RestApiResponseException) {
-            RestApiResponseException exception = (RestApiResponseException) throwable;
+          if (throwable instanceof RestApiResponseException exception) {
             RestApiException expected = RestApiException.builder()
                 .status(HttpStatus.CONFLICT.value())
                 .error(HttpStatus.CONFLICT.getReasonPhrase())

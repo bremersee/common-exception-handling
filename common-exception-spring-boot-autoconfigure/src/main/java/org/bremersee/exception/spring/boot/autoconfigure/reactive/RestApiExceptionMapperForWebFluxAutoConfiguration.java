@@ -23,6 +23,7 @@ import org.bremersee.exception.RestApiExceptionMapperForWeb;
 import org.bremersee.exception.RestApiExceptionMapperProperties;
 import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperBootProperties;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -30,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.ClassUtils;
 
@@ -44,7 +44,7 @@ import org.springframework.util.ClassUtils;
     ObjectMapper.class,
     RestApiExceptionMapperProperties.class
 })
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties({RestApiExceptionMapperBootProperties.class})
 @Slf4j
 public class RestApiExceptionMapperForWebFluxAutoConfiguration {
@@ -71,13 +71,14 @@ public class RestApiExceptionMapperForWebFluxAutoConfiguration {
    */
   @EventListener(ApplicationReadyEvent.class)
   public void init() {
-    log.info("\n"
-            + "*********************************************************************************\n"
-            + "* {}\n"
-            + "*********************************************************************************\n"
-            + "* applicationName = {}\n"
-            + "* apiPaths = {}\n"
-            + "*********************************************************************************",
+    log.info("""
+
+            *********************************************************************************
+            * {}
+            *********************************************************************************
+            * applicationName = {}
+            * apiPaths = {}
+            *********************************************************************************""",
         ClassUtils.getUserClass(getClass()).getSimpleName(),
         applicationName,
         properties.getApiPaths());

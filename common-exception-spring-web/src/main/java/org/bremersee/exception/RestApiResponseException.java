@@ -20,6 +20,7 @@ import java.util.Optional;
 import lombok.Getter;
 import org.bremersee.exception.model.RestApiException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -27,12 +28,14 @@ import org.springframework.web.server.ResponseStatusException;
  *
  * @author Christian Bremer
  */
-@SuppressWarnings("SameNameButDifferent")
+@Getter
 public class RestApiResponseException
     extends ResponseStatusException
     implements RestApiExceptionAware {
 
-  @Getter
+  /**
+   * The parsed response of the server as {@link RestApiException}.
+   */
   private final RestApiException restApiException;
 
   /**
@@ -40,9 +43,7 @@ public class RestApiResponseException
    *
    * @param restApiException the rest api exception
    */
-  public RestApiResponseException(
-      RestApiException restApiException) {
-
+  public RestApiResponseException(RestApiException restApiException) {
     super(detectHttpStatus(restApiException));
     this.restApiException = restApiException;
   }
@@ -53,18 +54,15 @@ public class RestApiResponseException
    * @param status the status
    * @param restApiException the rest api exception
    */
-  public RestApiResponseException(
-      HttpStatus status,
-      RestApiException restApiException) {
-
+  public RestApiResponseException(HttpStatusCode status, RestApiException restApiException) {
     super(status);
     this.restApiException = restApiException;
   }
 
-  private static HttpStatus detectHttpStatus(RestApiException restApiException) {
+  private static HttpStatusCode detectHttpStatus(RestApiException restApiException) {
     return Optional.ofNullable(restApiException)
         .map(RestApiException::getStatus)
-        .map(HttpStatus::resolve)
+        .map(HttpStatusCode::valueOf)
         .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
   }
 

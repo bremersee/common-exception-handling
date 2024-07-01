@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import feign.Request;
@@ -28,8 +30,6 @@ import feign.Response;
 import feign.RetryableException;
 import feign.Util;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -133,9 +133,14 @@ class FeignClientExceptionErrorDecoderTest {
     when(restApiExceptionParser.parseException(any(byte[].class), any(), any()))
         .thenReturn(restException);
 
-    Response response = createResponse(httpStatus, "30");
+    Response response = createResponse(httpStatus, "20");
 
-    Exception actual = target.decode("saveSomething", response);
+    FeignClientExceptionErrorDecoder spyTarget = spy(target);
+    doReturn(0L)
+        .when(spyTarget)
+        .currentTimeMillis();
+
+    Exception actual = spyTarget.decode("saveSomething", response);
     softly.assertThat(actual)
         .isNotNull()
         .isInstanceOf(RetryableException.class)
@@ -144,8 +149,8 @@ class FeignClientExceptionErrorDecoderTest {
     softly.assertThat(actual)
         .isNotNull()
         .isInstanceOf(RetryableException.class)
-        .extracting(exc -> ((RetryableException) exc).retryAfter(), InstanceOfAssertFactories.DATE)
-        .isBefore(Instant.now().plusMillis(30001));
+        .extracting(exc -> ((RetryableException) exc).retryAfter(), InstanceOfAssertFactories.LONG)
+        .isEqualTo(20000L);
     softly.assertThat(actual)
         .isNotNull()
         .isInstanceOf(RetryableException.class)
@@ -165,22 +170,32 @@ class FeignClientExceptionErrorDecoderTest {
    */
   @Test
   void testDetermineRetryAfter(SoftAssertions softly) {
-    Optional<Instant> actual = target.determineRetryAfter(null);
+    Optional<Long> actual = target.determineRetryAfter(null);
     softly.assertThat(actual)
         .isEmpty();
+
+    FeignClientExceptionErrorDecoder spyTarget = spy(target);
+    doReturn(0L)
+        .when(spyTarget)
+        .currentTimeMillis();
+    actual = spyTarget.determineRetryAfter("30");
+    softly.assertThat(actual)
+        .isPresent()
+        .get(InstanceOfAssertFactories.LONG)
+        .isEqualTo(30000);
 
     actual = target.determineRetryAfter("30");
     softly.assertThat(actual)
         .isPresent()
-        .get(InstanceOfAssertFactories.INSTANT)
-        .isBefore(Instant.now().plus(Duration.ofMillis(30001)));
+        .get(InstanceOfAssertFactories.LONG)
+        .isLessThan(System.currentTimeMillis() + 33000);
 
     OffsetDateTime expected = OffsetDateTime.parse("2007-12-24T18:21Z");
     String value = expected.format(DateTimeFormatter.RFC_1123_DATE_TIME);
     actual = target.determineRetryAfter(value);
     softly.assertThat(actual)
         .isPresent()
-        .hasValue(expected.toInstant());
+        .hasValue(expected.toInstant().toEpochMilli());
   }
 
   /**
@@ -190,7 +205,7 @@ class FeignClientExceptionErrorDecoderTest {
   void testDetermineRetryAfterFailed() {
     OffsetDateTime expected = OffsetDateTime.parse("2007-12-24T18:21Z");
     String value = expected.format(DateTimeFormatter.ISO_DATE_TIME);
-    Optional<Instant> actual = target.determineRetryAfter(value);
+    Optional<Long> actual = target.determineRetryAfter(value);
     assertThat(actual)
         .isEmpty();
   }

@@ -16,7 +16,8 @@
 
 package org.bremersee.exception;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
@@ -39,15 +40,19 @@ public class RestApiExceptionMapperForWebFlux extends RestApiExceptionMapperForW
   }
 
   @Override
-  public HttpStatus detectHttpStatus(Throwable exception, Object handler) {
-    if (exception instanceof WebClientResponseException) {
-      try {
-        return ((WebClientResponseException) exception).getStatusCode();
-
-      } catch (IllegalArgumentException ignored) {
-        // ignored
-      }
+  protected HttpStatusCode detectHttpStatus(Throwable exception, Object handler) {
+    if (exception instanceof WebClientResponseException cre) {
+      return cre.getStatusCode();
     }
     return super.detectHttpStatus(exception, handler);
+  }
+
+  @Override
+  protected String getError(Throwable exception, HttpStatusCode httpStatusCode) {
+    if ((exception instanceof WebClientResponseException cre)
+        && !(ObjectUtils.isEmpty(cre.getStatusText()))) {
+      return cre.getStatusText();
+    }
+    return super.getError(exception, httpStatusCode);
   }
 }

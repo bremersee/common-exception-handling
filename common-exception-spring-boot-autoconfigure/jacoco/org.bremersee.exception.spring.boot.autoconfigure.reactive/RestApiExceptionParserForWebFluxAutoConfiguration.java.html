@@ -16,7 +16,6 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
@@ -39,27 +38,27 @@ import org.springframework.util.ClassUtils;
  * @author Christian Bremer
  */
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@ConditionalOnClass({
-    ObjectMapper.class,
-    Jackson2ObjectMapperBuilder.class,
-    RestApiExceptionParserImpl.class
+@ConditionalOnClass(name = {
+    &quot;com.fasterxml.jackson.databind.ObjectMapper&quot;,
+    &quot;org.springframework.http.converter.json.Jackson2ObjectMapperBuilder&quot;,
+    &quot;org.bremersee.exception.RestApiExceptionParserImpl&quot;
 })
 @AutoConfiguration
-<span class="fc" id="L48">@Slf4j</span>
-<span class="fc" id="L49">public class RestApiExceptionParserForWebFluxAutoConfiguration {</span>
+<span class="fc" id="L47">@Slf4j</span>
+<span class="fc" id="L48">public class RestApiExceptionParserForWebFluxAutoConfiguration {</span>
 
   /**
    * Init.
    */
   @EventListener(ApplicationReadyEvent.class)
   public void init() {
-<span class="fc" id="L56">    log.info(&quot;&quot;&quot;</span>
+<span class="fc" id="L55">    log.info(&quot;&quot;&quot;</span>
 
             *********************************************************************************
             * {}
             *********************************************************************************&quot;&quot;&quot;,
-<span class="fc" id="L61">        ClassUtils.getUserClass(getClass()).getSimpleName());</span>
-<span class="fc" id="L62">  }</span>
+<span class="fc" id="L60">        ClassUtils.getUserClass(getClass()).getSimpleName());</span>
+<span class="fc" id="L61">  }</span>
 
   /**
    * Creates rest api exception parser for reactive web application.
@@ -73,10 +72,10 @@ import org.springframework.util.ClassUtils;
   public RestApiExceptionParser restApiExceptionParser(
       ObjectProvider&lt;Jackson2ObjectMapperBuilder&gt; objectMapperBuilderProvider) {
 
-<span class="fc" id="L76">    Jackson2ObjectMapperBuilder objectMapperBuilder = objectMapperBuilderProvider.getIfAvailable();</span>
-<span class="fc" id="L77">    return Optional.ofNullable(objectMapperBuilder)</span>
-<span class="fc" id="L78">        .map(RestApiExceptionParserImpl::new)</span>
-<span class="fc" id="L79">        .orElseGet(RestApiExceptionParserImpl::new);</span>
+<span class="fc" id="L75">    Jackson2ObjectMapperBuilder objectMapperBuilder = objectMapperBuilderProvider.getIfAvailable();</span>
+<span class="fc" id="L76">    return Optional.ofNullable(objectMapperBuilder)</span>
+<span class="fc" id="L77">        .map(RestApiExceptionParserImpl::new)</span>
+<span class="fc" id="L78">        .orElseGet(RestApiExceptionParserImpl::new);</span>
   }
 
 }

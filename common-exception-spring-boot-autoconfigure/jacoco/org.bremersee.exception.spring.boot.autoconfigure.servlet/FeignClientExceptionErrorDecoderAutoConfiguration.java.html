@@ -16,7 +16,6 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.servlet;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
@@ -39,29 +38,29 @@ import org.springframework.util.ClassUtils;
  * @author Christian Bremer
  */
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass({
-    ObjectMapper.class,
-    FeignClientExceptionErrorDecoder.class
+@ConditionalOnClass(name = {
+    &quot;com.fasterxml.jackson.databind.ObjectMapper&quot;,
+    &quot;org.bremersee.exception.feign.FeignClientExceptionErrorDecoder&quot;
 })
 @AutoConfigureAfter({
     RestApiExceptionParserForWebAutoConfiguration.class
 })
 @AutoConfiguration
-<span class="fc" id="L50">@Slf4j</span>
-<span class="fc" id="L51">public class FeignClientExceptionErrorDecoderAutoConfiguration {</span>
+<span class="fc" id="L49">@Slf4j</span>
+<span class="fc" id="L50">public class FeignClientExceptionErrorDecoderAutoConfiguration {</span>
 
   /**
    * Init.
    */
   @EventListener(ApplicationReadyEvent.class)
   public void init() {
-<span class="fc" id="L58">    log.info(&quot;&quot;&quot;</span>
+<span class="fc" id="L57">    log.info(&quot;&quot;&quot;</span>
 
             *********************************************************************************
             * {}
             *********************************************************************************&quot;&quot;&quot;,
-<span class="fc" id="L63">        ClassUtils.getUserClass(getClass()).getSimpleName());</span>
-<span class="fc" id="L64">  }</span>
+<span class="fc" id="L62">        ClassUtils.getUserClass(getClass()).getSimpleName());</span>
+<span class="fc" id="L63">  }</span>
 
   /**
    * Creates feign client exception error decoder bean.
@@ -74,9 +73,9 @@ import org.springframework.util.ClassUtils;
   public FeignClientExceptionErrorDecoder feignClientExceptionErrorDecoder(
       ObjectProvider&lt;RestApiExceptionParser&gt; parserProvider) {
 
-<span class="fc" id="L77">    RestApiExceptionParser parser = parserProvider</span>
-<span class="fc" id="L78">        .getIfAvailable(RestApiExceptionParserImpl::new);</span>
-<span class="fc" id="L79">    return new FeignClientExceptionErrorDecoder(parser);</span>
+<span class="fc" id="L76">    RestApiExceptionParser parser = parserProvider</span>
+<span class="fc" id="L77">        .getIfAvailable(RestApiExceptionParserImpl::new);</span>
+<span class="fc" id="L78">    return new FeignClientExceptionErrorDecoder(parser);</span>
   }
 
 }

@@ -16,7 +16,6 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.servlet;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
@@ -37,16 +36,16 @@ import org.springframework.web.client.RestTemplate;
  * @author Christian Bremer
  */
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass({
-    ObjectMapper.class,
-    RestApiResponseErrorHandler.class
+@ConditionalOnClass(name = {
+    &quot;com.fasterxml.jackson.databind.ObjectMapper&quot;,
+    &quot;org.bremersee.exception.RestApiResponseErrorHandler&quot;
 })
 @AutoConfigureAfter({
     RestApiExceptionParserForWebAutoConfiguration.class
 })
 @AutoConfiguration
 @Order(100)
-<span class="fc" id="L49">@Slf4j</span>
+<span class="fc" id="L48">@Slf4j</span>
 public class RestTemplateErrorHandlerAutoConfiguration implements RestTemplateCustomizer {
 
   private final RestApiExceptionParser restApiExceptionParser;
@@ -57,14 +56,14 @@ public class RestTemplateErrorHandlerAutoConfiguration implements RestTemplateCu
    * @param restApiExceptionParser the rest api exception parser
    */
   public RestTemplateErrorHandlerAutoConfiguration(
-<span class="fc" id="L60">      ObjectProvider&lt;RestApiExceptionParser&gt; restApiExceptionParser) {</span>
-<span class="fc" id="L61">    this.restApiExceptionParser = restApiExceptionParser</span>
-<span class="fc" id="L62">        .getIfAvailable(RestApiExceptionParserImpl::new);</span>
-<span class="fc" id="L63">  }</span>
+<span class="fc" id="L59">      ObjectProvider&lt;RestApiExceptionParser&gt; restApiExceptionParser) {</span>
+<span class="fc" id="L60">    this.restApiExceptionParser = restApiExceptionParser</span>
+<span class="fc" id="L61">        .getIfAvailable(RestApiExceptionParserImpl::new);</span>
+<span class="fc" id="L62">  }</span>
 
   @Override
   public void customize(RestTemplate restTemplate) {
-<span class="fc" id="L67">    restTemplate.setErrorHandler(new RestApiResponseErrorHandler(restApiExceptionParser));</span>
-<span class="fc" id="L68">  }</span>
+<span class="fc" id="L66">    restTemplate.setErrorHandler(new RestApiResponseErrorHandler(restApiExceptionParser));</span>
+<span class="fc" id="L67">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

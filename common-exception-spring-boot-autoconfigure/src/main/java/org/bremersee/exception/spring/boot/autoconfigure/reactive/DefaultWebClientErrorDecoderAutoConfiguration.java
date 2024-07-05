@@ -16,7 +16,6 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.webclient.DefaultWebClientErrorDecoder;
@@ -38,9 +37,9 @@ import org.springframework.util.ClassUtils;
  * @author Christian Bremer
  */
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@ConditionalOnClass({
-    ObjectMapper.class,
-    DefaultWebClientErrorDecoder.class
+@ConditionalOnClass(name = {
+    "com.fasterxml.jackson.databind.ObjectMapper",
+    "org.bremersee.exception.webclient.DefaultWebClientErrorDecoder"
 })
 @AutoConfigureAfter({
     RestApiExceptionParserForWebFluxAutoConfiguration.class

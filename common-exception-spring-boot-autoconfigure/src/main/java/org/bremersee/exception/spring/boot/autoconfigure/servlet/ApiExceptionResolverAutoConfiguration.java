@@ -16,11 +16,9 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.servlet;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
-import org.bremersee.exception.RestApiExceptionMapperProperties;
 import org.bremersee.exception.servlet.ApiExceptionResolver;
 import org.bremersee.exception.servlet.HttpServletRequestIdProvider;
 import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperBootProperties;
@@ -44,10 +42,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * The api exception resolver autoconfiguration.
  */
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass({
-    ObjectMapper.class,
-    RestApiExceptionMapperProperties.class,
-    ApiExceptionResolver.class
+@ConditionalOnClass(name = {
+    "com.fasterxml.jackson.databind.ObjectMapper",
+    "org.bremersee.exception.RestApiExceptionMapperProperties",
+    "org.bremersee.exception.servlet.ApiExceptionResolver"
 })
 @ConditionalOnBean({
     Jackson2ObjectMapperBuilder.class

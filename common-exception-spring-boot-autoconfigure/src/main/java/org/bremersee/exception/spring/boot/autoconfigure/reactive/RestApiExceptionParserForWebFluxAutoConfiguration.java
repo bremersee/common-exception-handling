@@ -16,7 +16,6 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
@@ -39,10 +38,10 @@ import org.springframework.util.ClassUtils;
  * @author Christian Bremer
  */
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@ConditionalOnClass({
-    ObjectMapper.class,
-    Jackson2ObjectMapperBuilder.class,
-    RestApiExceptionParserImpl.class
+@ConditionalOnClass(name = {
+    "com.fasterxml.jackson.databind.ObjectMapper",
+    "org.springframework.http.converter.json.Jackson2ObjectMapperBuilder",
+    "org.bremersee.exception.RestApiExceptionParserImpl"
 })
 @AutoConfiguration
 @Slf4j

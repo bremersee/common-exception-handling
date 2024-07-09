@@ -16,11 +16,9 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.reactive;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionMapper;
 import org.bremersee.exception.RestApiExceptionMapperForWeb;
-import org.bremersee.exception.RestApiExceptionMapperProperties;
 import org.bremersee.exception.spring.boot.autoconfigure.RestApiExceptionMapperBootProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -40,9 +38,9 @@ import org.springframework.util.ClassUtils;
  * @author Christian Bremer
  */
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@ConditionalOnClass({
-    ObjectMapper.class,
-    RestApiExceptionMapperProperties.class
+@ConditionalOnClass(name = {
+    "com.fasterxml.jackson.databind.ObjectMapper",
+    "org.bremersee.exception.RestApiExceptionMapperProperties"
 })
 @AutoConfiguration
 @EnableConfigurationProperties({RestApiExceptionMapperBootProperties.class})

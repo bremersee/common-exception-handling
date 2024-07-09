@@ -16,7 +16,6 @@
 
 package org.bremersee.exception.spring.boot.autoconfigure.servlet;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.bremersee.exception.RestApiExceptionParser;
 import org.bremersee.exception.RestApiExceptionParserImpl;
@@ -37,9 +36,9 @@ import org.springframework.web.client.RestTemplate;
  * @author Christian Bremer
  */
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@ConditionalOnClass({
-    ObjectMapper.class,
-    RestApiResponseErrorHandler.class
+@ConditionalOnClass(name = {
+    "com.fasterxml.jackson.databind.ObjectMapper",
+    "org.bremersee.exception.RestApiResponseErrorHandler"
 })
 @AutoConfigureAfter({
     RestApiExceptionParserForWebAutoConfiguration.class

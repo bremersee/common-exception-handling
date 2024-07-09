@@ -5,8 +5,8 @@ pipeline {
   environment {
     CODECOV_TOKEN = credentials('common-exception-handling-codecov-token')
     TEST = true
-    DEPLOY = false
-    SNAPSHOT_SITE = false
+    DEPLOY = true
+    SNAPSHOT_SITE = true
     RELEASE_SITE = true
     DEPLOY_FEATURE = false
   }

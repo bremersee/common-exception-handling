@@ -1,6 +1,6 @@
 # Common Exception Handling
 
-[![codecov](https://codecov.io/gh/bremersee/common-exception-handling/branch/main/graph/badge.svg)](https://codecov.io/gh/bremersee/common-exception-handling)
+[![codecov](https://codecov.io/gh/bremersee/common-exception-handling/branch/develop/graph/badge.svg)](https://codecov.io/gh/bremersee/common-exception-handling)
 
 #### Maven Site
 

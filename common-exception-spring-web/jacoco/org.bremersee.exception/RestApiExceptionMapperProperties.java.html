@@ -237,9 +237,14 @@ public interface RestApiExceptionMapperProperties {
      */
     String getExceptionClassName();
 
+    /**
+     * Determines whether to include the message into the http output or not.
+     *
+     * @return the boolean
+     */
     @Value.Default
     default Boolean getIncludeMessage() {
-<span class="fc" id="L242">      return true;</span>
+<span class="fc" id="L247">      return true;</span>
     }
 
     /**
@@ -249,7 +254,7 @@ public interface RestApiExceptionMapperProperties {
      */
     @Value.Default
     default Boolean getIncludeException() {
-<span class="fc" id="L252">      return true;</span>
+<span class="fc" id="L257">      return true;</span>
     }
 
     /**
@@ -259,7 +264,7 @@ public interface RestApiExceptionMapperProperties {
      */
     @Value.Default
     default Boolean getIncludeApplicationName() {
-<span class="fc" id="L262">      return true;</span>
+<span class="fc" id="L267">      return true;</span>
     }
 
     /**
@@ -269,7 +274,7 @@ public interface RestApiExceptionMapperProperties {
      */
     @Value.Default
     default Boolean getIncludePath() {
-<span class="fc" id="L272">      return true;</span>
+<span class="fc" id="L277">      return true;</span>
     }
 
     /**
@@ -279,7 +284,7 @@ public interface RestApiExceptionMapperProperties {
      */
     @Value.Default
     default Boolean getIncludeHandler() {
-<span class="fc" id="L282">      return false;</span>
+<span class="fc" id="L287">      return false;</span>
     }
 
     /**
@@ -289,7 +294,7 @@ public interface RestApiExceptionMapperProperties {
      */
     @Value.Default
     default Boolean getIncludeStackTrace() {
-<span class="fc" id="L292">      return false;</span>
+<span class="fc" id="L297">      return false;</span>
     }
 
     /**
@@ -299,7 +304,7 @@ public interface RestApiExceptionMapperProperties {
      */
     @Value.Default
     default Boolean getIncludeCause() {
-<span class="fc" id="L302">      return false;</span>
+<span class="fc" id="L307">      return false;</span>
     }
 
     /**
@@ -309,10 +314,10 @@ public interface RestApiExceptionMapperProperties {
      */
     @Value.Default
     default Boolean getEvaluateAnnotationFirst() {
-<span class="fc" id="L312">      return false;</span>
+<span class="fc" id="L317">      return false;</span>
     }
 
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

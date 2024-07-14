@@ -1,11 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>/srv/jenkins/workspace/common-exception-handling_main/common-exception-spring-web/target/generated-sources/annotations/org/bremersee/exception/ImmutableRestApiExceptionMapperProperties.java xref</title>
+<title>ImmutableRestApiExceptionMapperProperties xref</title>
 <link type="text/css" rel="stylesheet" href="../../../stylesheet.css" />
 </head>
 <body>
-<div id="overview"><a href="../../../../apidocs/org/bremersee/exception">View Javadoc</a></div><pre>
+<div id="overview"><a href="../../../../apidocs/org/bremersee/exception/ImmutableRestApiExceptionMapperProperties.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> org.bremersee.exception;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> java.util.ArrayList;
@@ -414,9 +414,9 @@
 <a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L407" href="#L407">407</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> Builder from(<a name="RestApiExceptionMapperProperties" href="../../../org/bremersee/exception/RestApiExceptionMapperProperties.html#RestApiExceptionMapperProperties">RestApiExceptionMapperProperties</a> instance) {
 <a class="jxr_linenumber" name="L408" href="#L408">408</a>       Objects.requireNonNull(instance, <span class="jxr_string">"instance"</span>);
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>       defaultExceptionMapping(instance.getDefaultExceptionMapping());
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>       <strong class="jxr_keyword">this</strong>.defaultExceptionMapping(instance.getDefaultExceptionMapping());
 <a class="jxr_linenumber" name="L410" href="#L410">410</a>       addAllExceptionMappings(instance.getExceptionMappings());
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>       defaultExceptionMappingConfig(instance.getDefaultExceptionMappingConfig());
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>       <strong class="jxr_keyword">this</strong>.defaultExceptionMappingConfig(instance.getDefaultExceptionMappingConfig());
 <a class="jxr_linenumber" name="L412" href="#L412">412</a>       addAllExceptionMappingConfigs(instance.getExceptionMappingConfigs());
 <a class="jxr_linenumber" name="L413" href="#L413">413</a>       <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L414" href="#L414">414</a>     }

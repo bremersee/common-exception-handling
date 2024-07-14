@@ -1,11 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>/srv/jenkins/workspace/common-exception-handling_main/common-exception-spring-web/target/generated-sources/annotations/org/bremersee/exception/ImmutableExceptionMapping.java xref</title>
+<title>ImmutableExceptionMapping xref</title>
 <link type="text/css" rel="stylesheet" href="../../../stylesheet.css" />
 </head>
 <body>
-<div id="overview"><a href="../../../../apidocs/org/bremersee/exception">View Javadoc</a></div><pre>
+<div id="overview"><a href="../../../../apidocs/org/bremersee/exception/ImmutableExceptionMapping.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> org.bremersee.exception;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> java.util.ArrayList;
@@ -240,8 +240,8 @@
 <a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L233" href="#L233">233</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> Builder from(RestApiExceptionMapperProperties.ExceptionMapping instance) {
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>       Objects.requireNonNull(instance, <span class="jxr_string">"instance"</span>);
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>       exceptionClassName(instance.getExceptionClassName());
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>       status(instance.getStatus());
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>       <strong class="jxr_keyword">this</strong>.exceptionClassName(instance.getExceptionClassName());
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>       <strong class="jxr_keyword">this</strong>.status(instance.getStatus());
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>       String messageValue = instance.getMessage();
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>       <strong class="jxr_keyword">if</strong> (messageValue != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>         message(messageValue);

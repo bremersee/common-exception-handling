@@ -237,14 +237,23 @@ public class RestApiExceptionMapperBootProperties {
 <span class="fc" id="L237">      this.code = code;</span>
 <span class="fc" id="L238">    }</span>
 
+    /**
+     * The exception class name.
+     */
     @Getter
     private String exceptionClassName;
 
     private int status;
 
+    /**
+     * The exception message.
+     */
     @Getter
     private String message;
 
+    /**
+     * The exception code.
+     */
     @Getter
     private String code;
 
@@ -254,10 +263,10 @@ public class RestApiExceptionMapperBootProperties {
      * @return the status
      */
     public int getStatus() {
-<span class="pc bpc" id="L257" title="1 of 2 branches missed.">      if (HttpStatus.resolve(status) == null) {</span>
-<span class="nc" id="L258">        return HttpStatus.INTERNAL_SERVER_ERROR.value();</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">      if (HttpStatus.resolve(status) == null) {</span>
+<span class="nc" id="L267">        return HttpStatus.INTERNAL_SERVER_ERROR.value();</span>
       }
-<span class="fc" id="L260">      return status;</span>
+<span class="fc" id="L269">      return status;</span>
     }
 
   }
@@ -291,4 +300,4 @@ public class RestApiExceptionMapperBootProperties {
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

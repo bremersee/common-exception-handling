@@ -110,6 +110,13 @@ public class RestApiExceptionMapperForWeb implements RestApiExceptionMapper {
         .map(HttpStatus::valueOf);
   }
 
+  /**
+   * Gets error.
+   *
+   * @param throwable the throwable
+   * @param httpStatusCode the http status code
+   * @return the error
+   */
   @Nullable
   protected String getError(Throwable throwable, HttpStatusCode httpStatusCode) {
     if ((throwable instanceof ResponseStatusException rse)

@@ -237,6 +237,11 @@ public interface RestApiExceptionMapperProperties {
      */
     String getExceptionClassName();
 
+    /**
+     * Determines whether to include the message into the http output or not.
+     *
+     * @return the boolean
+     */
     @Value.Default
     default Boolean getIncludeMessage() {
       return true;

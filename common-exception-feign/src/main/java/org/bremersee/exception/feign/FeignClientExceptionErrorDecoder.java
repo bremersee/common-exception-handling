@@ -161,6 +161,11 @@ public class FeignClientExceptionErrorDecoder implements ErrorDecoder {
     }
   }
 
+  /**
+   * Returns the current time millis of the system.
+   *
+   * @return the current time millis of the system
+   */
   protected long currentTimeMillis() {
     return System.currentTimeMillis();
   }

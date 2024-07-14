@@ -237,14 +237,23 @@ public class RestApiExceptionMapperBootProperties {
       this.code = code;
     }
 
+    /**
+     * The exception class name.
+     */
     @Getter
     private String exceptionClassName;
 
     private int status;
 
+    /**
+     * The exception message.
+     */
     @Getter
     private String message;
 
+    /**
+     * The exception code.
+     */
     @Getter
     private String code;
 
